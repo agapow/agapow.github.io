@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Parsing Dendroscope nodes - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="For when you have to do lots to a big tree. Previously, I showed how Dendroscope files can be easily manipulated with brute-force regex, so you can right scripts to color a mass of nodes, rather than having to format them one-by-one in the GUI. However, more complex manipulations require …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Parsing Dendroscope nodes">
+	<meta name="twitter:description" content="For when you have to do lots to a big tree. Previously, I showed how Dendroscope files can be easily manipulated with brute-force regex, so you can right scripts to color a mass of nodes, rather than having to format them one-by-one in the GUI. However, more complex manipulations require …">
+	<meta name="twitter:url" content="/science/computational-biology/tools/parsing-dendroscope-nodes/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Parsing Dendroscope nodes</h1>
+
+<div class="metadata">
+  <time datetime="2007-01-01T12:00:00+00:00" pubdate>2007-01-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+</div>
+
+
+      <p>For when you have to do lots to a big tree.</p>
+<p>Previously, I showed how Dendroscope files can be easily manipulated
+with brute-force regex, so you can right scripts to color a mass of
+nodes, rather than having to format them one-by-one in the GUI. However,
+more complex manipulations require more powerful approaches. Here is a
+more systematic way of parsing - and manipulating - Dendroscope nodes.</p>
+<p>Each node occupies one line and looks like a named set of key-value
+pairs:</p>
+<pre class="literal-block">
+137: x=-6.9873 y=3.4021 lc=0 0 0 lb='A_ENG_303_2009'
+</pre>
+<p>There's at least a dozen possible keys, all cryptically named. You can
+work out what they do by editing a tree in the GUI and seeing what
+changes in the file. The good news is that the keys can appear in any
+order, and are consistently separated by spaces. The bad news is that
+values can be integers, floats, triplets of integers (for colors) or
+quoted strings. So with a little regex magic, we can make a class to
+parse these strings and stuff them in a hash-like structure:</p>
+<pre class="literal-block">
+# Store node information in a handy format
+class DendroNodeInfo &lt; Hash
+        # Parses a line like &quot;x=-6.9873343E-4 ... lc=0 0 0 lb='A_ENG_303_2009'&quot;
+        def self.from_field_str(fld_str)
+                info = self.new()
+                fld_str.scan(/(w+)=(d+ d+ d+|'[^']\*'|S+)/) { |m| info[m[0]] = m[1]
+                        } return info end # Returns an appropriately formatted info string # def
+                        to_field_str()
+                        # order isn't critical but we do this for neatness
+                        ordered_fields = %w[nh nw fg sh x y lx ly ll la lv lc lb] all_fields =
+                        (keys - ordered_fields) + ordered_fields pairs =[] all_fields.each {
+                        |k| if has_key?(k) pairs &lt;&lt; [k, fetch(k)] end }
+                pair_strs = pairs.each() { |p|
+                        &quot;#{p[0]}=#{p[1]}&quot;
+                }
+                return pair_strs.join(' ')
+        end
+end
+</pre>
+<p>Users should feed the field string to the class method from_field_str:</p>
+<blockquote>
+field_str = &quot;x=-6.9873 y=3.4021 lc=0 0 0 lb='A_ENG_303_2009'&quot;
+fields = DendroNodeInfo.from_field_str(field_str)</blockquote>
+<p>which can then be manipulated:</p>
+<pre class="literal-block">
+fields[&quot;lc&quot;] = &quot;255 50 120&quot;
+</pre>
+<p>and used to produce a new field string:</p>
+<pre class="literal-block">
+print &quot;135: #{fields.to_field_str()}&quot;
+</pre>
+<p>Note that the class copes with new or unrecognised fields. The order
+that they are output is set, just so the keys are arranged in a nice
+order.</p>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

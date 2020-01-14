@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Plotting &amp; Graphs for the web - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="In several recent projects, I've needed to produce graphs of various epidemiological & bioinformatic datasets on demand in web applications. Unfortunately, in the world of Ruby and Rails, the choices of toolkits aren't as straightforward as hoped. This is a summary of the available choices and what I found. Background & assumptions …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Plotting &amp; Graphs for the web">
+	<meta name="twitter:description" content="In several recent projects, I've needed to produce graphs of various epidemiological & bioinformatic datasets on demand in web applications. Unfortunately, in the world of Ruby and Rails, the choices of toolkits aren't as straightforward as hoped. This is a summary of the available choices and what I found. Background & assumptions …">
+	<meta name="twitter:url" content="/programming/web-development/plotting-graphs-for-the-web/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Plotting &amp; Graphs for the web</h1>
+
+<div class="metadata">
+  <time datetime="2010-12-01T12:00:00+00:00" pubdate>2010-12-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/plotting/">plotting</a>, <a href="//by-tag/graphs/">graphs</a>, <a href="//by-tag/web-development-visualisation/">web-development. visualisation</a></p></div>
+		<div class="summary">Or, "there must be simpler way to do graphs in Rails"</div>
+
+
+      <p>In several recent projects, I've needed to produce graphs of various
+epidemiological &amp; bioinformatic datasets on demand in web applications.
+Unfortunately, in the world of Ruby and Rails, the choices of toolkits
+aren't as straightforward as hoped. This is a summary of the available
+choices and what I found.</p>
+<div class="section" id="background-assumptions">
+<h2>Background &amp; assumptions</h2>
+<ul class="simple">
+<li>Must support box-and-whisker charts. User requirements.</li>
+<li>Must be guaranteed to preserve privacy of data, e.g. no rendering on
+a remote platform. User privacy requirements (PII)</li>
+<li>Must work in a web environment and Rails</li>
+<li>Must work with Ruby</li>
+<li>Should be open and non-encumbered license-wise, e.g. no commercial
+products, crippleware, limited versions. So that we have full access
+to the code and may distribute the products without any problem.</li>
+<li>Should produce image graphs that can be copied and downloaded. Users
+may want to copy grants for inclusion in reports. This rules out
+Flash and Javascript-based solutions.</li>
+<li>Should be an active project and maintained. So there will be fewer
+problems with incompatibility.</li>
+<li>Should require a minimal amount of customization. Less work, better
+code quality.</li>
+<li>Should work with Ruby 1.8.6. That's what we develop with, although
+deployment will be with a later version.</li>
+<li>Would like to avoid wonky or non-standard tech, e.g. anything
+requiring a flash plugin or browser upgrades. Don't want another user
+issue to manage.</li>
+<li>Would like to avoid installation of other requisite libraries, e.g.
+ImageMagick. Less to install and maintain, less vulnerable points for
+incompatibility.</li>
+<li>Would like to avoid commercial solutions, because of difficulties in
+finding money and being able to share any sofwtare developed freely</li>
+<li>Would like a Ruby module to wrap any low level details if necessary</li>
+<li>Note there's a shifting landscape in browser capabilities, with more
+recent browser version being mucgh more capable than others</li>
+<li>Note there's a wide body of possible local &amp; remote users, i.e. not a
+small group we can encourage to install a plugin.</li>
+<li>Note most users (including most of HPA) still have older versions of
+Internet Explorer (e.g. v8 or earlier)</li>
+</ul>
+</div>
+<div class="section" id="possible-general-solutions">
+<h2>Possible general solutions</h2>
+<div class="section" id="svg-in-the-browser">
+<h3>SVG in the browser</h3>
+<p>Generate and render SVG for direct display in the browser</p>
+<ul class="simple">
+<li>It's easy to write</li>
+<li>It looks good and scales well</li>
+<li>It looks the same everywhere</li>
+<li>There's some nice toolkits (e.g. Raphael)</li>
+<li>Can be interactive</li>
+</ul>
+<p>But:</p>
+<ul class="simple">
+<li>Before version 9, IE doesn't handle SVG at all</li>
+<li>Outside technical audiences, no one knows what to do with an SVG
+file, and few of the general programs (e.g. Powerpoint) can handle
+them. There are some clever export mechanisms that can convert in the
+browser but that's extra work.</li>
+<li>You can use a plugin to get SVG rendering for IE, but a large number
+of them are being discontinued or neglected. And you have to use a
+plugin.</li>
+</ul>
+<p><strong>Verdict:</strong> no good, we have to support IE8.</p>
+</div>
+<div class="section" id="canvas">
+<h3>Canvas</h3>
+<p>Use the canvas element to draw pictures.</p>
+<ul class="simple">
+<li>Similar comments to SVG</li>
+</ul>
+<p>But:</p>
+<ul class="simple">
+<li>Similar problems to SVG</li>
+<li>The full canvas element is a component of HTML5, which is implemented
+in a very small number of recent browsers.</li>
+</ul>
+<p><strong>Verdict:</strong> no good, we need to support legacy browsers</p>
+</div>
+<div class="section" id="svg-behind-the-scenes">
+<h3>SVG behind the scenes</h3>
+<p>Use SVG to make pictures and then convert to display format</p>
+<ul class="simple">
+<li>Get ease of use of SVG and downloadable pics</li>
+<li>Easy to change size / resolution</li>
+</ul>
+<p>But:</p>
+<ul class="simple">
+<li>Need a converter. Deal with the install headache of ImageMagick?</li>
+</ul>
+<p><strong>Verdict:</strong> maybe</p>
+</div>
+<div class="section" id="javascript-in-the-browser">
+<h3>Javascript in the browser</h3>
+<p>Clever drawing solution using JS that make pretty pictures (e.g. Plotr,
+Raphael)</p>
+<ul class="simple">
+<li>Looks nice</li>
+<li>Some are interactive</li>
+</ul>
+<p>But:</p>
+<ul class="simple">
+<li>Can't save directly</li>
+<li>Entails working at least a little bit in Javascript, so do we want to
+bring another language / development mode into the mix</li>
+</ul>
+<p><strong>Verdict:</strong> probably not</p>
+</div>
+<div class="section" id="google-visualization-charts">
+<h3>Google Visualization &amp; Charts</h3>
+<p>Various Google javascript intermediated tools for graphing.</p>
+<ul class="simple">
+<li>Looks nice</li>
+<li>API fairly straightforward</li>
+<li>A number of gems for using this</li>
+</ul>
+<p>But:</p>
+<ul class="simple">
+<li>Works by calling and sending data to the Google mothership, a big
+privacy no-no</li>
+<li>From experience, converting all data into another language layer
+(JSON) is a bit irritating</li>
+<li>Unclear if we can save images</li>
+</ul>
+<p><strong>Verdict:</strong> not at the moment</p>
+</div>
+<div class="section" id="call-external-program-serverside">
+<h3>Call external program serverside</h3>
+<p>Various and diverse methods that call some commandline thing on the
+server like MetaPost or GnuPlot, capture result and return to browser.</p>
+<ul class="simple">
+<li>Proven rendering solution</li>
+<li>Delivers right format</li>
+</ul>
+<p>But:</p>
+<ul class="simple">
+<li>Another component in the system to go wrong</li>
+<li>Have to deliver data to external program somehow</li>
+<li>Privacy concerns mean we have to careful with any saved files</li>
+</ul>
+<p><strong>Verdict:</strong> a bit too fiddly, hope to avoid</p>
+</div>
+<div class="section" id="fucking-flash">
+<h3>Fucking Flash</h3>
+<p>Flash-based solutions.</p>
+<ul class="simple">
+<li>Can look nice</li>
+<li>Can be interactive</li>
+</ul>
+<p>But:</p>
+<ul class="simple">
+<li>Have to ensure users have plugins</li>
+<li>Don't necessarily have an image export capability</li>
+</ul>
+<p><strong>Verdict:</strong> no</p>
+</div>
+</div>
+<div class="section" id="specific-solutions">
+<h2>Specific solutions</h2>
+<div class="section" id="protovis">
+<h3>Protovis</h3>
+<p>A server-side library for building graphics and visualizations.</p>
+<ul class="simple">
+<li>Very nice looking</li>
+<li>There's a lot of smartness in how graphs are built - scaling data to
+the size of the axes, overlaying charts, etc.</li>
+<li>Does lots of different types of charts</li>
+<li>There's a Ruby wrapper for it, RubyVis</li>
+<li>General drawing toolkit</li>
+<li>Implementation of protovis</li>
+<li>Still calls REXML</li>
+<li>1.8.7 minmum</li>
+</ul>
+<p>But:</p>
+<ul class="simple">
+<li>Really, truly is a toolkit. Just to do a simple barchart, you'll have
+to write a lot of code. There's no “barchart()” or “scatter_graph()”
+functions.</li>
+<li>Produces SVG, so you have the conversion problem.</li>
+</ul>
+</div>
+<div class="section" id="highcharts">
+<h3>Highcharts</h3>
+<p>A free-for-non-commercial javascript based toolkit.</p>
+<ul class="simple">
+<li>Lots of graph types, looks good.</li>
+<li>Has an export module for saving graphics as bitmaps</li>
+</ul>
+<p>But:</p>
+<ul class="simple">
+<li>Have to encode data for Javascript.</li>
+<li>Ruby gem is for rails 3+</li>
+<li>Export requires either using public remote service or running your
+own</li>
+</ul>
+</div>
+<div class="section" id="fusioncharts">
+<h3>Fusioncharts</h3>
+<ul class="simple">
+<li>Flash</li>
+<li>Nice charts</li>
+<li>&quot;Fusioncharts Free&quot;</li>
+</ul>
+</div>
+<div class="section" id="amcharts">
+<h3>amCharts</h3>
+<ul class="simple">
+<li>Flash</li>
+<li>Nice charts</li>
+<li>&quot;the only limitation of the free version ...&quot;</li>
+</ul>
+</div>
+<div class="section" id="open-flash-chart">
+<h3>Open Flash Chart</h3>
+<ul class="simple">
+<li>Free</li>
+<li>It's still flash</li>
+</ul>
+</div>
+<div class="section" id="anychart">
+<h3>Anychart</h3>
+<ul class="simple">
+<li>Flash</li>
+<li>&quot;download trial versions&quot;</li>
+</ul>
+</div>
+<div class="section" id="seer">
+<h3>Seer</h3>
+<ul class="simple">
+<li>Wraps Google visualization API</li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h3>Highcharts</h3>
+<ul class="simple">
+<li>Uses javascript</li>
+<li>Nice charts &amp; hints</li>
+<li>Has ruby library</li>
+<li>&quot;free for non-commercial uses&quot;</li>
+</ul>
+</div>
+<div class="section" id="rifgraf">
+<h3>Rifgraf</h3>
+<ul class="simple">
+<li>Ruby serverside library</li>
+<li>For timeline / progressive data</li>
+</ul>
+</div>
+<div class="section" id="gruff">
+<h3>Gruff</h3>
+<ul class="simple">
+<li>Ruby serverside library</li>
+<li>Nice looking graphs</li>
+<li>Require imagemagick</li>
+<li>No box and whisker plots</li>
+<li>Active as of September 2010</li>
+</ul>
+</div>
+<div class="section" id="scruffy">
+<h3>Scruffy</h3>
+<ul class="simple">
+<li>Ruby serverside library</li>
+<li>Status unclear, dead since 2009? Looks like there's a very recent
+fork.</li>
+<li>No box and whisker plots</li>
+<li>USes SVG internally</li>
+<li>Says charts can be added</li>
+</ul>
+</div>
+<div class="section" id="rgplot">
+<h3>RGPlot</h3>
+<ul class="simple">
+<li>Ruby serverside library</li>
+<li>Uses gnuplot. Seriously?</li>
+</ul>
+</div>
+<div class="section" id="prawngraphs">
+<h3>Prawngraphs</h3>
+<ul class="simple">
+<li>Ruby serverside library</li>
+<li>Render to pdf</li>
+<li>A little thin on documentation and demos</li>
+</ul>
+</div>
+<div class="section" id="rchart">
+<h3>rchart</h3>
+<ul class="simple">
+<li>Ruby serverside library</li>
+<li>&quot;A port of PChart&quot;</li>
+<li>Requires gd</li>
+</ul>
+</div>
+<div class="section" id="statsample">
+<h3>statsample</h3>
+<ul class="simple">
+<li>Ruby serverside library</li>
+<li>A large toolkit for analysing and plotting population data</li>
+<li>Many dependcies or included libraries</li>
+<li>Calls rubyvis which calls rexml/formatter/default which doesn't exist
+in Ruby 1.8.6</li>
+</ul>
+</div>
+<div class="section" id="gerbilcharts">
+<h3>gerbilcharts</h3>
+<ul class="simple">
+<li>Ruby serverside library</li>
+<li>For time series data</li>
+</ul>
+</div>
+<div class="section" id="lilygraph">
+<h3>lilygraph</h3>
+<ul class="simple">
+<li>Ruby serverside library</li>
+<li>Lightly documented</li>
+</ul>
+</div>
+<div class="section" id="svg-graph">
+<h3>SVG::Graph</h3>
+<ul class="simple">
+<li>General drawing toolkit</li>
+<li>Uses SVG</li>
+<li>Can render SVG &amp; PNG</li>
+<li>Graph choice is a little thin?</li>
+<li>Loads, at least</li>
+<li>Uses Rexml but seems fine with Ruby 1.8.6 version</li>
+<li>Still have to export to an image via something like RMagick</li>
+</ul>
+</div>
+<div class="section" id="processing">
+<h3>Processing</h3>
+<ul class="simple">
+<li>General visualization toolkit</li>
+<li>For interactive / compiled visualisations</li>
+</ul>
+</div>
+<div class="section" id="rmagick">
+<h3>RMagick</h3>
+<ul class="simple">
+<li>General drawing toolkit</li>
+<li>Draw the images yourself?</li>
+<li>RMagick has RVG, an SVG like drawing API</li>
+</ul>
+</div>
+<div class="section" id="rendersvg">
+<h3>Rendersvg</h3>
+<ul class="simple">
+<li>General drawing toolkit</li>
+<li>No examples</li>
+</ul>
+</div>
+</div>
+<div class="section" id="notes">
+<h2>Notes</h2>
+<ul class="simple">
+<li>REXML and Image/GraghicMagick turned out to be a major problem.
+Several of the libraries have major (and differing) version
+dependencies which turns into a big ball of conflicting requirements
+quickly.</li>
+<li>REXML cannot be downloaded and installed locally, which would patch
+protovis</li>
+</ul>
+</div>
+<div class="section" id="conclusions">
+<h2>Conclusions</h2>
+<p>There's a lot of choices out there. But in my case, there's not a lot of
+good choices. The (what I would hold is reasonable) desire to avoid
+flash or commercial solutions lops off a good proportion of choices. The
+(unavoidable due to privacy concerns and users wanting to download
+graphs as images) need to generate all charts on the server excludes
+several nice javascript solutions. With what remains, you're confronted
+by three big problems:</p>
+<ul class="simple">
+<li>The selection of graph types generated is often poor</li>
+<li>The libraries rely on ImageMagick and (thus) Rmagick, which are a
+pain to install (e.g. &quot;unexpected segmentation fault at ...&quot;)</li>
+<li>You get caught up in the Ruby dependency and versioning hell, where
+the sum of libraries required force a narrow window of versions of
+other libraries, which in turn constrains what you can do elsewhere
+in the application and makes hosting the application a pain (e.g. one
+of your apps needs ruby 1.8.7 and <em>these</em> libraries, while another
+needs 1.9.2 and <em>these</em> other libraries)</li>
+</ul>
+<p>In short, it sucks. I've cobbled together some graphs with RubyVis (nice
+output but needed a lot of code) and done some work with Gruff
+(simpler), with both needing ImageMagick in the background. This is much
+harder than it should be.</p>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

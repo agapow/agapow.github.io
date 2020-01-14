@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Matplotlib - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Matplotlib is cool. Did I say it was cool? I meant very cool. While principally a plotting library, it can be used for image manipulation and drawing. draw_lines Which is where our first problem occurs (as of the 0.8.4 version of matplotlib and possibly earlier). Should you try …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Matplotlib">
+	<meta name="twitter:description" content="Matplotlib is cool. Did I say it was cool? I meant very cool. While principally a plotting library, it can be used for image manipulation and drawing. draw_lines Which is where our first problem occurs (as of the 0.8.4 version of matplotlib and possibly earlier). Should you try …">
+	<meta name="twitter:url" content="/programming/python/matplotlib/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Matplotlib</h1>
+
+<div class="metadata">
+  <time datetime="2008-07-01T12:00:00+01:00" pubdate>2008-07-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/python/">python</a>, <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/matplotlib/">matplotlib</a>, <a href="//by-tag/visuslisation/">visuslisation</a></p></div>
+		<div class="summary">Notes on installing and using.</div>
+
+
+      <p><a class="reference external" href="http://matplotlib.sf.net">Matplotlib</a> is cool. Did I say it was
+cool? I meant very cool. While principally a plotting library, it can be
+used for image manipulation and drawing.</p>
+<div class="section" id="draw-lines">
+<h2>draw_lines</h2>
+<p>Which is where our first problem occurs (as of the 0.8.4 version of
+matplotlib and possibly earlier). Should you try and use the Agg backend
+to draw a few lines on a picture like so:</p>
+<pre class="literal-block">
+from matplotlib.backends.backend_agg import RendererAgg
+from matplotlib.transforms import Value
+
+dpi = Value (72.0)
+theIm = RendererAgg (400, 400, dpi)
+theGc = theIm.new_gc()
+theIm.draw_lines (theGc, (50 , 100 ), (150 , 200))
+</pre>
+<p>matplotlib will choke with the message:</p>
+<pre class="literal-block">
+IndexError: Unexpected SeqBase&lt;T&gt; length
+</pre>
+<p><tt class="docutils literal">draw_lines</tt> does more or less the same thing:</p>
+<pre class="literal-block">
+theIm.draw_lines (theGc, (10, 20, 30), (50, 60, 70))
+</pre>
+<p>The problem appears to be that <tt class="docutils literal">draw_lines</tt> can be called with an
+optional argument to transform the line(s). If this is not passed, an
+assertion is triggered just at the start of <tt class="docutils literal"><span class="pre">RendererAgg::draw_lines</span></tt> within
+<tt class="docutils literal">_backend_agg.cpp</tt>:</p>
+<pre class="literal-block">
+args.verify_length(4);
+</pre>
+<p>as there are only 3 arguments. <tt class="docutils literal">draw_line</tt> runs into problems because it
+is implemented as a call to <tt class="docutils literal">draw_lines</tt>. Although the transfrom argument
+is supposed to be set to <tt class="docutils literal">None</tt> by default, this doesn't help because
+<tt class="docutils literal"><span class="pre">RendererAgg::draw_lines</span></tt> trys to access the <tt class="docutils literal">ptr()</tt> argument of the
+transform. (In fact, it's worse as this has a tendency to kill the
+python interpreter.)</p>
+<p>This problem can be solved from the user level by calling <tt class="docutils literal">draw_lines</tt>
+with the identity transform (and where needed using <tt class="docutils literal">draw_lines</tt> to draw
+a single line):</p>
+<pre class="literal-block">
+from matplotlib.transforms import identity_transform
+identity_trans = identity_transform()
+theIm.draw_lines (theGc, (50 , 100), (150 , 200), identity_trans)
+</pre>
+<p>This has been <a class="reference external" href="http://sourceforge.net/tracker/index.php?func=detail&amp;aid=1353312&amp;group_id=80706&amp;atid=560720">lodged as a
+bug</a>.
+A followup to my report acknowledges the problem, saying it's the result
+of transition between old and new drawing APIs. In this light, my above
+solution seems reasonable.</p>
+</div>
+<div class="section" id="more-installation-woes">
+<h2>More installation woes</h2>
+<p>In mid-2006, after getting a new MacBook, I spent three days trying to
+install matplotlib. It wasn't just one problem but a series of different
+issues that disguised each other. Thanks to the members of the
+matplotlib mailing list for helping me sort it out. (The technical
+parameters were, at the beginning: OSX 10.4, MPL 0.87.4, with <tt class="docutils literal">numeric</tt>,
+<tt class="docutils literal">numarray</tt> and <tt class="docutils literal">numpy</tt> installed.)</p>
+<p>The problems all surrounded the use of <tt class="docutils literal">pylab</tt>. Matplotlib would install
+and import fine:</p>
+<blockquote>
+<pre class="doctest-block">
+&gt;&gt;&gt; import matplotlib
+</pre>
+</blockquote>
+<p>but when pylab was invoked, implicitly or explicitly, it would fail with
+a delightful variety of error messages. The first was:</p>
+<blockquote>
+<pre class="doctest-block">
+&gt;&gt;&gt; import pylab
+[...] matrix undefined
+</pre>
+</blockquote>
+<p>The problem occured on line 74 of <tt class="docutils literal">matplotlib/numerix/__init__.py</tt>
+where <tt class="docutils literal">Matrix = matrix</tt>. matrix should have been defined when numpy was
+imported as the numerical library for MPL in the same file:</p>
+<pre class="literal-block">
+import numpy.oldnumeric as numpy
+from numpy.oldnumeric import *
+</pre>
+<p>However, oldnumeric doesn't define a term matrix. Setting MPL to use
+Numeric instead of Numpy, this step is passed but I run into the next
+error, also at the import pylab stage:</p>
+<pre class="literal-block">
+Debug: ../src/common/object.cpp(224): assert
+&quot;sm_classTable-&gt;Get(m_className) == NULL&quot; failed: class already in
+RTTI table - have you used IMPLEMENT_DYNAMIC_CLASS() twice (may be
+by linking some object module(s) twice)?
+../src/common/object.cpp(224): assert
+&quot;sm_classTable-&gt;Get(m_className) == NULL&quot; failed: class already in
+RTTI table - have you used IMPLEMENT_DYNAMIC_CLASS() twice (may be
+by linking some object module(s) twice)?
+</pre>
+<p>The first error is the result of an incompatibility between matplotlib
+0.87.4 and numpy 1.0b and higher. The solution is to install matplotlib
+0.87.5.</p>
+<p>The second problem is caused by something entirely different. If you
+grep for sm_classTable in the MPL source, you'll find it in the wxagg
+sources. In fact, the problem turned out be with wxPython. MPL either
+couldn't find my wxPython installation or was finding the wrong. The
+environmental variable WX_CONFIG has to be set to the path of the
+wx-config executable for the correct installation. Once that is is done,
+MPL installs with fewer error messages (see below) and pylab imports and
+runs perfectly.</p>
+<p>Another problem that occurred during this: MPL also requires <tt class="docutils literal">freetype2</tt>,
+not <tt class="docutils literal">freetype</tt> (1). Freetype seems to get installed by every second
+program and so there were multiple installations on my disk. In
+addition, freetype2 compilation is easy to screw up in the Mac / ppc /
+intel universe. If matplotlib / pylab finds the wrong or a bad freetype2
+installation, you may get a lot of warnings or errors about legacy calls
+to <tt class="docutils literal">_FontFamilyIterator</tt> etc. While it is probably possible to get the
+source compiled correctly using the right arguments to ./configure, in
+the end it proved easiest to get the library from
+<a class="reference external" href="http://darwinports.opendarwin.org/">Darwinports</a>.</p>
+<p>(As an aside, if you install Darwinports and then upgrade your home
+system Tcl/Tk, this may hose some Tcl packages required by port. See
+what a fun week I've had?)</p>
+<p>As a further aside when matplotlib is built, a bunch of ominous but
+non-fatal warnings are generated like:</p>
+<pre class="literal-block">
+/usr/bin/ld: for architecture ppc /usr/bin/ld: warning fat file:
+/usr/local/lib/libgcc_s.10.4.dylib does not contain an architecture
+that matches the specified -arch flag: ppc (file ignored)
+</pre>
+<p>when linking various agg and _nc_transforms pieces, as well as:</p>
+<pre class="literal-block">
+src/_ns_backend_agg.cpp:41:1: warning: &quot;M_PI&quot; redefined
+In file included from /usr/include/math.h:26, from
+/Developer/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/cmath
+</pre>
+<p>These appear to be spurious or at least don't interfere with the
+function of MPL.</p>
+<p>Finally, it would do well to check what version of Xcode and DevTools
+you have. Despite having a brand new Mac, the version of XCode that came
+with it was significantly out of date, and may of had issues recognising
+the Intel architecture.</p>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<ul class="simple">
+<li><a class="reference external" href="http://telliott99.blogspot.com/2011/07/matplotlib-on-os-x-lion-revised.html">telliot99's more recent experiences in installing
+MPL</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

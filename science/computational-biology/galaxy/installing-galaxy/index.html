@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Installing Galaxy - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="This presents one way to create an optimized production Galaxy instance. Variations are certainly possible and some of the choices presented are/were dictated by local culture. Certain settings may be more suitable for production or development environments. Nonetheless, this presents a start-to-stop process for installation and setup. Note: this …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Installing Galaxy">
+	<meta name="twitter:description" content="This presents one way to create an optimized production Galaxy instance. Variations are certainly possible and some of the choices presented are/were dictated by local culture. Certain settings may be more suitable for production or development environments. Nonetheless, this presents a start-to-stop process for installation and setup. Note: this …">
+	<meta name="twitter:url" content="/science/computational-biology/galaxy/installing-galaxy/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Installing Galaxy</h1>
+
+<div class="metadata">
+  <time datetime="2007-06-14T12:56:00+01:00" pubdate>2007-06-14</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/computational-biology/">computational biology</a>, <a href="//by-tag/galaxy/">galaxy</a></p></div>
+		<div class="summary">Setting up a production version of GMOD Galaxy for general use.</div>
+
+
+      <p>This presents one way to create an optimized production Galaxy instance.
+Variations are certainly possible and some of the choices presented
+are/were dictated by local culture. Certain settings may be more
+suitable for production or development environments. Nonetheless, this
+presents a start-to-stop process for installation and setup.</p>
+<p><strong>Note:</strong> this is a living document, will change across time, and is
+occasionally terse or cryptic where I have yet to fill it out.</p>
+<div class="section" id="assumptions">
+<h2>Assumptions</h2>
+<ul class="simple">
+<li>Running on unix on Fedora or a similar system</li>
+<li>Galaxy will be running off a suburl (e.g. <a class="reference external" href="http://foobar/galaxy">http://foobar/galaxy</a>)</li>
+<li>Superuser privileges may be required at some points</li>
+<li>Apache is used as a frontend server.</li>
+</ul>
+</div>
+<div class="section" id="prepping-environment">
+<h2>Prepping environment</h2>
+<p>Create a user for Galaxy to run as and under. Galaxy will be installed
+into this users account:</p>
+<pre class="literal-block">
+% /usr/sbin/useradd galaxy
+% passwd galaxy
+</pre>
+<p>Note that we don't install Galaxy &quot;inside&quot; Apache, as this would expose
+all of Galaxy (including datasets) to anyone on the web.</p>
+<p>Install virtualenv, so we can later create a sandboxed python
+interpreter:</p>
+<pre class="literal-block">
+% yum install python-virtualenv.noarch
+</pre>
+<p>See <a class="reference external" href="http://virtualenv.openplanning.org">http://virtualenv.openplanning.org</a></p>
+<p>If needed, install mercurial, so the Galaxy repository can be used for
+installation (and later updating):</p>
+<pre class="literal-block">
+% yum install mercurial
+</pre>
+<p>Change to the galaxy user and into its home directory. Clone the Galaxy
+repository:</p>
+<pre class="literal-block">
+% hg clone https://bitbucket.org/galaxy/galaxy-dist
+</pre>
+<p>This will create galaxy-dist in the home directory.</p>
+<p>Create a local sand-boxed Python interpreter for the galaxy user. We'll
+install all local data in the &quot;local&quot; dir:</p>
+<pre class="literal-block">
+% virtualenv --no-site-packages local
+</pre>
+<p>Then activate this interpreter, which will modify $PATH so the
+sand-boxed python is used by galaxy:</p>
+<pre class="literal-block">
+% source ./local/bin/activate
+</pre>
+<p>Alternatively, an entirely separatePython interpreter could be installed
+for Galaxy. You could use the system interpreter, but either of these
+two schemes avoids library collision or dueling versions.</p>
+<p>Check this installation by running Galaxy:</p>
+<pre class="literal-block">
+% cd galaxy-dist % sh run.sh
+</pre>
+<p>It may report that numerous &quot;eggs&quot; (Python librararies) are being
+updated, before saying that the server is starting. At that point, it
+may also report a network error (socket error 98) if another
+applpication is using the default socket (8080) or it is blocked from
+connecting to it.</p>
+</div>
+<div class="section" id="adjusting-network-settings">
+<h2>Adjusting network settings</h2>
+<p>Galaxy settings are editted in the file universe_wsgi.ini. Edit the
+port Galaxy will use:</p>
+<pre class="literal-block">
+port = 7070
+</pre>
+<p>And the addresses it will listen to. With the default settings, Galaxy
+only listens to localhost and is not accessible over the network:</p>
+<pre class="literal-block">
+host = 0.0.0.0
+</pre>
+</div>
+<div class="section" id="connecting-to-a-real-database">
+<h2>Connecting to a real database</h2>
+<p>Using Postgres, or an equivalent real db, create a database for Galaxy's
+use:</p>
+<pre class="literal-block">
+CREATE DATABASE galaxy_prod;
+</pre>
+<p>Give the user permissions to create tables and so on:</p>
+<pre class="literal-block">
+GRANT ALL ON galaxy_prod.* TO galaxy_prod_user&#64;localhost IDENTIFIED BY foobar;
+</pre>
+<p>Edit the database connection in universe_wsgi.ini to give the
+connection as an SQLAlchemy URI string:</p>
+<pre class="literal-block">
+db = postgres://galaxy_prod_user:foobar&#64;123.45.67.89:5432/galaxy_prod
+</pre>
+<p><em>Note that the example given in the Galaxy documentation is wrong, or at
+least opaque.</em></p>
+<p>Start up the system and see that it works. There will be an extended
+period of migrating tables.</p>
+</div>
+<div class="section" id="optimizing-database-use">
+<h2>Optimizing database use</h2>
+<p>Many database settings can be tweaked to speed Galaxy. Some are:</p>
+<p>Reduce connection overhead by using only one connection to the database
+per thread:</p>
+<pre class="literal-block">
+database_engine_option_strategy = threadlocal
+</pre>
+<p>Large queries or datasets may cause issues, so Postgres database cursors
+should be cached:</p>
+<pre class="literal-block">
+database_engine_option_server_side_cursors = True
+</pre>
+<p>If plagued by errors of insufficient database pool connections, increase
+these:</p>
+<pre class="literal-block">
+#database_engine_option_pool_size = 5
+#database_engine_option_max_overflow = 10
+</pre>
+</div>
+<div class="section" id="setting-up-a-proxy">
+<h2>Setting up a proxy</h2>
+<p>Galaxy can run off its own internal webserver, but in production it is
+far preferable to use a proper server as a proxy. These instructions
+assume this is Apache and the server is to be accessed at
+<a class="reference external" href="http://fobarbaz.com/galaxy-inst">http://fobarbaz.com/galaxy-inst</a>. See
+<a class="reference external" href="https://bitbucket.org/galaxy/galaxy-central/wiki/Config/ApacheProxy">https://bitbucket.org/galaxy/galaxy-central/wiki/Config/ApacheProxy</a> and
+<a class="reference external" href="http://docs.uabgrid.uab.edu/wiki/Galaxy#Apache_and_Postgres_Setup">http://docs.uabgrid.uab.edu/wiki/Galaxy#Apache_and_Postgres_Setup</a></p>
+<p>Edit the httpd.conf file:</p>
+<pre class="literal-block">
+% vi /etc/httpd/conf/httpd.conf
+</pre>
+<p>Rewrite requests on the standard port and the suburl to Galaxy:</p>
+<pre class="literal-block">
+&lt;VirtualHost *:80&gt;
+ServerName 158.119.147.41
+RewriteEngine on
+#RewriteLog &quot;/etc/httpd/logs/rewrite_log&quot;
+#RewriteLogLevel 9
+RewriteRule ^/galaxy$ /galaxy/ [R]
+#RewriteRule ^/galaxy/static/style/(.*) /home/galaxy/galaxy_dist/static/june_2007_style/blue/$1 [L]
+#RewriteRule ^/galaxy/static/scripts/(.*) /home/galaxy/galaxy_dist/static/scripts/packed/$1 [L]
+#RewriteRule ^/galaxy/static/(.*) /home/galaxy/galaxy_dist/static/$1 [L]
+#RewriteRule ^/galaxy/favicon.ico /home/galaxy/galaxy_dist/static/favicon.ico [L]
+#RewriteRule ^/galaxy/robots.txt /home/galaxy/galaxy_dist/static/robots.txt [L]
+RewriteRule ^/galaxy(.*) http://localhost:7070$1 [P] &lt;/VirtualHost&gt;
+</pre>
+<p>RewriteLog commands can be used to debug the rewrites. See below for
+other commented out lines.</p>
+<p>Restart the apache server:</p>
+<pre class="literal-block">
+% /etc/init.d/httpd restart
+</pre>
+<p>Ideally you'd like to serve static content (images, style sheets etc.)
+straight through Apache to take the load off Galaxy. The commented lines
+above show failed attempts to do so. The error seems to be outside of
+Galaxy in Apache and results in none of the static content showing up
+and the error log shows “(13) permission denied” errors. Things tried to
+diagnose and correct this:</p>
+<ul class="simple">
+<li>Logged the rewrite calls to see they rewrite to the correct paths for the static content</li>
+<li>Checked the proxy-filter and filter-with declarations</li>
+<li>Checked the unix permissions on the static dir</li>
+<li>Tested for non-existent or incorrect paths (which generate a different error)</li>
+<li>Inserted directory declarations to “Allow from all” for the static dir</li>
+<li>Checked for and tried .htaccess files</li>
+<li>Checked SELinux is disabled</li>
+</ul>
+</div>
+<div class="section" id="branding">
+<h2>Branding</h2>
+<p>In universe_wsgi.ini, edit the name of the site:</p>
+<pre class="literal-block">
+brand = HPA Bioinformatics
+</pre>
+<p>and url linked to by the logo:</p>
+<pre class="literal-block">
+logo_url = http://www.hpa-bioinfotools.org.uk
+</pre>
+<p>and the &quot;email comments&quot; address:</p>
+<pre class="literal-block">
+bugs_email = mailto:paul-michael.agapow&#64;hpa.org.uk
+</pre>
+</div>
+<div class="section" id="running-galaxy">
+<h2>Running Galaxy</h2>
+<p>You can run Galaxy as a detached daemon:</p>
+<pre class="literal-block">
+% sh ./run.sh --daemon % sh ./run.sh --stop-daemon % sh ./run.sh --status % sh ./run.sh --monitor-restart # restart if stopped
+</pre>
+<p>Create a startup (init) script:</p>
+<pre class="literal-block">
+% vi /etc/init.d/galaxy
+</pre>
+<p>and write it as something like this:</p>
+<pre class="literal-block">
+#!/bin/bash
+#
+# /etc/rc.d/init.d/galaxy
+#
+# Manages the Galaxy webserver
+# Based on http://www.sensi.org/~alec/unix/redhat/sysvinit.html
+#
+# chkconfig: 2345 80 20
+# description: Manages the Galaxy webserver
+
+# The chkconfig is levels, strat priority, stop priority. Last two should add to 100.
+# You get an error/failure if you try to restrat a stopped service.
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+GALAXY_USER=galaxy
+GALAXY_DIST_HOME=/home/galaxy/galaxy_dist
+GALAXY_RUN=&quot;${GALAXY_DIST_HOME}/run.sh&quot;
+GALAXY_PID=&quot;${GALAXY_DIST_HOME}/paster.pid&quot;
+
+case &quot;$1&quot; in
+start)
+echo -n &quot;Starting galaxy services: &quot;
+daemon --user $GALAXY_USER &quot;${GALAXY_RUN} --daemon --pid-file=${GALAXY_PID}&quot;
+touch /var/lock/subsys/galaxy
+;;
+stop)
+echo -n &quot;Shutting down galaxy services: &quot;
+daemon --user $GALAXY_USER &quot;${GALAXY_RUN} --stop-daemon&quot;
+rm -f /var/lock/subsys/galaxy
+;;
+status)
+daemon --user galaxy &quot;${GALAXY_RUN} --status&quot;
+;;
+restart)
+$0 stop; $0 start
+;;
+reload)
+$0 stop; $0 start
+;;
+*)
+echo &quot;Usage: galaxy {start|stop|status|reload|restart&quot;
+exit 1
+;;
+esac
+</pre>
+<p>Set the permissions as 755. Check the owner:</p>
+<pre class="literal-block">
+% chmod 755 /etc/init.d/galaxy
+% ls -la /etc/init.d/galaxy
+</pre>
+<p>Add to the system services and check:</p>
+<pre class="literal-block">
+% /sbin/chkconfig --add galaxy
+% /sbin/chkconfig --list galaxy
+</pre>
+<p>Start the service with:</p>
+<pre class="literal-block">
+% /etc/init.d/galaxy start
+</pre>
+</div>
+<div class="section" id="misc">
+<h2>Misc</h2>
+<p>Set Galaxy to use a local area as temporary storage:</p>
+<pre class="literal-block">
+% vi ~/.bash_profile
+</pre>
+<p>then:</p>
+<pre class="literal-block">
+TEMP=$HOME/galaxy_dist/database/tmp export TEMP
+</pre>
+<p>Don't forget:</p>
+<pre class="literal-block">
+% source ~/.bash_profile
+</pre>
+<p>The front page can be customized by editing static/welcome.html. You
+should at least edit out the &quot;customize this page&quot; message ...</p>
+<p>Other style customizations are possible. Note that some may be cached by
+the system and take some time to show up.</p>
+</div>
+<div class="section" id="notes">
+<h2>Notes</h2>
+<p>Some documentation refers to your installation dir as &quot;galaxy_dist&quot;,
+others as &quot;galaxy-dist&quot;. Look out for this causing errors.</p>
+</div>
+<div class="section" id="also-see">
+<h2>Also see</h2>
+<ul class="simple">
+<li><a class="reference external" href="https://bitbucket.org/galaxy/galaxy-central/wiki/Config/ProductionServer">https://bitbucket.org/galaxy/galaxy-central/wiki/Config/ProductionServer</a></li>
+<li><a class="reference external" href="http://docs.uabgrid.uab.edu/wiki/Galaxy">http://docs.uabgrid.uab.edu/wiki/Galaxy</a> for NGS setup</li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

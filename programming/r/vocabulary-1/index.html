@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>"Hadley’s vocabulary: part 1 - the basics" - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="The endlessly productive Hadley Wickham has suggested an R vocabulary, a minimal set of common terms and operators that everyone using R should know. Surprisingly, I didn't know all of them or didn't know all their behaviours. So as a piece of deliberate practice, here's the first part of the …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content=""Hadley’s vocabulary: part 1 - the basics"">
+	<meta name="twitter:description" content="The endlessly productive Hadley Wickham has suggested an R vocabulary, a minimal set of common terms and operators that everyone using R should know. Surprisingly, I didn't know all of them or didn't know all their behaviours. So as a piece of deliberate practice, here's the first part of the …">
+	<meta name="twitter:url" content="/programming/r/vocabulary-1/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>"Hadley’s vocabulary: part 1 - the basics"</h1>
+
+<div class="metadata">
+  <time datetime="2015-05-10T22:16:35+01:00" pubdate>2015-05-10</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+</div>
+
+
+      <p>The endlessly productive Hadley Wickham has suggested an <a href="http://adv-r.had.co.nz/Vocabulary.html">R vocabulary</a>, a minimal set of common terms and operators that everyone using R should know. Surprisingly, I didn't know all of them or didn't know all their behaviours. So as a piece of deliberate practice, here's the first part of the list with some comments and examples. I've rearranged some items (so as to group similar terms), added a few that seemed missing and conversely left out but 1 or 2 obscure ones.</p>
+<h2>Getting help</h2>
+<p>When in doubt, <em>?</em> is the first resort, calling up the documentation for the following exact term. Doubling it - <em>??</em> - leads R to search through all documentation instead:</p>
+<div class="highlight"><pre><span></span><span class="o">?</span> str
+<span class="o">??</span> str
+</pre></div>
+
+
+<p><em>str</em> gives a breakdown of an object, listing its type and recursing into its structure:</p>
+<div class="highlight"><pre><span></span><span class="c1"># a simple, single object</span>
+str <span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>##  chr &quot;&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># a vector</span>
+str <span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>##  int [1:5] 1 2 3 4 5
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># a complex structure</span>
+str <span class="p">(</span><span class="kt">list</span><span class="p">(</span>a <span class="o">=</span> <span class="s">&quot;A&quot;</span><span class="p">,</span> L <span class="o">=</span> <span class="kp">as.list</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## List of 2
+##  $ a: chr &quot;A&quot;
+##  $ L:List of 5
+##   ..$ : int 1
+##   ..$ : int 2
+##   ..$ : int 3
+##   ..$ : int 4
+##   ..$ : int 5
+</pre></div>
+
+
+<p><em>summary</em> gives a less detailed (but more readable) breakdown of an object. Different classes of objects render their summaries in different ways:</p>
+<div class="highlight"><pre><span></span><span class="c1"># this just gives simple type info for the object</span>
+summary <span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>##    Length     Class      Mode 
+##         1 character character
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># numerical objects are rendered as summary statistics</span>
+summary <span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##       1       2       3       3       4       5
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># complex objects may just give their structure</span>
+summary <span class="p">(</span><span class="kt">list</span> <span class="p">(</span>a <span class="o">=</span> <span class="s">&quot;A&quot;</span><span class="p">,</span> L <span class="o">=</span> <span class="kp">as.list</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">10</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>##   Length Class  Mode     
+## a  1     -none- character
+## L 10     -none- list
+</pre></div>
+
+
+<h2>Assignment</h2>
+<p>Assignment and variable creation is traditionally done with <em>&lt;-</em> in R. <em>=</em> is sometimes used and <em>largely</em> works the same for most common cases: <em>&lt;-</em> can be used anywhere, while <em>=</em> can only be used at the top level.</p>
+<p><em>&lt;&lt;-</em> is like <em>&lt;-</em> but searches upwards through environments fopr an existing variable to assign to, i.e. it doesn't create a variable if it can't find it in the local scope but goes looking for it elsewhere. So it's like Python's <em>global</em> statement. Only use this if you really need to.</p>
+<p><em>&lt;-</em> and <em>&lt;&lt;-</em> can also be used backwards (assigning left to right) but this is not recommended.</p>
+<p><em>assign</em> is a function to set a named variable and thus is useful for programmatic assignation:</p>
+<div class="highlight"><pre><span></span>x <span class="o">&lt;-</span> <span class="m">5</span>
+y <span class="o">&lt;&lt;-</span> <span class="m">6</span>
+z <span class="o">=</span> <span class="m">7</span>
+
+<span class="m">8</span> <span class="o">-&gt;</span> a
+<span class="m">9</span> <span class="o">-&gt;&gt;</span> b
+
+nam <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> sep <span class="o">=</span> <span class="s">&quot;.&quot;</span><span class="p">)</span>
+assign <span class="p">(</span>nam<span class="p">,</span> <span class="m">1</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>Operators</h2>
+<p>R contains the usual mathematical operators, most of which use the usual symbols: <em>+ - * ^</em></p>
+<p><em>^</em> is the exponention / power operator.</p>
+<p>Note that unlike some other langauges, <em>/</em> may do floating point division regardless of the arguments. If the result can precisely be an integer, an integer will be produced. If the result is a float (non-whole), that will be produced.</p>
+<div class="highlight"><pre><span></span><span class="m">4</span> <span class="o">/</span> <span class="m">2</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 2
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="m">4.0</span> <span class="o">/</span> <span class="m">2</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 2
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="m">4.0</span> <span class="o">/</span> <span class="m">2.0</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 2
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="m">3</span> <span class="o">/</span> <span class="m">2</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 1.5
+</pre></div>
+
+
+<p>Modulo is expressed with <em>%%</em>.</p>
+<p>The usual mathematical comparsators are there as well: <em>!= == &gt; &gt;= &lt; &lt;=</em></p>
+<h2>Basic search</h2>
+<p><em>%in%</em> is the membership function, returning whether a value can be found inside another:</p>
+<div class="highlight"><pre><span></span><span class="m">1</span> <span class="o">%in%</span> <span class="m">1</span><span class="o">:</span><span class="m">5</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] TRUE
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="s">&#39;A&#39;</span> <span class="o">%in%</span> <span class="kt">list</span> <span class="p">(</span>a <span class="o">=</span> <span class="s">&quot;A&quot;</span><span class="p">,</span> L <span class="o">=</span> <span class="kp">as.list</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">10</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] TRUE
+</pre></div>
+
+
+<p><em>match</em> by contrast, returns the indices (plural) of where that value is found:</p>
+<div class="highlight"><pre><span></span>match <span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 1
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>match <span class="p">(</span><span class="m">6</span><span class="p">,</span> <span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] NA
+</pre></div>
+
+
+<h2>Browsing large datasets</h2>
+<p>Largely and unwieldy pieces opf data can be browsed with <em>head</em> and <em>tail</em>:</p>
+<div class="highlight"><pre><span></span>head <span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">10000</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 1 2 3 4 5 6
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>head <span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">10000</span><span class="p">,</span> n<span class="o">=</span><span class="m">10</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>##  [1]  1  2  3  4  5  6  7  8  9 10
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>tail <span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">10000</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1]  9995  9996  9997  9998  9999 10000
+</pre></div>
+
+
+<h2>Type tests</h2>
+<p>R includes a large number of tests for testing the type of variables, mostly called obvious names like <em>is.FOO</em>. For example, <em>is.na</em> and <em>is.null</em> test for objects being <em>NA</em> and <em>NULL</em> respectively.</p>
+<p>Which leads us to discuss the meaning and difference of NA and NULL.</p>
+<ul>
+<li>
+<p>NA is a logical value akin to TRUE and FALSE, signifying indeterminacy, unknown or missing data. You may find it in vectors or dataframes.</p>
+</li>
+<li>
+<p>NULL is the absence of a value, a value that "doesn't exist". It can be returned by functions to signal "there is no answer". It cannot be inserted into a container as a member, and in fact is used to delete members.</p>
+</li>
+</ul>
+<p>The similar sounding but unrelated <em>NaN</em> is "not a number", the result of division by 0 for example.</p>
+<p>Other mathematical type tests include: <em>is.finite is.infinite is.nan</em></p>
+<h2>Mathematical functions</h2>
+<p><em>abs</em> returns the absolute value of a variable while <em>sign</em> returns its sign (positive or negative).</p>
+<p>The usual geometric functions are there and do what you'd expect: <em>acos, asin, atan, atan2 sin, cos, tan</em>. Note that angles are in radians not degrees.</p>
+<p>The usual logarithmic functions are there: <em>exp, log, log10, log2, sqrt</em>. The natural log is, of course, <em>log</em>.</p>
+<p><em>ceiling</em> rounds up, while <em>floor</em> rounds down and <em>round</em> rounds off. <em>trunc</em> rounds towards 0, while <em>signif</em> rounds to a significant number of digits (seemingly 2 by default):</p>
+<div class="highlight"><pre><span></span>ceiling <span class="p">(</span><span class="m">12.34</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 13
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>floor <span class="p">(</span><span class="m">12.34</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 12
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>floor <span class="p">(</span><span class="m">-12.34</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] -13
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>round <span class="p">(</span><span class="m">12.34</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 12
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>round <span class="p">(</span><span class="m">12.54</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 13
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>trunc <span class="p">(</span><span class="m">12.34</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 12
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>trunc <span class="p">(</span><span class="m">-12.34</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] -12
+</pre></div>
+
+
+<p>The rounding functions all take an optional argument <em>digits</em>, that let's you control where the rounding takes place. If <em>digits</em> is negative, rounding can take place in the whole numbers. Think of the arguments as being <em>10^-digits</em> is the figure that's being altered:</p>
+<div class="highlight"><pre><span></span>round <span class="p">(</span><span class="m">12.54</span><span class="p">,</span> digits<span class="o">=</span><span class="m">2</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 12.54
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>round <span class="p">(</span><span class="m">12.54</span><span class="p">,</span> digits<span class="o">=</span><span class="m">1</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 12.5
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>round <span class="p">(</span><span class="m">12.54</span><span class="p">,</span> digits<span class="o">=</span><span class="m">0</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 13
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>round <span class="p">(</span><span class="m">12.54</span><span class="p">,</span> digits<span class="o">=</span><span class="m">-1</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 10
+</pre></div>
+
+
+<h2>Comparison</h2>
+<p>Comparing objects is actualy a tricky thing, so R provide a few different methods for doing it.</p>
+<p><em>all.equal</em> tests equality in a slightly sloppy way, allowing for slight tolerances. Note that it return a boolean if the objects are identical, but a description of the differences otherwise:</p>
+<div class="highlight"><pre><span></span>all.equal <span class="p">(</span><span class="kc">pi</span><span class="p">,</span> <span class="m">355</span><span class="o">/</span><span class="m">113</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] &quot;Mean relative difference: 8.491368e-08&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>all.equal <span class="p">(</span>tan <span class="p">(</span><span class="kc">pi</span><span class="o">*</span> <span class="p">(</span><span class="m">1</span><span class="o">/</span><span class="m">4</span> <span class="o">+</span> <span class="m">1</span><span class="o">:</span><span class="m">10</span><span class="p">)),</span> <span class="kp">rep</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">10</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] TRUE
+</pre></div>
+
+
+<p><em>identical</em> is the stricter version, that measures if two objects are exactly the same.</p>
+<h2>Filtering &amp; slicing</h2>
+<p>The bracket indexing in R works much like it does in other langauges, but is a lot more powerful. It can accept an index, a range of indices, a boolean vector or an expression that produces any of those:</p>
+<div class="highlight"><pre><span></span>d <span class="o">&lt;-</span> <span class="m">1</span><span class="o">:</span><span class="m">10</span>
+d<span class="p">[</span><span class="m">4</span><span class="p">]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 4
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>d<span class="p">[</span><span class="m">4</span><span class="o">:</span><span class="m">6</span><span class="p">]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 4 5 6
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>d<span class="p">[</span>d <span class="o">%%</span> <span class="m">2</span> <span class="o">==</span> <span class="m">0</span><span class="p">]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1]  2  4  6  8 10
+</pre></div>
+
+
+<p><em>[[</em> can be used to select a single element dropping names, effectively copying the value 'out' of the containing object.</p>
+<p><em>$</em> can be used to select named elements out of an object.</p>
+<p><em>subset</em> allows you to filter a dataset into just those rows meeting a certain criteria. You can also select those columns to appear in the output:</p>
+<div class="highlight"><pre><span></span>head <span class="p">(</span>airquality<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>##   Ozone Solar.R Wind Temp Month Day
+## 1    41     190  7.4   67     5   1
+## 2    36     118  8.0   72     5   2
+## 3    12     149 12.6   74     5   3
+## 4    18     313 11.5   62     5   4
+## 5    NA      NA 14.3   56     5   5
+## 6    28      NA 14.9   66     5   6
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>head <span class="p">(</span><span class="kp">subset</span><span class="p">(</span>airquality<span class="p">,</span> Temp <span class="o">&gt;</span> <span class="m">80</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>##    Ozone Solar.R Wind Temp Month Day
+## 29    45     252 14.9   81     5  29
+## 35    NA     186  9.2   84     6   4
+## 36    NA     220  8.6   85     6   5
+## 38    29     127  9.7   82     6   7
+## 39    NA     273  6.9   87     6   8
+## 40    71     291 13.8   90     6   9
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>head <span class="p">(</span><span class="kp">subset</span><span class="p">(</span>airquality<span class="p">,</span> Temp <span class="o">&gt;</span> <span class="m">80</span><span class="p">,</span> select <span class="o">=</span> <span class="kt">c</span><span class="p">(</span>Ozone<span class="p">,</span> Temp<span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>##    Ozone Temp
+## 29    45   81
+## 35    NA   84
+## 36    NA   85
+## 38    29   82
+## 39    NA   87
+## 40    71   90
+</pre></div>
+
+
+<h2>Simple analysis</h2>
+<p>Several simple calculations over a sequence of data are available, most of which are obvious names like <em>max min prod sum</em>:</p>
+<div class="highlight"><pre><span></span>d <span class="o">&lt;-</span> <span class="m">1</span><span class="o">:</span><span class="m">5</span>
+max <span class="p">(</span>d<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 5
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>min <span class="p">(</span>d<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 1
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>prod <span class="p">(</span>d<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 120
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>sum <span class="p">(</span>d<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 15
+</pre></div>
+
+
+<p>Usefully, R provides "cumulative" versions that produce answers as you move along the sequence:</p>
+<div class="highlight"><pre><span></span>cummax <span class="p">(</span>d<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 1 2 3 4 5
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>cummin <span class="p">(</span>d<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 1 1 1 1 1
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>cumprod <span class="p">(</span>d<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1]   1   2   6  24 120
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>cumsum <span class="p">(</span>d<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1]  1  3  6 10 15
+</pre></div>
+
+
+<p><em>pmax</em> and <em>pmin</em> are a bit strange but useful in the right circumstances. They give the maximum (or minmum) across a set of sequences, for every position. Note that as is "standard" (well, common) in R, if the sequence lengths don't match, then the shorter one is "recycled" (repeated):</p>
+<div class="highlight"><pre><span></span>pmax <span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,</span> <span class="m">2</span><span class="o">:</span><span class="m">6</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 2 3 4 5 6
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>pmin <span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,</span> <span class="m">2</span><span class="o">:</span><span class="m">3</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Warning in pmin(1:5, 2:3): an argument will be fractionally recycled
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 1 2 2 3 2
+</pre></div>
+
+
+<p><em>range</em> returns the minimum and maximum of a sequence:</p>
+<div class="highlight"><pre><span></span>range <span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 1 5
+</pre></div>
+
+
+<p>The mean, median, standard deviation and variance of a sequence can be calculated by <em>mean, median, sd, var</em>:</p>
+<div class="highlight"><pre><span></span>mean <span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 3
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>median <span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 3
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>sd <span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 1.581139
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>var <span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 2.5
+</pre></div>
+
+
+<p><em>var</em> can also be used to compute the variance of one sequence with another. Likewise, <em>cov</em> and <em>cor</em> can be used to compute covariance and correlation, respectively. They can also be used over matrices:</p>
+<div class="highlight"><pre><span></span>var <span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,</span> <span class="m">2</span><span class="o">:</span><span class="m">6</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 2.5
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>cov <span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,</span> <span class="m">2</span><span class="o">:</span><span class="m">6</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 2.5
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>cor <span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">,</span> <span class="m">2</span><span class="o">:</span><span class="m">6</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] 1
+</pre></div>
+
+
+<p><em>rle</em> counts "runs", consecutive appearances of the same value:</p>
+<div class="highlight"><pre><span></span>rle <span class="p">(</span><span class="kt">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">5</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Run Length Encoding
+##   lengths: int [1:8] 1 2 1 1 2 1 1 3
+##   values : num [1:8] 1 2 3 2 4 5 1 5
+</pre></div>
+
+
+<h2>Functions</h2>
+<p>Unsurprisingly, <em>function</em> is used for constructing functions and <em>return</em> for returning values from functions. It's worth pointing out that <em>return</em> is a function itself, so the returned value must appear in a brackets after it, i.e. not <em>return x</em>. You could just leave R to use the implicit return, i..e the last value in the function, but it's best to be explicit:</p>
+<div class="highlight"><pre><span></span>double_x <span class="o">&lt;-</span> <span class="kr">function</span> <span class="p">(</span>x<span class="p">)</span> <span class="p">{</span>
+   <span class="kr">return</span> <span class="p">(</span><span class="m">2</span> <span class="o">*</span> x<span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p><em>missing</em> can be used in function bodies to check for missing argument values, which might be used to check for optional arguments:</p>
+<div class="highlight"><pre><span></span>double_x <span class="o">&lt;-</span> <span class="kr">function</span> <span class="p">(</span>x<span class="p">)</span> <span class="p">{</span>
+   <span class="kr">if</span> <span class="p">(</span>missing <span class="p">(</span>x<span class="p">))</span> <span class="p">{</span>
+      <span class="kr">return</span> <span class="p">(</span><span class="s">&quot;no argument!&quot;</span><span class="p">)</span>
+   <span class="p">}</span> <span class="kr">else</span> <span class="p">{</span>
+      <span class="kr">return</span> <span class="p">(</span><span class="m">2</span> <span class="o">*</span> x<span class="p">)</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>I tend to think that sensible default values for arguments are a cleaner way to handle this, and actually signal that an argument is optional. <em>NULL</em> is the usual default value used in these cases:</p>
+<div class="highlight"><pre><span></span>double_x <span class="o">&lt;-</span> <span class="kr">function</span> <span class="p">(</span>x<span class="o">=</span><span class="kc">NULL</span><span class="p">)</span> <span class="p">{</span>
+   <span class="kr">if</span> <span class="p">(</span>is.null <span class="p">(</span>x<span class="p">))</span> <span class="p">{</span>
+      <span class="kr">return</span> <span class="p">(</span><span class="s">&quot;no argument!&quot;</span><span class="p">)</span>
+   <span class="p">}</span> <span class="kr">else</span> <span class="p">{</span>
+      <span class="kr">return</span> <span class="p">(</span><span class="m">2</span> <span class="o">*</span> x<span class="p">)</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

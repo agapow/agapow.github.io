@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Failing installer - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Application installation craps out, a mystery is created and then solved. Symptoms Following the purchase of a new computer and a new hard-drive for an old computer, the installer for a much-loved game (Ticket to Ride) would choke half-way through with a repeated series of "could not write" error messages …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Failing installer">
+	<meta name="twitter:description" content="Application installation craps out, a mystery is created and then solved. Symptoms Following the purchase of a new computer and a new hard-drive for an old computer, the installer for a much-loved game (Ticket to Ride) would choke half-way through with a repeated series of "could not write" error messages …">
+	<meta name="twitter:url" content="/misc/mac/failing-installer-2/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Failing installer</h1>
+
+<div class="metadata">
+  <time datetime="2012-06-14T12:56:00+01:00" pubdate>2012-06-14</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/misc/">misc</a>
+</div>
+
+
+      <p><em>Application installation craps out, a mystery is created and then
+solved.</em></p>
+<div class="section" id="symptoms">
+<h2>Symptoms</h2>
+<p>Following the purchase of a new computer and a new hard-drive for an old
+computer, the installer for a much-loved game (<a class="reference external" href="http://www.ticket2ridegame.com/">Ticket to
+Ride</a>) would choke half-way through
+with a repeated series of &quot;could not write&quot; error messages for various
+components of the app. This happened on both machines, despite the fact
+that it had previously been installed on one, and that the OS version
+and selection of extensions hadn't changed.</p>
+</div>
+<div class="section" id="diagnosis">
+<h2>Diagnosis</h2>
+<p>The CD was unmarked and apparently uncorrupt. Dragging the installer to
+a disk and running it from there ended with the exact same problem.
+Interestingly, just before this trouble, I had also had problems with
+other applications that were installed by simply dragging into the
+'Applications' folder. OSX would report that I did not have permission
+and had to authenticate with my root password.</p>
+</div>
+<div class="section" id="solution">
+<h2>Solution</h2>
+<p>I ran 'Disk Utility' and repaired permissions on both disks. <em>Something</em>
+that I had installed on both systems had changed the permissions subtly
+on the 'Applications' folder so that installers would fail as they
+didn't have root access. (Later experience shows that several Java
+installers appear to be the culprits.) Fixing permissions solved this.
+Just why OSX is so vulnerable to corrupt permissions is a mystery. The
+OS comes with an application to repair them. Isn't there a better
+solution?</p>
+</div>
+<div class="section" id="technical-details">
+<h2>Technical details</h2>
+<p>Machine: MacBook and iMac flat; OS version: 10.4.7; App version: 1.0.7;</p>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li class="active"><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

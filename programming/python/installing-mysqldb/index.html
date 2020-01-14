@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Installing MySQLdb - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Good news: you can get reliable and easy access to a proper, fully-featured database from within Python. Bad news: you may have to tinker to get it to (a) install properly. And if not done properly, this may cause it to (b) not work properly. Good news: Download a .dmg …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Installing MySQLdb">
+	<meta name="twitter:description" content="Good news: you can get reliable and easy access to a proper, fully-featured database from within Python. Bad news: you may have to tinker to get it to (a) install properly. And if not done properly, this may cause it to (b) not work properly. Good news: Download a .dmg …">
+	<meta name="twitter:url" content="/programming/python/installing-mysqldb/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Installing MySQLdb</h1>
+
+<div class="metadata">
+  <time datetime="2007-01-01T12:00:00+00:00" pubdate>2007-01-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/mysqldb/">mysqldb</a>, <a href="//by-tag/mysqwl/">mysqwl</a>, <a href="//by-tag/python/">python</a></p></div>
+		<div class="summary">When unresolved linker symbols attack.</div>
+
+
+      <p><strong>Good news:</strong> you can get reliable and easy access to a proper,
+fully-featured database from within Python.</p>
+<p><strong>Bad news:</strong> you may have to tinker to get it to (a) install properly.
+And if not done properly, this may cause it to (b) not work properly.</p>
+<p><strong>Good news:</strong> Download a .dmg of MySQL for MacOSX from
+<a class="reference external" href="http://MySQL.org">MySQL.org</a>. Double-click and install the MySQL
+package, the MySQL tools package and the preference pane. This works
+seemlessly and is much better and quicker than compiling from source or
+using fink / darwinports etc. Also, the pref pane lets you quickly start
+up the MySQL server or have it startup automatically when the system
+boots.</p>
+<p><em>Addendum: Matt Baker reports that he ended up with a malfunctioning
+MySQLdb egg that was apparently installed by the MySQL .dmg, which would
+explain other weird behaviour. The solution is to delete and install it
+another way.</em></p>
+<p><strong>Bad news:</strong> MySQL is installed off the main executable path in
+/usr/local/mysql. This isn't a problem in itself, as the prompt can be
+easily raised:</p>
+<pre class="literal-block">
+localhost$ /usr/local/mysql/bin/mysql mysql&gt;
+</pre>
+<p>However it can cause problems in the later installation of MySQLdb, the
+Python package required for interaction, as it can't find the
+mysql_config executable.</p>
+<p><strong>Good news:</strong> There are several feasible ways of fixing this. First,
+you could edit your .bash_profile file in your home directory and add
+aliases to point at the useful binaries:</p>
+<pre class="literal-block">
+alias mysql='/usr/local/mysql/bin/mysql' alias
+mysql_config='/usr/local/mysql/bin/mysql_config'
+</pre>
+<p>The MySQLdb instructions suggest an alternative way of telling the build
+process where the necessary files are, by editing the site.cfg file.</p>
+<p><strong>Bad news:</strong> MySQLdb may still not install. (Depends. I've had variable luck on different OSX systems that should had fairly similar configurations. What I give above is what worked for me.)  The symptoms are that it complains
+about not being able to find mysql_config and then generates a bunch of
+linker errors. Or, it apparently installs but when you go into Python
+and type:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; import MySQLdb
+</pre>
+<p>you get a bunch of errors then as the library has been built and
+installed but is non-functional.</p>
+<p><strong>Good news:</strong> Instead of adding the aliases. adding the MySQL binaries
+directory to your $PATH, the build stage will work. In your
+.bash_profile file, add something like:</p>
+<pre class="literal-block">
+PATH=&quot;${PATH}:/usr/local/mysql/bin&quot;
+</pre>
+<p>so that the build can find all the MySQL binaries. If compiling on a
+PPC, you may still get an error message about an &quot;unrecognised
+architecture&quot; but this can be ignored safely.</p>
+<p><strong>Great news:</strong> This works.</p>
+<p><strong>Later news:</strong> Each round of installing Plone shows me new ways that
+installation can go awry. This latest time was no different. A source
+install of MySQLdb as above failed, installing into Python without
+apparent problems but dropping at the import stage, with errors like:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; import MySQLdb Traceback (most recent call last): File &quot;&lt;stdin&gt;&quot;,
+line 1, in ? File
+&quot;/Library/Frameworks/Python.framework/Versions/2.4/lib/python2.4/site-packages
+/PIL/__init__.py&quot;, line 19, in ? File
+&quot;build/bdist.macosx-10.3-fat/egg/_mysql.py&quot;, line 7, in ? File
+&quot;build/bdist.macosx-10.3-fat/egg/_mysql.py&quot;, line 6, in
+__bootstrap__ ImportError: Failure linking new module:
+/Users/johnB/.python-eggs
+/MySQL_python-1.2.2-py2.4-macosx-10.3-fat.egg-tmp/_mysql.so: Library
+not loaded: /usr/local/mysql/lib/mysql/libmysqlclient_r.15.dylib
+Referenced from:
+/Users/johnB/.python-eggs/MySQL_python-1.2.2-py2.4-macosx-10.3-fat.egg-tmp/
+_mysql.so Reason: image not found
+</pre>
+<p>Installing a <a class="reference external" href="http://pythonmac.org/packages">pre-compiled fat Mac
+binary</a> as suggested by <a class="reference external" href="http://www.physics.usyd.edu.au/astrop/ausvoss/index.php/Main/InstallMacOSX">these
+guys</a>
+did the trick in the end. Note that for this to work, the dysfunctional
+library had to be removed by hand. Go to you site-packages directory,
+delete the mySQLdb egg and delete the line referring to it in the
+easy-install.pth file.</p>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

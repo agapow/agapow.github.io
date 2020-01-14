@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>psicons.core - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Note Although I used psicons heavily for a while, better and more humane tools have come along. In particular, I'd recommend snakemake. This page is left here for historical interest Background Scientific analysis can be problematic: It may involve multiple steps, each using the results of the previous stage.  Making …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="psicons.core">
+	<meta name="twitter:description" content="Note Although I used psicons heavily for a while, better and more humane tools have come along. In particular, I'd recommend snakemake. This page is left here for historical interest Background Scientific analysis can be problematic: It may involve multiple steps, each using the results of the previous stage.  Making …">
+	<meta name="twitter:url" content="/software/psicons-core/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>psicons.core</h1>
+
+<div class="metadata">
+  <time datetime="2010-03-01T12:00:00+00:00" pubdate>2010-03-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/software/">software</a>
+<p class="tags">tagged <a href="//by-tag/reproducibility/">reproducibility</a>, <a href="//by-tag/python/">python</a>, <a href="//by-tag/software/">software</a></p></div>
+		<div class="summary">A tool for documentable and reproducible analysis and research.</div>
+
+
+
+
+
+<h3>Platforms & distributions</h3>
+<ul>
+      <li>Python package</li>
+      <li>platform-independent source code</li>
+</ul>
+
+
+<h3>Repositories</h3>
+<ul>
+      <li><A HREF="http://pypi.python.org/pypi/psicons-core">http://pypi.python.org/pypi/psicons-core</A></li>
+      <li><A HREF="http://github.com/agapow/psicons.core">http://github.com/agapow/psicons.core</A></li>
+</ul>
+
+
+
+   <h3>Development status</h3>
+   <p>Stable, fallow.</p>
+
+<h3>Latest version</h3>
+<p>See below.</p>
+
+
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Although I used psicons heavily for a while, better and more humane tools have come along. In particular, I'd recommend snakemake. This page is left here for historical interest</p>
+</div>
+<div class="section" id="background">
+<h2>Background</h2>
+<p>Scientific analysis can be problematic:</p>
+<ul class="simple">
+<li>It may involve multiple steps, each using the results of the
+previous stage.&nbsp;&nbsp;Making a mistake often means repeating the whole
+series for safety.</li>
+<li>Sometimes analysis chains have to be repeated on different datasets.</li>
+<li>Sometimes, even within a single analysis, the same manipulation or
+test has&nbsp;to be repeated with slightly different parameters.</li>
+<li>Even immediately after the fact, it's easy to forget what was done.
+9 months&nbsp;later when responding to a referee's report, it may be
+impossible.</li>
+<li>Collaborators, clients or bosses may demand accountability.</li>
+<li>With long but routine tasks, it's easy to get bored and make
+mistakes.</li>
+</ul>
+<p>It this light, psicons is a quick and dirty hack to subvert the <em>scons</em>
+build&nbsp;system for scientific analysis. Every stage of analysis is a
+command-line call&nbsp;to a script or executable that takes <em>inputs</em> and
+produces <em>outputs</em>. When&nbsp;scons is called, dependencies between outputs
+and inputs are tested and only&nbsp;those stages are run that are necessary
+to update outputs. In addition, the&nbsp;exact sequence of analyses is
+recorded by the build file.</p>
+<p>In summary, psicons provides:</p>
+<dl class="docutils">
+<dt>Repeatability:</dt>
+<dd>running a build file, reruns the same analysis</dd>
+<dt>Reproducibility:</dt>
+<dd>the build file (and custom scripts) document the steps of&nbsp;&nbsp;the analysis</dd>
+<dt>Minimization of effort:</dt>
+<dd>if inputs or analysis steps are changed, only the&nbsp; necessary (dependent) steps of the analysis are rerun</dd>
+<dt>Mistake-resistant:</dt>
+<dd>errors don't derail analysis due to
+reproducibility (&quot;what&nbsp; did I do&quot;) and minimization of effort (only
+dependent steps are repeated)</dd>
+<dt>Programmability:</dt>
+<dd>analysis tasks may be constructed with
+programatically&nbsp; (&quot;repeat the analysis across this parameter range&quot;)</dd>
+</dl>
+<p>psicons is very much a hack-and-see project, having been produced in
+the&nbsp;aftermath of the 2009 H1N1 pandemic from the need for complex
+processing of&nbsp;large amounts of sequence data using ad-hoc scripts and
+formats. It worked&nbsp;well in that limited role, but is still an early
+release exploring the&nbsp;approach. Functionality is limited and the API may
+change. Comment is invited.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation</h2>
+<p>This package can be installed by the usual Pythonic methods:</p>
+<ol class="arabic">
+<li><p class="first">use your favourite installation tool:</p>
+<pre class="literal-block">
+% easy_install rst2beamer
+</pre>
+</li>
+<li><p class="first">or download the source, unpack it, change into the directory and call:</p>
+<pre class="literal-block">
+% python setup.py install
+</pre>
+</li>
+</ol>
+<p><em>psicons</em> requires that scons is installed, which is where things get
+tricky.&nbsp;Scons by default installs itself in a sandboxed way with
+multiple versions&nbsp;living side-by-side and thus being non-importable. Of
+course, <em>psicons</em> needs&nbsp;to use the scons library, so a conventional
+installation must be forced. &nbsp;Download the scons tarball, unpack it and
+install it like thus:</p>
+<pre class="literal-block">
+% python setup.py install --standard-lib
+</pre>
+</div>
+<div class="section" id="usage">
+<h2>Usage</h2>
+<p>A full API is included in the source distribution.</p>
+<p>Psicons works just like scons. In fact, it is scons. More details are
+available&nbsp;elsewhere but briefly, you run scons like this:</p>
+<pre class="literal-block">
+# look for a build file called &quot;Sconstruct&quot; by default
+% scons
+# looks for a named build file
+% scons -f mybuildfile
+</pre>
+<p>This causes scons to execute the build file, which is just a Python
+script,&nbsp;defining a series of tasks or <em>commands</em>:</p>
+<pre class="literal-block">
+# an scons build file
+# some necessary administration - set up the build environment
+env = Environment()
+# compile two libraries and then combine into one program
+first_libs = env.Object ('hello.c', CCFLAGS='-DHELLO')
+second_libs = env.Object ('goodbye.c', CCFLAGS='-DGOODBYE')
+env.Program (first_libs + second_libs)
+</pre>
+<p>The first time this file is executed, the first two commands build
+libraries,&nbsp;while the third combines the libraries into a single
+executable. Dependencies&nbsp;between the steps are automatically tracked:
+should one of the original source&nbsp;files be changed (e.g. hello.c), when
+the file is rerun only the steps&nbsp;&quot;downstream&quot; of it (e.g. recompilation
+of the first library, and the final&nbsp;linking) are rerun.</p>
+<p>Scons has a large number of commands for all sorts of software builds.
+Psicons&nbsp;adds two new commands, so that local scripts or external
+programs can be used&nbsp;to in a build. In this way, complex multi-step
+analyses can be constructed from&nbsp;a series of interdependent commands,
+that &quot;build&quot; intermediate data and final&nbsp;results:</p>
+<pre class="literal-block">
+from psicons.core import *
+
+env = Environment()
+
+# call a local script
+IN_DATA = 'jg_08-10_2010.csv'
+CLEAN_DATA = 'jg_08-10_2010-cleaned.csv'
+make_clean_data = Script (env, 'clean_seqs.py',
+    args = ['--save-as', CLEAN_DATA],
+    infiles = [IN_DATA],
+    output = CLEAN_DATA,
+)
+
+# call an external command
+EPI_DATA = 'jg-types.txt'
+RESULT_DATA = 'results.tab'
+type_data = External (env, 'treemaker',
+    args = ['--save-as', RESULT_DATA],
+    infiles = [CLEAN_DATA, EPI_DATA],
+    output = [RESULT_DATA],
+)
+</pre>
+<p>The interfaces of these two commands are similar:</p>
+<ul class="simple">
+<li>what is being called?</li>
+<li>what inputs does it use (depend on)?</li>
+<li>what outputs does it produce?</li>
+</ul>
+<p>When scons is run on this build file, it calls the script
+<tt class="docutils literal">clean_seqs.py</tt> on&nbsp;<tt class="docutils literal">IN_DATA</tt> to produce <tt class="docutils literal">CLEAN_DATA</tt>. Then the
+external program <tt class="docutils literal">treemaker</tt> is&nbsp;called on <tt class="docutils literal">CLEAN_DATA</tt> and
+<tt class="docutils literal">EPI_DATA</tt> to produce <tt class="docutils literal">RESULT_DATA</tt>. Should&nbsp;<tt class="docutils literal">EPI_DATA</tt> be
+edited, when scons is called again, only the second external&nbsp;step will
+be run again as the first step and it's results is still up to date.</p>
+<p>Thus:</p>
+<ul class="simple">
+<li>Analyses may be run (and rerun) easily</li>
+<li>If data changes (or scripts change - bug fixes), only the necessary
+steps are&nbsp; rerun</li>
+<li>The actions taken are recorded in the build file</li>
+</ul>
+<p>To ease renaming intermediate or output files in a rational way,
+<em>psicons</em>&nbsp;offers a few utility functions for interpolating file names
+from parameters. To&nbsp;illustrate:</p>
+<pre class="literal-block">
+# generate a new string from a template
+&gt;&gt;&gt; d = {'foo': '123', 'bar': '456'}
+&gt;&gt;&gt; interpolate ('ab{foo}cd{bar}ef', d)
+'ab123cd456ef'
+# name new file name from old by adding suffix to name
+&gt;&gt;&gt; interpolate_from_path ('mydata.csv', '{stem}-cleaned{ext}')
+'mydata-cleaned.csv'
+</pre>
+</div>
+<div class="section" id="limitations">
+<h2>Limitations</h2>
+<p>Certainly, far, far more complicated reproducibility tools are out there
+(see <a class="reference external" href="http://csdl2.computer.org/comp/mags/cs/2009/01/mcs2009010005.pdf">here</a>)
+but&nbsp;many are based around certain disciplines (e.g. geophysics,
+computational math),&nbsp;require working through web interfaces or using
+very standard sets of analysis&nbsp;tools. <em>psicons</em> is written from the
+point of view of a bioinformatician doing&nbsp;sequence and phylogenetic
+analysis, working on the commandline using a lot of&nbsp;custom scripts and
+an endlessly changing lineup of supplied tools. As sometimes&nbsp;happens,
+other tools didn't fit, so I wrote one that did.</p>
+<p>As with many quick hack tools, documentation is currently a bit thin.</p>
+<p>The need for a modified scons installation is a blemish. Future versions
+of&nbsp;psicons may need to directly incorporate scons for ease of
+installation.</p>
+<p>Clearly, a set of standard tools for extracting, transforming and
+plotting&nbsp;data would be a powerful addition to <em>psicons</em>. This doesn't
+exist as yet.</p>
+<p>The process of installing a new tool or module for use by SCons is
+fiddly, involves copying libraries in a tool directory,
+registering &nbsp;their use in build files, voids the ease of using
+<tt class="docutils literal">easy_install</tt> and makes&nbsp;development a pain. Thus, the additional
+&quot;commands&quot; are real scons commands, so much as functions that generate
+commands. But they are easy to use.</p>
+</div>
+<div class="section" id="credit">
+<h2>Credit</h2>
+<p>Thanks to the architects of Scons, of course.</p>
+<p>While this project was started before encountering Madagascar, it&nbsp;has inevitably shaped development. It's a remarkably
+powerful system, although&nbsp;ill-suited to my current purposes. You should
+check it out.</p>
+<p>Only when writing this document did I become aware of <em>sconstools</em>, which seems to be following exactly the same direction as psicons.</p>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<ul class="simple">
+<li><a class="reference external" href="http://www.scons.org">Scons</a></li>
+<li><a class="reference external" href="http://reproducibility.org/wiki/Reproducible_computational_experiments_using_SCons">Madagscar and Scons for reproducibility</a></li>
+<li><a class="reference external" href="http://scons.org/doc/production/HTML/scons-user/x3697.html">Where To Put Your Custom Builders and Tools</a></li>
+<li><a class="reference external" href="http://code.google.com/p/sconstools/">Sconstools</a></li>
+</ul>
+</div>
+
+
+
+<h2>Releases</h2>
+<ul>
+   <li><A HREF="/downloads/software/psicons-core">/downloads/software/psicons-core</A></li>
+</ul>
+
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li class="active"><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

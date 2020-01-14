@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>The etree tail quirk - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="How to make a good XML solution for Python better. Python was late to adopt XML and even then the libraries provided weren't as powerful or easy to use as those available elsewhere. Fortunately, with Python 2.5, a subset of the ElementTree library was incorporated into the standard library …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="The etree tail quirk">
+	<meta name="twitter:description" content="How to make a good XML solution for Python better. Python was late to adopt XML and even then the libraries provided weren't as powerful or easy to use as those available elsewhere. Fortunately, with Python 2.5, a subset of the ElementTree library was incorporated into the standard library …">
+	<meta name="twitter:url" content="/programming/python/the-etree-tail-quirk/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>The etree tail quirk</h1>
+
+<div class="metadata">
+  <time datetime="2009-01-01T12:00:00+00:00" pubdate>2009-01-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+</div>
+
+
+      <p>How to make a good XML solution for Python better.</p>
+<p>Python was late to adopt XML and even then the libraries provided
+weren't as powerful or easy to use as those available elsewhere.
+Fortunately, with Python 2.5, a subset of the
+<a class="reference external" href="http://effbot.org/zone/element-index.htm">ElementTree</a> library was
+incorporated into the standard library as
+<a class="reference external" href="http://docs.python.org/lib/module-xml.etree.ElementTree.html">xml.etree</a>.
+Less fortunately, etree has its own quirks. One of these is to do with
+the handling of text within nodes.</p>
+<p>If you're dealt with XML, you'd know that an XML element may contain
+text, which some XML parsers will (sensibly) interpret as the value for
+that element. In this example, the name element has Truman Capote as its
+value:</p>
+<pre class="literal-block">
+&lt;name&gt;Truman Capote&lt;/name&gt;
+</pre>
+<p>It can also contain other elements, which are treated as children of the
+parent element. Here name has the child elements first and last:</p>
+<blockquote>
+&lt;name&gt;&lt;first&gt;Truman&lt;/first&gt;&lt;last&gt;Capote&lt;/last&gt;&lt;/name&gt;</blockquote>
+<p>It can also do both:</p>
+<pre class="literal-block">
+&lt;credit&gt;The novel was written by &lt;name&gt;Truman Capote&lt;/name&gt; in
+1965&lt;/credit&gt;
+</pre>
+<p>In this case, what should the &quot;value&quot; of the parent element be? Should
+it be The novel was written by? This is logical, but should it also
+include the child element? And what about the trailing in 1965? That
+clearly belongs to the root credit, but it can't be part of the value
+without the intervening name element. The question of children is also
+complicated. If name is the only child, it removes it from its context
+within the surrounding text.</p>
+<p>What is the correct way to handle this? In Python, xml.minidom treats
+text as a child element (actually &quot;text node&quot;) in itself, as does the
+HTML DOM. This seems logical and orthogonal. The ordering and
+relationship of children is preserved. A node's &quot;value&quot; can either not
+be used (just look at terminal text nodes), or interpreted as the sum of
+all child nodes, or applies only when there is a single child that is
+text. Thus the above XML fragment renders as:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Element &quot;credit&quot;</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt>Text node &quot;The novel was written by &quot;</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt>Element &quot;name&quot;</dt>
+<dd><ul class="first last">
+<li>Text node &quot;Truman Capote&quot;</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>Text node &quot; in 1965&quot;</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>This is a more consistent approach. The nature of a child node shouldn't
+change depending on other child nodes (other siblings). Yet this is what
+is exactly what happens with etree. Consider two XML fragments:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; frag1 = &quot;&lt;tag1&gt;ABCD&lt;/tag1&gt;&quot;
+&gt;&gt;&gt; frag2 = &quot;&lt;tag1&gt;&lt;tag2/&gt;ABCD&lt;/tag1&gt;&quot;
+</pre>
+<p>When using minidom, in both cases the text ABCD is rendered as a text
+node:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; import xml.dom.minidom as minidom
+&gt;&gt;&gt; doc1 = minidom.parseString (frag1)
+&gt;&gt;&gt; root1 = doc1.childNodes[0]
+&gt;&gt;&gt; root1.childNodes [&lt;DOM Text node &quot;ABCD&quot;&gt;]
+&gt;&gt;&gt; doc2 = minidom.parseString (frag2)
+&gt;&gt;&gt; root2 = doc2.childNodes[0]
+&gt;&gt;&gt; root2.childNodes [&lt;DOM Element: tag2 at ...&gt;, &lt;DOM Text node &quot;ABCD&quot;&gt;]
+</pre>
+<p>in the respective parse trees:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Element &quot;tag1&quot;</dt>
+<dd><ul class="first last">
+<li>Text node &quot;ABCD&quot;</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>and:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Element &quot;tag1&quot;</dt>
+<dd><ul class="first last">
+<li>Element &quot;tag2&quot;</li>
+<li>Text node &quot;ABCD&quot;</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>In contrast, when parsing with etree:</p>
+<blockquote>
+<pre class="doctest-block">
+&gt;&gt;&gt; from xml.etree import ElementTree
+&gt;&gt;&gt; root3 = ElementTree.fromstring (frag1)
+&gt;&gt;&gt; root3[:] []
+&gt;&gt;&gt; root3.text 'ABCD'
+&gt;&gt;&gt; root4 = ElementTree.fromstring (frag2)
+&gt;&gt;&gt; root4[:] [&lt;Element tag2 at ...&gt;]
+&gt;&gt;&gt; root4[0].tail 'ABCD'
+</pre>
+</blockquote>
+<p>in the respective parse trees:</p>
+<ul class="simple">
+<li>Element &quot;tag1&quot; (with text as &quot;ABCD&quot;)</li>
+</ul>
+<p>and:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Element &quot;tag1&quot;</dt>
+<dd><ul class="first last">
+<li>Element &quot;tag2&quot; (with tail as &quot;ABCD&quot;)</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>To detail, in etree an Element has text and tail members, for the text
+stored within and following a element. If text is the sole child of an
+element, it will be stored in the text member. If there are sibling
+elements, it will be stored in text or as the tail of one of it's
+siblings, <em>depending on its relative position</em>. A more detailed example:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; tailfrag1 = '&lt;tag1&gt;text1&lt;tag2&gt;text2&lt;/tag2&gt;text3&lt;/tag1&gt;'
+&gt;&gt;&gt; tailfrag2 = '&lt;tag1&gt;text1&lt;tag2/&gt;text2&lt;tag3/&gt;text3&lt;/tag1&gt;'
+</pre>
+<p>Parsing with xml.minidom produces orthogonal structures:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; m = minidom.parseString (tailfrag1)
+&gt;&gt;&gt; n = m.childNodes[0] # get the root
+&gt;&gt;&gt; n.tagName, n.nodeValue, len (n.childNodes) (u'tag1', None, 3)
+&gt;&gt;&gt; for x in n.childNodes: ... print x ... &lt;DOM Text node &quot;text1&quot;&gt;
+&lt;DOM Element: tag2 at ...&gt; &lt;DOM Text node &quot;text3&quot;&gt;
+&gt;&gt;&gt; e = minidom.parseString (tailfrag2)
+&gt;&gt;&gt; f = e.childNodes[0] # get the root
+&gt;&gt;&gt; f.tagName, f.nodeValue, len (f.childNodes) (u'tag1', None, 5)
+&gt;&gt;&gt; for x in f.childNodes:
+        ... print x ...
+        &lt;DOM Text node &quot;text1&quot;&gt; &lt;DOM
+Element: tag2 at ...&gt; &lt;DOM Text node &quot;text2&quot;&gt; &lt;DOM Element: tag3 at ...&gt;
+&lt;DOM Text node &quot;text3&quot;&gt;
+</pre>
+<p>The results respectively are:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Element &quot;tag1&quot;</dt>
+<dd><ul class="first last">
+<li>Text node &quot;text1&quot;</li>
+<li><dl class="first docutils">
+<dt>Element &quot;tag2&quot;</dt>
+<dd><ul class="first last">
+<li>Text node &quot;text2&quot;</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>Text node &quot;text3&quot;</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>and:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Element &quot;tag1&quot;</dt>
+<dd><ul class="first last">
+<li>Text node &quot;text1&quot;</li>
+<li>Element &quot;tag2&quot;</li>
+<li>Text node &quot;text2&quot;</li>
+<li>Element &quot;tag3&quot;</li>
+<li>Text node &quot;text3&quot;</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>While, with etree the text shifts between text and tail:</p>
+<blockquote>
+<pre class="doctest-block">
+&gt;&gt;&gt; x = ElementTree.fromstring (tailfrag1)
+&gt;&gt;&gt; x.tag, x.text, x.tail, len(x)
+('tag1', 'text1', None, 1)
+&gt;&gt;&gt; y = x[0]
+&gt;&gt;&gt; y.tag, y.text, y.tail, len(y)
+('tag2', 'text2', 'text3', 0)
+&gt;&gt;&gt; a = ElementTree.fromstring (tailfrag2)
+&gt;&gt;&gt; a.tag, a.text, a.tail, len(a)
+('tag1', 'text1', None, 2)
+&gt;&gt;&gt; b = a[0]
+&gt;&gt;&gt; b.tag, b.text, b.tail, len(b)
+('tag2', None, 'text2', 0)
+&gt;&gt;&gt; c = a[1]
+&gt;&gt;&gt; c.tag, c.text, c.tail, len(c)
+('tag3', None, 'text3', 0)
+</pre>
+</blockquote>
+<p>The results respectively are:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Element &quot;tag1&quot; (with text as &quot;text1&quot;)</dt>
+<dd><ul class="first last">
+<li>Element &quot;tag2&quot; (with text as &quot;text2&quot; and text as &quot;text3&quot;)</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>and:</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Element &quot;tag1&quot; (with text as &quot;text1&quot;)</dt>
+<dd><ul class="first last">
+<li>Element &quot;tag2&quot; (with tail as &quot;text2&quot;)</li>
+<li>Element &quot;tag3&quot; (with tail as &quot;text3&quot;)</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>That's inconsistent and just damn untidy.</p>
+<p>Admittedly, kosher XML <em>should</em> have elements that contain <em>either</em> a
+single text node <em>or</em> one or more elements. In the real world, this
+can't be relied upon. Take almost any stretch of HTML or XHTML:</p>
+<blockquote>
+&lt;P&gt;In &lt;B&gt;When Death Comes&lt;/B&gt;, Mary Oliver says &lt;EM&gt;When it's
+over, I want to say I have been a bride married to amazement, I've
+been a bridegroom taking the world into my arms&lt;/EM&gt;.&lt;/P&gt;</blockquote>
+<p>With etree, parts of this sentence that logically should be at the same
+level appear as the text of the root paragraph, or as the text or tails
+of children of the root. When walking an such an XML tree, a program has
+to look for both text and tail members and interpret them correctly.
+Perhaps worse, when building an XML tree, code has to keep track of what
+has preceded so that text can be attached to correct place. Finally, the
+&quot;tail&quot; idiom is unlike the treatment of text in the HTML DOM, or in fact
+any other XML library I know of. That's not a showstopper, but makes it
+worth asking if the benefits of any new approach are real.</p>
+<p>What's the solution? etree is simple and works well in most cases.
+Rather than writing YAXP (Yet Another XML Parser), a better solution is
+to modify the etree behaviour with wrapping function. This one of the
+reasons I developed the teetree module, detailed elsewhere.</p>
+<p>Other illustrations (and solutions) to this problem can be found:</p>
+<p>-<a class="reference external" href="http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/498286">ElementTree text helper</a></p>
+<p>-<a class="reference external" href="http://codespeak.net/lxml/dev/compatibility.html">LXML compatibility</a>.</p>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

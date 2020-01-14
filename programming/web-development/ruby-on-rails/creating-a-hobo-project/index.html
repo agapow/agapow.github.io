@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Creating a Hobo project - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Hobo is a nifty thing, a better Rails than Rails, but there are a number of small roadbumps to getting a project started. This is a list of one possible way through the maze. Assumptions You're working in a Unix-like environment For development purposes, you will be building a sandboxed …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Creating a Hobo project">
+	<meta name="twitter:description" content="Hobo is a nifty thing, a better Rails than Rails, but there are a number of small roadbumps to getting a project started. This is a list of one possible way through the maze. Assumptions You're working in a Unix-like environment For development purposes, you will be building a sandboxed …">
+	<meta name="twitter:url" content="/programming/web-development/ruby-on-rails/creating-a-hobo-project/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Creating a Hobo project</h1>
+
+<div class="metadata">
+  <time datetime="2011-02-01T12:00:00+00:00" pubdate>2011-02-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/ruby/">ruby</a>, <a href="//by-tag/web-development/">web-development</a>, <a href="//by-tag/ruby-on-rails/">ruby-on-rails</a>, <a href="//by-tag/hobo/">hobo</a></p></div>
+		<div class="summary">A step-by-step guide to setting up Hobo development.</div>
+
+
+      <p><a class="reference external" href="http://hobocentral.net">Hobo</a> is a nifty thing, a better Rails than
+Rails, but there are a number of small roadbumps to getting a project
+started. This is a list of one possible way through the maze.</p>
+<div class="section" id="assumptions">
+<h2>Assumptions</h2>
+<ul class="simple">
+<li>You're working in a Unix-like environment</li>
+<li>For development purposes, you will be building a sandboxed ruby and
+hobo installation in you home directory</li>
+<li>You are using the most recent stable version of Hobo (e.g. 1.0.x) and
+not the Rails 3 candidates and not v1.3</li>
+</ul>
+</div>
+<div class="section" id="installing-the-ruby-version-manager">
+<h2>Installing the Ruby Version Manager</h2>
+<p>This allows you to keep and run multiple versions of Ruby and different
+libraries.</p>
+<p>Install rvm as per its website &lt;<a class="reference external" href="http://rvm.beginrescueend.com/">http://rvm.beginrescueend.com/</a> &gt;. This
+requires that git is available:</p>
+<pre class="literal-block">
+% bash &lt; &lt;( curl http://rvm.beginrescueend.com/releases/rvm-install-head)
+</pre>
+</div>
+<div class="section" id="install-the-versions-of-ruby-you-need">
+<h2>Install the versions of Ruby you need</h2>
+<p>1.9.2 is best:</p>
+<pre class="literal-block">
+% rvm install 1.9.2
+</pre>
+<p>Follow the instructions to add this line to end of your .bash_profile,
+so rvm can chnage the paths for all you Ruby interpreters and libraries:</p>
+<pre class="literal-block">
+[[ -s &quot;$HOME/.rvm/scripts/rvm&quot; ]] &amp;&amp; . &quot;$HOME/.rvm/scripts/rvm&quot;
+# This loads RVM into a shell session.
+</pre>
+<p>Source this file:</p>
+<pre class="literal-block">
+% source ~/.bash_profile
+</pre>
+<p>Test it is successfully installed:</p>
+<pre class="literal-block">
+% type rvm | head -1 rvm is a function
+</pre>
+<p>To use a particular version:</p>
+<pre class="literal-block">
+% rvm use 1.9.2
+</pre>
+<p>To set this as the default version:</p>
+<pre class="literal-block">
+% rvm use --default 1.9.2
+</pre>
+</div>
+<div class="section" id="install-libraries">
+<h2>Install libraries</h2>
+<p>It's easiest to pin a version of Rails for use with Hobo:</p>
+<pre class="literal-block">
+% gem install --version &quot;=2.3.10&quot; rails
+</pre>
+<p>Finally install hobo:</p>
+<pre class="literal-block">
+% gem install hobo
+</pre>
+</div>
+<div class="section" id="create-the-project">
+<h2>Create the project</h2>
+<p>Like this:</p>
+<pre class="literal-block">
+% hobo myproject
+</pre>
+<p>Test it:</p>
+<pre class="literal-block">
+% cd myproject % ./script/server - p 9124
+</pre>
+</div>
+<div class="section" id="creating-application-components">
+<h2>Creating application components</h2>
+<p>A resource is a database model (and table) with connected views and
+controllers:</p>
+<pre class="literal-block">
+% ./script/generate hobo_model_resource Trial title:string description:text
+</pre>
+<p>A naked model is internal, it has no direct web interface:</p>
+<pre class="literal-block">
+% ./script/generate hobo_model TrialParticipant relationship:string
+</pre>
+<p>Controllers for static content (e.g. documentation pages, tools) can be
+generated by using the Hobo front controller:</p>
+<pre class="literal-block">
+% ./script/generate hobo_front_controller Docs
+</pre>
+<p>After the creation of any tables, a migration must be generated and
+used:</p>
+<pre class="literal-block">
+% ./script/generate hobo_migration
+</pre>
+</div>
+<div class="section" id="notes">
+<h2>Notes</h2>
+<p>The default Hobo installation uses sqlite as a database.</p>
+<p>For unclear reasons, sometimes rvm doesn't install sqlite as part of the
+standard library. You may have to install it manually:</p>
+<pre class="literal-block">
+% gem install sqlite
+</pre>
+<p>If the Hobo project creation errors or runs into problems, you will need
+to delete and recreate it as not all the necessary infrastructure has
+been created.</p>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

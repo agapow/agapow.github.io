@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Primitive R objects and S3 - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Primordial R objects The first thing to know is that nearly every object in R is really just a list with named elements. For example, the results returned from "summary" are returned in an object: x <- summary(c(1:10)) x ## Min. 1st Qu. Median Mean 3rd Qu. Max. ## 1 …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Primitive R objects and S3">
+	<meta name="twitter:description" content="Primordial R objects The first thing to know is that nearly every object in R is really just a list with named elements. For example, the results returned from "summary" are returned in an object: x <- summary(c(1:10)) x ## Min. 1st Qu. Median Mean 3rd Qu. Max. ## 1 …">
+	<meta name="twitter:url" content="/programming/r/primitive-r-objects-and-s3/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Primitive R objects and S3</h1>
+
+<div class="metadata">
+  <time datetime="2013-07-01T15:16:00+01:00" pubdate>2013-07-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/oop/">OOP</a>, <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/r/">R</a>, <a href="//by-tag/s3/">S3</a></p></div>
+		<div class="summary">Objects are just lists and class is just an attribute.</div>
+
+
+      <div class="section" id="primordial-r-objects">
+<h2>Primordial R objects</h2>
+<p>The first thing to know is that nearly every object in R is really just
+a list with named elements. For example, the results returned from
+&quot;summary&quot; are returned in an object:</p>
+<pre class="literal-block">
+x &lt;- summary(c(1:10))
+x
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+##    1.00    3.25    5.50    5.50    7.75   10.00
+
+class(x)
+## [1] &quot;summaryDefault&quot; &quot;table&quot;
+</pre>
+<p><em>Note: this is a common idiom used in R - wherever multiple results must
+be returned from a function, create a list or array with each result in
+a named element, essentially a very lightweight class specialised for
+that functions results. Also note that the exact form
+of  ``summary()`` called and what is returned depends on the type of
+arguments passed. I'll talk more about this later.</em></p>
+<p>But if you examine the summary results object, it's actually just a list
+with named elements:</p>
+<pre class="literal-block">
+typeof(x)
+## [1] &quot;double&quot;
+length(x)
+## [1] 6
+names(x)
+## [1] &quot;Min.&quot;    &quot;1st Qu.&quot; &quot;Median&quot;  &quot;Mean&quot;    &quot;3rd Qu.&quot; &quot;Max.&quot;
+x[1]
+## Min.
+##    1
+</pre>
+<p>So the summary results type is a list of doubles but it is of the
+classes  <tt class="docutils literal">summaryDefault</tt> and <tt class="docutils literal">table</tt>. This probably seems very odd
+to those coming from other programming langauges. R has it's own
+peculiar terminology for typing:</p>
+<ul>
+<li><p class="first"><strong>type</strong> describes what sort of primitive type the object is, e.g. a
+list, integer, double, a dataframe, and can be calculated
+with  <tt class="docutils literal">typeof()</tt>. Note that as there no such thing as a scalar - a
+standalone, single numeric quantity - in R, vectors will return as
+the type of their contents.</p>
+</li>
+<li><p class="first"><strong>mode</strong> also describes what sort of primitive type or data the
+object is, albeit in a slightly more generic way, and can be
+calculated with  <tt class="docutils literal">mode()</tt></p>
+</li>
+<li><p class="first"><strong>class</strong> describes the interface of the object and what sort of
+functions it can be used with and how. This ties into R's use of
+generic functions and can be calculated with  <tt class="docutils literal">class()</tt>:</p>
+<pre class="literal-block">
+typeof(x)
+## [1] &quot;double&quot;
+mode(x)
+## [1] &quot;numeric&quot;
+class(x)
+## [1] &quot;summaryDefault&quot; &quot;table&quot;
+</pre>
+</li>
+</ul>
+<p><em>Note: There is also,
+confusingly,  ``storage.mode()`` and ``oldClass`` for asking similar
+but not identical questions. Broadly
+speaking,  ``typeof`` and ``class`` are the only ones you will usually
+need.  ``str()`` provides most of the above information and can be
+handy for dissecting objects to see how they work.</em></p>
+</div>
+<div class="section" id="attributes-class">
+<h2>Attributes &amp; class</h2>
+<p>Asides from named elements, R objects can also be equipped with
+attributes, data or members that sit outside the list contents.
+Attributes can be set and retrieved as follows:</p>
+<pre class="literal-block">
+# create and set attribute
+attr(x, &quot;foo&quot;) &lt;- 23
+# retrieve / get attribute value
+attr(x, &quot;foo&quot;)
+## [1] 23
+</pre>
+<p><em>Note: Thus attribute access works like indexing in (say) Python or C++
+- the element itself is returned and can be operated directly upon as
+value or for assignment. This is another common R idiom: a function
+returning a member that can be got or set.</em></p>
+<p>Attributes  <em>cannot</em> be accessed using the slot or member syntax of
+other R OOP schemes:</p>
+<pre class="literal-block">
+x&#64;class
+## Error: trying to get slot &quot;class&quot; from an object (class &quot;summaryDefault&quot;)
+## that is not an S4 object
+x$class
+## Error: $ operator is invalid for atomic vectors
+</pre>
+<p>All attributes of an object can be listed:</p>
+<pre class="literal-block">
+# list all attributes
+attributes(x)
+## $names
+## [1] &quot;Min.&quot;    &quot;1st Qu.&quot; &quot;Median&quot;  &quot;Mean&quot;    &quot;3rd Qu.&quot; &quot;Max.&quot;
+##
+## $class
+## [1] &quot;summaryDefault&quot; &quot;table&quot;
+##
+## $foo
+## [1] 23
+</pre>
+<p>This highlights something important: all well-formed R objects should
+have a  <tt class="docutils literal">class</tt> attribute, which is just another attribute with a
+string value giving the classes that the object belongs to.
+The  <tt class="docutils literal">class()</tt> function is really just a shortcut
+for <tt class="docutils literal">attr (x, &quot;class&quot;)</tt> and can be sued to retrieve or set an objects
+class:</p>
+<pre class="literal-block">
+class(x)
+## [1] &quot;summaryDefault&quot; &quot;table&quot;
+class(x) &lt;- &quot;foo&quot;
+class(x)
+## [1] &quot;foo&quot;
+class(x) &lt;- c(&quot;foo&quot;, &quot;bar&quot;)
+</pre>
+<p>So, looking at our laundry list of OOP characteristics, named elements
+and attributes allow R objects to (arguably) allowing modelling and
+modularity. But at this point an R S3 class looks little more than a
+dumb container of data, just an annotated list. Is making a class just a
+matter of assigning a name to the class attribute? If so, what is that
+good for? To which the answers are &quot;yes&quot; and &quot;generic functions&quot;.</p>
+</div>
+<div class="section" id="rolling-your-own-objects-classes">
+<h2>Rolling your own objects &amp; classes</h2>
+<p>This most primitive object system is called &quot;S3&quot;. There are many ways
+that you could put a S3 class together and few if any formal mechanisms
+for doing so.  <tt class="docutils literal">structure()</tt> is useful as it adds ones or more
+attributes to an object in one pass:</p>
+<pre class="literal-block">
+y &lt;- structure(c(1:3), class = &quot;foo&quot;)
+typeof(y)
+## [1] &quot;integer&quot;
+class(y)
+## [1] &quot;foo&quot;
+</pre>
+<p>But this skates around the S3's lack of explicit constructor or
+intialiser idioms. However, it would be trivial to hack together
+constructor-like functions to make objects of a particular or specific
+class:</p>
+<pre class="literal-block">
+mk_object &lt;- function(x, kls) {
+    structure(x, class = kls)
+}
+
+y &lt;- mk_object(c(1:3), &quot;bar&quot;)
+y
+## [1] 1 2 3
+## attr(,&quot;class&quot;)
+## [1] &quot;bar&quot;
+mk_foo_object &lt;- function(x) {
+    structure(x, class = &quot;foo&quot;)
+}
+y &lt;- mk_foo_object(c(1:3))
+y
+## [1] 1 2 3
+## attr(,&quot;class&quot;)
+## [1] &quot;foo&quot;
+</pre>
+<p>which could elaborated upon to provide type-checking, data
+transformation and other features.</p>
+</div>
+<div class="section" id="generic-functions">
+<h2>Generic functions</h2>
+<p><em>Note: &quot;method&quot; tends to be used interchangeably with &quot;function&quot; in this
+context within R. But a method in other programming languages usually
+refers to a function attached to an object, so I've avoided this.</em></p>
+<p>Where the  <tt class="docutils literal">class</tt> attributes are used is in dispatching inside
+generic functions. Rather than use methods on an object, S3 uses
+functions outside an object that sniff the objects class type and send
+it to another function specialised for that object. In summary:</p>
+<ol class="arabic simple">
+<li>There exists object  <tt class="docutils literal">x</tt> of class  <tt class="docutils literal">foo</tt></li>
+<li>A (generic) function  <tt class="docutils literal">bar</tt> is called on this
+object:  <tt class="docutils literal">bar (x)</tt></li>
+<li>Internally, all arguments passed to the generic function are
+dispatched to a version of the function specialised for the class of
+the first argument passed:  <tt class="docutils literal">bar.foo (x)</tt></li>
+</ol>
+<p>It's very easy to write a generic function in R. Simply
+call  <tt class="docutils literal">UseMethod</tt> with the function name and the object:</p>
+<pre class="literal-block">
+bar &lt;- function(x) {
+    UseMethod(&quot;bar&quot;)
+}
+</pre>
+<p>and provide specialised versions for the different classes:</p>
+<pre class="literal-block">
+bar.foo &lt;- function(x) {
+    # whatever
+}
+</pre>
+<p>If an object has multiple classes, R works its way along the class
+vector looking for appropriate functions. If no specialised function is
+supplied (e.g. <tt class="docutils literal">bar.foo</tt> isn't defined), R goes looking for the
+default implementation, named as if it has a class  <tt class="docutils literal">default</tt>,
+e.g.  <tt class="docutils literal">bar.default</tt>:</p>
+<pre class="literal-block">
+bar.default &lt;- function(x) {
+    # handle all objects
+}
+</pre>
+<p>This can be used to provided specialised version of pre-existing and
+builtin functions. For example,  <tt class="docutils literal">print</tt> and <tt class="docutils literal">summary</tt> are both
+generic functions. Specialised versions could be written
+for  <tt class="docutils literal">bar</tt> called <tt class="docutils literal">print.bar</tt> and <tt class="docutils literal">summary.bar</tt>.</p>
+<p>You can find out all the specialisations of a function with the
+call  <tt class="docutils literal">methods()</tt>:</p>
+<pre class="literal-block">
+# lets just see the first ten ...  invisible specialisations are
+# asterisked in the listing
+methods(print)[1:10]
+##  [1] &quot;print.acf&quot;     &quot;print.AES&quot;     &quot;print.anova&quot;   &quot;print.aov&quot;
+##  [5] &quot;print.aovlist&quot; &quot;print.ar&quot;      &quot;print.Arima&quot;   &quot;print.arima0&quot;
+##  [9] &quot;print.AsIs&quot;    &quot;print.aspell&quot;
+</pre>
+<p>Unlike (say) overridden functions in C++, R's generic functions can only
+dispatch based on the class of the first argument.</p>
+<p>Strictly speaking, S3 doesn't handle inheritance. However, there is a
+function  <tt class="docutils literal">NextMethod</tt> which can be used to hand off execution to the
+next entry in the class vector:</p>
+<pre class="literal-block">
+class(z) &lt;- c(&quot;baz&quot;, &quot;quux&quot;)
+## Error: object 'z' not found
+print.baz &lt;- function(x) {
+    # i.e. looks for print.quux
+    NextMethod()
+}
+</pre>
+<p>So theoretically this could be used to create subtype polymorphism,
+dispatching a function call up a class inheritance chain to be fulfilled
+by a derived class or to fall back on basal behaviour. In practice, it's
+not clear to me that this is very useful. It relies on your class vector
+being arranged from specific to general (i.e. explicitly spelling out
+the chain of inheritance). And if this is the case, it just explicitly
+defines behaviour that would happen anyway from R's default behaviour.</p>
+<p><em>Note: This illustrates an important point. S3 objects are not instances
+of a class, rather class is a property of the object. In fact, most
+things that we would normally think of as class properties are actually
+object properties in S3. And so individual objects can be freely hacked
+and modified.</em></p>
+</div>
+<div class="section" id="summary">
+<h2>Summary</h2>
+<ul class="simple">
+<li>S3 is the most primitive - and most widespread - form of OOP in R</li>
+<li>S3 objects are essentially just a list of named elements with some
+added attributes, one of which is class</li>
+<li>S3 does not have methods, but instead relies upon external generic
+functions that dispatch to more specialised functions depending on
+the class of the passed object</li>
+</ul>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<ul class="simple">
+<li>A good introduction to the nitty-gritty of types in
+R:  <a class="reference external" href="http://www.nealgroothuis.name/introduction-to-data-types-and-objects-in-r/">http://www.nealgroothuis.name/introduction-to-data-types-and-objects-in-r/</a></li>
+<li>Hadley Wickham on S3:  <a class="reference external" href="https://github.com/hadley/devtools/wiki/S3">https://github.com/hadley/devtools/wiki/S3</a></li>
+<li><a class="reference external" href="http://www.r-bloggers.com/the-s3-oop-system/">http://www.r-bloggers.com/the-s3-oop-system/</a></li>
+<li>Untangling the &quot;type&quot; systems of R:  <a class="reference external" href="http://stackoverflow.com/questions/8855589/a-comprehensive-survey-of-the-types-of-things-in-r-mode-and-class-and-type">http://stackoverflow.com/questions/8855589/a-comprehensive-survey-of-the-types-of-things-in-r-mode-and-class-and-type</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

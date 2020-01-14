@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Py-konval - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Note This package has been taken over by TODO, who has substantially re-engineered it and chnaged some of the API. This page is maintained for largely historical purposes. Background The problem of sanitizing data (checking correctness and transforming to a useful form) is widespread throughout programming: How do I verify …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Py-konval">
+	<meta name="twitter:description" content="Note This package has been taken over by TODO, who has substantially re-engineered it and chnaged some of the API. This page is maintained for largely historical purposes. Background The problem of sanitizing data (checking correctness and transforming to a useful form) is widespread throughout programming: How do I verify …">
+	<meta name="twitter:url" content="/software/py-konval/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Py-konval</h1>
+
+<div class="metadata">
+  <time datetime="2012-03-01T12:00:00+00:00" pubdate>2012-03-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/software/">software</a>
+<p class="tags">tagged <a href="//by-tag/python/">python</a>, <a href="//by-tag/software/">software</a>, <a href="//by-tag/package/">package</a></p></div>
+		<div class="summary">Validation and conversion of data.</div>
+
+
+
+
+
+<h3>Platforms & distributions</h3>
+<ul>
+      <li>Python package</li>
+      <li>platform-independent source code</li>
+</ul>
+
+
+<h3>Repositories</h3>
+<ul>
+      <li><A HREF="http://pypi.python.org/pypi/konval">http://pypi.python.org/pypi/konval</A></li>
+      <li><A HREF="http://github.com/agapow/py-konval">http://github.com/agapow/py-konval</A></li>
+</ul>
+
+
+
+   <h3>Development status</h3>
+   <p>Stable, handed off.</p>
+
+<h3>Latest version</h3>
+<p>See below.</p>
+
+
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This package has been taken over by TODO, who has substantially re-engineered it and chnaged some of the API. This page is maintained for largely historical purposes.</p>
+</div>
+<div class="section" id="background">
+<h2>Background</h2>
+<p>The problem of sanitizing data (checking correctness and transforming to
+a useful form) is widespread throughout programming:</p>
+<ul class="simple">
+<li>How do I verify user input is correct?</li>
+<li>How do I munge data from a spreadsheet into dates and numbers?</li>
+<li>How do I convert raw database fields into a programmatic object?</li>
+</ul>
+<p>Ian Bicking came up with a sensible idiom for this problem, embodied in
+his Formencode library: validation and conversion are one and the same thing, and can be handled
+by passing raw data through a chain of validators. Each validator checks
+and/or transforms the data and passes it on to the next.</p>
+<p>In this spirit, <em>konval</em> is a package that provides:</p>
+<ul class="simple">
+<li>a rich library of validation objects</li>
+<li>base classes for easily producing custom validators</li>
+<li>functions for easily using validators in a variety of ways</li>
+</ul>
+<p><em>konval</em> is in an exploratory state, having been produced to support
+another package and see if use can be got out of generalising
+conversion. As such. it is still an early release and the API may
+change. Comment is invited.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation</h2>
+<p>This package can be installed by the usual Pythonic methods:</p>
+<ol class="arabic">
+<li><p class="first">use your favourite installation tool:</p>
+<pre class="literal-block">
+% easy_install rst2beamer
+</pre>
+</li>
+<li><p class="first">or download the source, unpack it, change into the directory and call:</p>
+<pre class="literal-block">
+% python setup.py install
+</pre>
+</li>
+</ol>
+</div>
+<div class="section" id="using-konval">
+<h2>Using konval</h2>
+<p>A full API is included in the source distribution.</p>
+<p>Most commonly, konval will be used to check or clean values. Failures
+result in exceptions being thrown:</p>
+<pre class="literal-block">
+# convert user input to a actual integer
+&gt;&gt;&gt; from konval import *
+&gt;&gt;&gt; sanitize ('1.0', ToInt())
+1
+&gt;&gt;&gt; sanitize ('one', ToInt())
+Traceback (most recent call last)
+...
+ValueError: can't convert '1.0' to integer
+</pre>
+<p>A single validator or list can be passed to sanitize. Failure in any
+will result in any exception:</p>
+<pre class="literal-block">
+# check a list has no more than 3 members
+&gt;&gt;&gt; sanitize (['a', 'b', 'c'], [ToLength(), IsEqualOrLess(3)])
+3
+# check a password is long enough
+&gt;&gt;&gt; sanitize ('mypass', [ToLength(),IsEqualOrMore(8)])
+Traceback (most recent call last)
+...
+ValueError: 6 is lower than 8
+</pre>
+<p>Any callable object that accepts and returns a single value can be used
+as a validator:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; from string import *
+&gt;&gt;&gt; sanitize (&quot; my title &quot;, [strip, capitalize])
+'My title'
+</pre>
+<p>A rich library of prebuilt validators is supplied:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; sanitize ('abcde', IsNonblank()) 'abcde'
+&gt;&gt;&gt; sanitize (5, IsInRange(1,6)) 5
+&gt;&gt;&gt; sanitize ('foo', Synonyms({'foo': 'bar', 'baz': 'quux'}))
+'bar'
+</pre>
+<p>Custom validators can easily be subclassed from a supplied base class:</p>
+<pre class="literal-block">
+class IsFoo (BaseValidator):
+        def validate_value (self, value):
+                if value != 'foo':
+                        self.raise_validation_error (value)
+                return True
+</pre>
+<div class="section" id="limitations">
+<h3>Limitations</h3>
+<p><em>konval</em> is aimed at a one-way transformation of data, turning user
+input or stored data <em>into</em> Python objects. Certainly it could be used
+in the reverse direction, but this is not a primary use case. FormEncode
+is based around two-way (round trip) conversion of data, so that may be
+a useful alternative.</p>
+<p>The name <em>konval</em> was chosen because:</p>
+<ol class="arabic simple">
+<li>there's already a Python library called &quot;sanity&quot;</li>
+<li>out of &quot;valcon&quot;, &quot;valkon&quot;, &quot;conval&quot; etc. it was the one with the
+fewest hits on Google</li>
+</ol>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<ul class="simple">
+<li><a class="reference external" href="http://formencode.org">FormEncode</a></li>
+</ul>
+</div>
+
+
+
+<h2>Releases</h2>
+<ul>
+   <li><A HREF="/downloads/software/py-konval">/downloads/software/py-konval</A></li>
+</ul>
+
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li class="active"><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

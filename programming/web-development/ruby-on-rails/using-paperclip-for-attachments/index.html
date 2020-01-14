@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Using Paperclip for attachments - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="This is not as straightforward as it seems. In development, it works fine. Simply declare that the model has an attachment: class Download < ActiveRecord::Base ... has_attached_file :attachment and stuff will work automagically. A directory “system” will be created in your public folder and the attachments will be created in there …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Using Paperclip for attachments">
+	<meta name="twitter:description" content="This is not as straightforward as it seems. In development, it works fine. Simply declare that the model has an attachment: class Download < ActiveRecord::Base ... has_attached_file :attachment and stuff will work automagically. A directory “system” will be created in your public folder and the attachments will be created in there …">
+	<meta name="twitter:url" content="/programming/web-development/ruby-on-rails/using-paperclip-for-attachments/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Using Paperclip for attachments</h1>
+
+<div class="metadata">
+  <time datetime="2012-10-14T12:56:00+01:00" pubdate>2012-10-14</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/ruby/">ruby</a>, <a href="//by-tag/ruby-on-rails/">ruby-on-rails</a>, <a href="//by-tag/web-development/">web-development</a></p></div>
+		<div class="summary">Doing something more than a toy example</div>
+
+
+      <p>This is not as straightforward as it seems.</p>
+<p>In development, it works fine. Simply declare that the model has an
+attachment:</p>
+<pre class="literal-block">
+class Download &lt; ActiveRecord::Base
+        ...
+        has_attached_file :attachment
+</pre>
+<p>and stuff will work automagically. A directory “system” will be created
+in your public folder and the attachments will be created in there in a
+nested fashion.</p>
+<p>Your templates can give a link to file, for downloads etc, like this:</p>
+<pre class="literal-block">
+Download this file
+&lt;a href=&quot;#{this.attachment}&quot;&gt;here&lt;/a&gt;       # in DRYML
+&lt;%= link_to &quot;PDF&quot; , this.attachment.url %&gt;  # in Erb
+</pre>
+<p>'attachment' or 'attachment.url' seem to be synonyms, as far as passing
+back an url that points to the physical file.</p>
+<p>Stuff gets weird when you move beyond this simple case. For a start, if
+you're serving from a suburl, you need to tell Paperclip about this. In
+config/production.rb, do something like this:</p>
+<pre class="literal-block">
+ENV[&quot;DOWNLOAD_ATTACHMENT_URL&quot;] =
+        '/saird/system/:class/:attachment/:id/:basename.:extension'
+</pre>
+<p>That is, return an url that points into the public folder with the
+appropriate path. The symbols in the string are interpolated, so you end
+up with '/saird/system/mymodel/myattachment/foo.txt'.</p>
+<p>Of course, this url has to use the appropriate set of directories /
+symbols / path that Paperclip is using to store the file. Should you
+need to change the location of those, or want to change the nested
+hierarchy, you need to set the path explicitly. Again, in
+config/production.rb:</p>
+<pre class="literal-block">
+ENV[&quot;DOWNLOAD_ATTACHMENT_PATH&quot;] =
+':rails_root/public/system/:class/:attachment/:id/:basename.:extension'
+</pre>
+<p>And then the model details are modified:</p>
+<pre class="literal-block">
+has_attached_file :attachment, :path =&gt;
+        ENV.fetch('DOWNLOAD_ATTACHMENT_PATH', ':rails_root/public:url'),
+        :url =&gt; ENV.fetch('DOWNLOAD_ATTACHMENT_URL',
+        '/system/:attachment/:id/:style/:filename')
+</pre>
+<p>(Ignore the default details as being peculiar to my dev setup.)</p>
+<p>So, what if you don't want the attachments to be stored in the public
+directory? In the HPA case, we have two separate instances in different
+locations serving off the same db. If they store files in public, the
+two will become unsynchronised. Some files will be with one instance and
+some with the other. So have them use a single central location, right?</p>
+<p>Here's the rub: Paperclip doesn't really handle that. Paperclip wants to
+assume that your stuff is in the public directory.</p>
+<p>(This appears to be because they're all using Capistrano or some setup
+where public/system is sym-linked to central file storage. So, the
+problem has already been solved for them.)</p>
+<p>So let's assume I've been given central storage at
+”/home/saird”. I modify the path setting to be:</p>
+<pre class="literal-block">
+ENV[&quot;DOWNLOAD_ATTACHMENT_PATH&quot;] =
+        '/home/saird/system/:class/:attachment/:id/:basename.:extension'
+</pre>
+<p>But what's the url to that location? I naively assumed that Paperclip
+was doing some clever routing (e.g. any requests that come in are mapped
+to the actual filepath on the system). No. No, Paperclip just takes the
+url and looks for the appropriate file in the public directory.</p>
+<p>Right, so I put a symbolic link in the public folder that points at the
+central storage:</p>
+<pre class="literal-block">
+% ln -s /home/saird public/storage
+</pre>
+<p>and set the url as:</p>
+<pre class="literal-block">
+ENV[&quot;DOWNLOAD_ATTACHMENT_URL&quot;] =
+        '/saird/storage/system/:class/:attachment/:id/:basename.:extension'
+</pre>
+<p>i.e. prefix it with the suburl appropriately and then route it through
+the symbolic link to the central directory.</p>
+<p>You might be tempted to use the symlink for the path setting as well,
+but this resulted in a permissions error. This may be related to our
+server setup however.</p>
+<p><strong>Note:</strong> another peculiar error resulted when the file storage was
+given just as the directory in which it would be created, e.g.
+'/home/saird', as some examples seemed to imply. Here it seemed
+that Paperclip tried to copy the dir and corrupted all its permissions.
+Charming.</p>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

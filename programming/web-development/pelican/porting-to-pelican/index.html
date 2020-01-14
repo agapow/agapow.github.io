@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Porting this site to Pelican - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Background Way, way back, this site ran on various permutations of PHP-based frameworks. Getting sick of ugly URLs and having to vigilantly update the software so as to avoid hacks (and still periodically falling victim to various hacks), I went in search of a Python-based framework that I could customize …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Porting this site to Pelican">
+	<meta name="twitter:description" content="Background Way, way back, this site ran on various permutations of PHP-based frameworks. Getting sick of ugly URLs and having to vigilantly update the software so as to avoid hacks (and still periodically falling victim to various hacks), I went in search of a Python-based framework that I could customize …">
+	<meta name="twitter:url" content="/programming/web-development/pelican/porting-to-pelican/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Porting this site to Pelican</h1>
+
+<div class="metadata">
+  <time datetime="2015-04-29T00:00:00+01:00" pubdate>2015-04-29</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/python/">python</a>, <a href="//by-tag/web-development/">web-development</a>, <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/wordpress/">wordpress</a>, <a href="//by-tag/plone/">plone</a>, <a href="//by-tag/restructured-text/">restructured-text</a>, <a href="//by-tag/pelican/">pelican</a></p></div>
+		<div class="summary">On making a simpler website in a slightly complicated way.</div>
+
+
+      <div class="section" id="background">
+<h2>Background</h2>
+<p>Way, way back, this site ran on various permutations of <a class="reference external" href="https://www.phpnuke.org/">PHP-based frameworks</a>. Getting sick of ugly URLs and having to vigilantly update the software so as to avoid hacks (and still periodically falling victim to various hacks), I went in search of a Python-based framework that I could customize, which had a more humane interface and organisation.</p>
+<p>So I settled on <a class="reference external" href="http://plone.org">Plone</a>, and there the site lived for 6-7 years. It allowed me to write articles in restructured text, arrange pages into a nice hierarchy, rendered sensible looking URLs, came with a growing set of plugins, had frameworks for customising page appearance and behaviour. On the downside, performance was sluggish and consumed much cpu / memory  / disk space, the Plone stack kept developing in <a class="reference external" href="/programming/tools/lifestyle-tools">more and more arcane ways</a>, theming support was dismal and my webhost could best be described as benignly negligent <a class="citation-reference" href="#grokthis" id="id1">[grokthis]</a>.</p>
+<p>So I turned to the darkside: <a class="reference external" href="https://WordPress.com/">WordPress</a>. And the experience was nice. There were plugins for almost anything you wanted. You had the choice of many attractive themes. The WP software stack was reliable, performed well and was easy to install. But now I was being bothered by minor things. I hated having to compose through a web-interface, wanting to write things on my laptop wherever I was. Translating documents I'd written in other ways (e.g. plain text, Word) was painful. While the stack of pages imported from Plone was problematic (as the result of both Plone's and WordPress's joint oddities), a special irritation was documents that changed regularly. Roll out a new version of a software package? Go to the WordPress interface, edit the webpage, edit the online manual, delete the old downloads, add the new uploads ... All this futzing around with documents also made me very conscious that the site contents weren't under version control. Finally there was also the constant need to update WordPress and its plugins <a class="citation-reference" href="#wp" id="id2">[wp]</a>.</p>
+<p>Then I stumbled across the new generation of static website generators and an idea started to take hold. Buoyed by the cheap price and easy availability of Amazon Web Services, I took the leap. And this is how I set the current website up.</p>
+</div>
+<div class="section" id="why-pelican">
+<h2>Why Pelican?</h2>
+<p><a class="reference external" href="https://github.com/getpelican">Pelican</a> is a static website generator. So why use one of those?</p>
+<ul class="simple">
+<li>The contents of my website can be kept on a hard disk.</li>
+<li>These contents can be committed and preserved in a Github repo.</li>
+<li>The website can be edited and tested offline before uploading it.</li>
+<li>Documents and files elsewhere on the hard disk can be symbolically linked into the site content, rather than just copied.</li>
+<li>Posts can be written in ReST (<a class="reference external" href="http://docutils.sourceforge.net/rst.html">restructured text</a>) or other plain formats.</li>
+<li>The site generation is under under my control and I can hack at it as desired.</li>
+</ul>
+<p>There are <a class="reference external" href="http://staticsitegenerators.net/">many static website generators</a>. So why Pelican?</p>
+<ul class="simple">
+<li>It's written in Python, my favoured language.</li>
+<li>Restructured text is it's primary format and I like and use ReST heavily.</li>
+<li>It seems to be the major player in Python-based site generators, with active development and a large community.</li>
+<li>The page templating language (<a class="reference external" href="http://jinja.pocoo.org/">Jinja2</a>) is a sane and widely-used one.</li>
+<li>There's a <a class="reference external" href="https://github.com/getpelican/pelican-themes">solid selection of themes</a>, essential for those of us with no artistic talent.</li>
+<li>Ditto for <a class="reference external" href="https://github.com/getpelican/pelican-plugins">plugins</a></li>
+<li>The framework <em>seemed</em> sane, approachable and ripe for customization.</li>
+<li>It <em>seemed</em> like it can render a non-bloggish site.</li>
+</ul>
+<p>(&quot;Seemed&quot; is not me being sarcastic. Lots of frameworks seem simple until used in anger.)</p>
+<p>The main failure points / turn-offs for any alternatives were:</p>
+<ul class="simple">
+<li>Implementation language</li>
+<li>Lack of themes</li>
+<li>Apparent inflexibility</li>
+<li>Small user community</li>
+<li>Incapable of rendering anything but a blog.</li>
+<li>Blogs or reports of people using them until they &quot;discovered Pelican&quot;.</li>
+</ul>
+</div>
+<div class="section" id="escaping-wordpress">
+<h2>Escaping WordPress</h2>
+<p>First the content had to be extracted from WordPress. The first step is simple, as WP can dump an XML file of your sites content.</p>
+<p>Now this has to be translated into ReST. Fortunately, Pelican has a <a class="reference external" href="http://docs.getpelican.com/en/latest/importer.html">tool</a> for this. Unfortunately, it doesn't work as well as it should.  There were a lot of niggling little problems in the produced ReST:</p>
+<ul class="simple">
+<li>Widespread use of backslash-escaped characters, in plain and literal text.</li>
+<li>Malformed lists (appearing as <tt class="docutils literal"><span class="pre">-listitem</span></tt>)</li>
+<li>Wrapping and indentation removed from literal and code blocks (devastating for formatted Python code)</li>
+<li>Chunks of raw html. (There is an option in the importer to just skip all of these. It might be wise to use this by default as none of the output HTML actually had any content.)</li>
+<li>Unicode entities (e.g. <tt class="docutils literal">&amp;amp;</tt>) left in the output rather than being converted to the correct unicode characters.</li>
+</ul>
+<p>Some of these are tricky things to catch. Some of it might be due to my heavy use of codeblocks and literal text. Some of this might be due to historical content imported from Plone. And WordPress' HTML can be a little pathological.</p>
+<p>The end result was that most pages would not render 'out of the box' and every page had to be checked. I used a lot of regular expressions and search-and-replace to clean the pages up.</p>
+</div>
+<div class="section" id="configuring-pelican">
+<h2>Configuring Pelican</h2>
+<p>Broadly, configuring and setting up Pelican is straightforward. You call <tt class="docutils literal"><span class="pre">pelican-quickstart</span></tt>, dump your restructured text (or markdown) files in the <tt class="docutils literal">content</tt> directory and run <tt class="docutils literal">make</tt>. The out-of-the-box behaviour is nice and sensible, but should you want anything more, you're going to have to write a little code.</p>
+<dl class="docutils">
+<dt>Pelican wants to turn your site into a blog:</dt>
+<dd><p class="first">Almost every other static website generator has this tendency baked-in, despite protests that &quot;you can configure X to do anything you want&quot;. (Much like a blob of molten pig iron can be turned into <em>anything</em>.) Pelican is arguably more flexible than most, but still has blog-like tendencies, wanting to arrange everything by date and categories and tags. The distinction is made between <tt class="docutils literal">articles</tt>  (timed / blog entry-like content) and <tt class="docutils literal">pages</tt> (static, fixed content) but pages are definitely second-class citizens in the Pelican ecosystem. For example, they're not included in the tag or category lists, so they're less findable.</p>
+<p>I'm also used to my sites being navigated in a hierarchy (e.g. <tt class="docutils literal"><span class="pre">/science/computational-biology/galaxy</span></tt>, <tt class="docutils literal"><span class="pre">/programming/web-development</span></tt>). It's very handy to give the url of a folder to someone and say &quot;everything about X is listed there&quot;. And it's a useful piece of organisation for me - the articles I've written on X can be found <em>here</em>. Pelican only allows a single level of categories. I could make everything a category but that would lead to an explosion of categories. A combination of catgories and tags might do the job but I wanted things to rest in a sensible url structure, rather than all gathered in <tt class="docutils literal"><span class="pre">/archive``or</span> <span class="pre">``/articles</span></tt>.</p>
+<p>After much prevarication, I decided to hack a solution in. There's a <a class="reference external" href="https://github.com/getpelican/pelican-plugins/tree/master/subcategory">subcategory plugin</a> available for Pelican that allows nested categories. Unfortunately, it requires that you explicitly annotate each article with its full subcategory. Drats. So I forked the github repo and hacked it so that it used the content path to infer the subcategory. Adjusting the pelican configuration file, I ended up with this scheme:</p>
+<pre class="literal-block">
+# used by the subcategory hack
+PATH_METADATA= '(?P&lt;path_no_ext&gt;.*)\..*'
+
+CATEGORY_URL = '{slug}/'
+CATEGORY_SAVE_AS = join (CATEGORY_URL, 'index.html')
+
+TAG_URL = '/by-tag/{slug}/'
+TAG_SAVE_AS = join (TAG_URL, 'index.html')
+
+ARTICLE_URL= join (CATEGORY_PREFIX, '{path_no_ext}/')
+ARTICLE_SAVE_AS= join (ARTICLE_URL, 'index.html')
+
+PAGE_URL = '{slug}/'
+PAGE_SAVE_AS = join (PAGE_URL, 'index.html')
+
+SUBCATEGORY_URL = '{savepath}/'
+SUBCATEGORY_SAVE_AS = join (SUBCATEGORY_URL, 'index.html')
+</pre>
+<p class="last">which meant that the if the article <tt class="docutils literal">foo</tt> was placed in <tt class="docutils literal">content/science/geospatial</tt>, it was given the subcategory of <tt class="docutils literal">science/geospatial</tt>, rendered as <tt class="docutils literal">/science/geospatial/foo/index.html</tt>, and referred to with the clean url of <tt class="docutils literal">/science/geospatial/foo/</tt>. Clean meaningful urls, meaningful organisation, articles sit under their categories, a bit of time-saving for me.</p>
+</dd>
+<dt>No such thing as a single-author site:</dt>
+<dd>No matter what I did, no matter what values I gave to <tt class="docutils literal">AUTHOR_URL</tt> or <tt class="docutils literal">AUTHOR_SAVE_AS</tt>, Pelican would always generate an authors page.</dd>
+<dt>Each theme is different:</dt>
+<dd><p class="first">There's a lot of nice and attractive themes available for Pelican. However, each works in a different way. If several themes have (say) a sharing toolbar or take a site subtitle or breadcrumb navigation or analytics capacity, they will each use different named variables and require different configuration. If a plugin introduces new site features, themes might not display theme or work with theme.</p>
+<p class="last">So you're going to have to start hacking at the theme until it does what you want. Fortunately, this is not onerous.</p>
+</dd>
+<dt>File urls:</dt>
+<dd>I've found the syntax for linking to other assets within the slightly opaque - it seems simple such that the minimal examples given in the documentation appear to be self-explanatory. But it took a while to work out.</dd>
+<dt>Commenting:</dt>
+<dd><p class="first">One of the features that appears in some but all themes is commenting. It's fairly easy to signup at Disqus, getting the requisite HTML and Javascript fragments to inject into your template for rendering a comment system. I had some minor trouble because various ad-blockers or tracker-blockers stopped the Disqus forms from showing on the site. After they were disabled, it was fine.</p>
+<p class="last">A live twitter feed can be inserted in a similar way.</p>
+</dd>
+<dt>Duplicate target name:</dt>
+<dd><p class="first">Not the fault of Pelican but I got a lot of these errors - <tt class="docutils literal">Duplicate explicit target name: &quot;foo&quot;`</tt>,  <tt class="docutils literal">Duplicate target name</tt> - seemingly triggered by hyperlinks that weren't duplicated. The trick seems to be that all links of all types (hyperlinks, citations, footnotes, etc.) within a single ReST document share the same &quot;space&quot;. So links with the same text or name will collide:</p>
+<pre class="literal-block">
+`Foo &lt;http://xxx.example.org&gt;`_
+`Foo &lt;http://yyy.example.com&gt;`_
+</pre>
+<p>I had footnotes and citations colliding with the urls within those footnotes. One solution is to make the links anonymous:</p>
+<pre class="literal-block">
+`Foo &lt;http://xxx.example.org&gt;`__
+`Foo &lt;http://yyy.example.com&gt;`__
+</pre>
+<p class="last">See <a class="reference external" href="http://stackoverflow.com/questions/5464627/how-to-have-same-text-in-two-links-with-restructured-text">StackOverflow</a>.</p>
+</dd>
+<dt>Bad names:</dt>
+<dd>It's really difficult to have tags or categories like <tt class="docutils literal">c++</tt>. The resultant urls you get are ugly. This is an admittedly hard problem, but it would be nice to separate the <em>name</em> and <em>slug</em> for tags and categories.</dd>
+<dt>Category indexes:</dt>
+<dd>It would be really nice to customize index pages for categories. There is a <a class="reference external" href="https://github.com/getpelican/pelican-plugins/tree/master/category_meta">plugin that purports to handle this</a> but it seems to have problems with my url layout and use of subcategory.</dd>
+<dt>Writing tools:</dt>
+<dd>Note a Pelican issue as such, but I really wish there were better tools for writing ReST. Many editors provide an appropriate mode but it's often just a syntax colouring. It would be great to have an editor with hotkeys (e.g. type cmd-b to bold this text), spelling and grammar checkers that picks up malformed text. Textmate has decent hotkeys, PyCharm has spellchecking (that is awkward to use) and many editors pick up some errors. Can we get these all together?</dd>
+<dt>Caching:</dt>
+<dd>Occasionally when I was hacking on the site, changes didn't seem to appear, especially if I was using <tt class="docutils literal">make devserver</tt> (which compiles the site and recompiles it when changes are detected),  This puzzled me for a while until I realised that Pelican caches generated pages and only recompiles them if it sees changes in the site content, theme or settings. Plugins are outside that loop. So flush the cache directory and all will be fine.</dd>
+</dl>
+</div>
+<div class="section" id="verdict">
+<h2>Verdict</h2>
+<p>Having complained at length about Pelican's shortcomings, let me reassure you that I'm very happy with it. Yes, it's fairly opinionated about site layout but after you've accepted or hacked on that, the layout is consistent and works well. Several times I thought &quot;surely this change must break Pelican&quot; but the site would work. I like writing in ReST and it's easy to produce material for the site. Files that I've generated elsewhere can easily be linked into the site structure. I don't have to maintain a complex software stack, it's just a collection of HTML pages. It's easy to hack upon. Most of all, it's a tool that lets me do what I want to do and gets out of the way.</p>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<p>Some other Pelican porting experiences:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://jakevdp.github.io/blog/2013/05/07/migrating-from-octopress-to-pelican/">http://jakevdp.github.io/blog/2013/05/07/migrating-from-octopress-to-pelican/</a></li>
+<li><a class="reference external" href="http://www.alexjf.net/blog/site/website-ported-to-pelican/">http://www.alexjf.net/blog/site/website-ported-to-pelican/</a></li>
+<li><a class="reference external" href="http://hselab.org/drupal-to-pelican.html">http://hselab.org/drupal-to-pelican.html</a></li>
+<li><a class="reference external" href="http://www.macdrifter.com/2012/08/pelican-guide-moving-from-wordpress-and-initial-setup.html">http://www.macdrifter.com/2012/08/pelican-guide-moving-from-wordpress-and-initial-setup.html</a></li>
+<li><a class="reference external" href="http://heldercorreia.com/blog/from-wordpress-to-pelican">http://heldercorreia.com/blog/from-wordpress-to-pelican</a></li>
+</ul>
+</div>
+<div class="section" id="footnotes">
+<h2>Footnotes</h2>
+<table class="docutils citation" frame="void" id="grokthis" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[grokthis]</a></td><td>The late <a class="reference external" href="http://grokthis.net">Grokthis</a>. To their credit, they offered cheap Plone hosting at a time when any Plone hosting was rare. Unfortunately, service faults cropped up a few times a year and the fastest way to get technical support was to post a complaint to a webhosting forum.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="wp" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[wp]</a></td><td>I also set-up my local neighbourhood association with WordPress and would still recommend it for a lot of use cases, especially blogs or timely content. A hosted solution, like the free WordPress.com blogs is best (which relieves you of the software updating and security responsibilities) but self-installation and hosting is fairly painless. A big shoutout to my webhost of the time, <a class="reference external" href="http://www.linode.com">Linode</a>. They offer a solid and well-priced service.</td></tr>
+</tbody>
+</table>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

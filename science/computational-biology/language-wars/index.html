@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Language Wars - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="(Originally published on BiocodersHub) Following several lengthy and passionate discussions in different venues on what language to use for teaching bioinformatics, I've started cutting and pasting my reply. And here it is. You'll get a lot of different opinions on this because: It's a religious issue. That is, it comes …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Language Wars">
+	<meta name="twitter:description" content="(Originally published on BiocodersHub) Following several lengthy and passionate discussions in different venues on what language to use for teaching bioinformatics, I've started cutting and pasting my reply. And here it is. You'll get a lot of different opinions on this because: It's a religious issue. That is, it comes …">
+	<meta name="twitter:url" content="/science/computational-biology/language-wars/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Language Wars</h1>
+
+<div class="metadata">
+  <time datetime="2012-06-01T12:00:00+01:00" pubdate>2012-06-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/computational-biology/">computational-biology</a>, <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/programming-langauges/">programming-langauges</a>, <a href="//by-tag/python/">python</a>, <a href="//by-tag/ruby/">ruby</a></p></div>
+		<div class="summary">"What language would you recommend to introduce programming to an audience of life science students at a bachelor level?"</div>
+
+
+      <p>(Originally published on BiocodersHub)</p>
+<p>Following several lengthy and passionate discussions in different venues
+on what language to use for teaching bioinformatics, I've started
+cutting and pasting my reply. And here it is.</p>
+<hr class="docutils" />
+<p>You'll get a lot of different opinions on this because:</p>
+<ul class="simple">
+<li>It's a religious issue. That is, it comes down a lot to subjective
+judgements and personal experience.</li>
+<li>There's a lot of possible considerations for language choice in
+bioinformatics courses:&nbsp;teachable to people who aren't just going to
+be programmers and may not have programmed before, has a lot of
+useful libraries, has a community behind it, good for quick and dirty
+/ one off scripting solutions, useful for web development, fast
+enough, etc.</li>
+<li>What &quot;bioinformatics&quot; means to one person and another can be quite
+different. <em>I'm a bioinformaticist, you're a computational biologist,
+you're a genomicist and they just do a few stats ...</em></li>
+</ul>
+<p>So a few thoughts about different languages:</p>
+<p><strong>Old school compiled languages, e.g. C/C++:</strong> No. Learning curve too
+high, no good for quick-and-dirty problems, weak in web development.
+Relatively little bioinformatic work happening here. Not a good place to
+start. Sure, it's fast, but Java would be a better place to look.</p>
+<p><strong>Java:</strong> Lots of libraries and BioJava is pretty damn good. However
+it's not a great first language, and always feels a bit &quot;heavy&quot; when I'm
+trying to do solve a small problem. Still, I expect to see a lot of
+development in this area with the JVM enabled languages like Jython,
+JRuby, Groovy, where you can script and still use the Java libraries.
+Not for novices. Scala may be an interesting new entrance in the high
+performance stakes, although I've yet to find anyone using it for
+bioinformatics.</p>
+<p><strong>Perl:</strong> was the undisputed choice for bioinformatics 10 years ago but
+that lead has evaporated. Quirky, opaque and write once. The whole Perl
+6 morass doesn't help. I think you can do better. Still, there's a lot
+of code here and a lot of the older significant tools are written in
+this (e.g. GBrowse etc.)</p>
+<p><strong>Ruby:</strong> I've got a love-hate relationship with Ruby. There's a lot of
+Good Stuff there, and the web development is excellent. People seem to
+like learning Ruby too. But there are a few quirks in the language and
+BioRuby is still a work in progress. Still, a lot of enthusiasm here.</p>
+<p><strong>Python:</strong> this is where the weight of attention is. BioPython has
+really come along in the last few years and many of the newer, excellent
+tools (e.g. Galaxy) are written in it. Easy to learn, kind to beginners,
+big community, good scientific computing support (IPython, NumPy, etc.),
+decent web programming tools, lots of resources for learning the
+language. There's an odd aspect or two I wish was developed more (I'd
+really like anonymous closures and better functional programming) but
+you couldn't go wrong here.</p>
+<p>(Declaration of interest: This is my choice. I've taught classes using
+Python. I've used Python in my own work for a decade. I think Python is
+the best general choice. But I think some other choices are defensible -
+or at least not ridiculous - especially in particular contexts.)</p>
+<p><strong>Javascript:</strong> many people rave about what a great language JS is, and
+there are occasional feints at doing bioinformatics in it. True, there
+are useful things that you could do in a browser with, perhaps involving
+microformatted sequence data. But while you <em>can</em> do work in it,
+<em>should</em> you? Mostly, it seems like a case of <a class="reference external" href="http://www.codinghorror.com/blog/2007/07/the-principle-of-least-power.html">Atwood's
+law</a>:
+&quot;Any application that can be written in JavaScript, will eventually be
+written in JavaScript.&quot; No Bio library (or really any standard libraries
+at all), non-existent bio community. You could do web-development
+entirely in JS, but it's still a fringe activity. Nope.</p>
+<p><strong>R:</strong> A lot of ecologists &amp; mathematical biologists use R, a lot of
+expression data is analysed using R, and it's got graphics &amp;
+visualization to die for. The IDE is great for beginners as well,
+allowing packages to easily be installed locally. There's a big
+commercial effort behind getting serious IDE and computation tools for R
+(see Revolution Analytics). I confess to a bit of a blindspot with R
+(some of the syntax is a bit weird), but this could be the right choice
+for the right group of students.</p>
+<p><strong>Matlab, Mathematica, Octave, etc.:</strong> There's a few people who do their
+work in one of the specialised analytical or mathematical languages. My
+experience here is admitttedly limited, and some of the visualizations
+and models produced are nice, but the community is tiny, library choice
+and coverage is limited, web development tools are not common, and using
+proprietory tools may not suit. (That Mathematica yearly subscription
+still smarts.) For the right person and project, these might work but
+I'm not persuaded any of these are a good general answer.</p>
+<p>Clarification: Of course, these languages are not related or very
+similar, but I've grouped them because they occupy similar niches.
+Bioinformatic library choice is low. There's tonnes of libraries in
+general, but as far as a Bio community goes for these languages, it
+seems to be a set of islands: this research group does structural
+bioinformatics, this investigator does ecological simulations, this
+project does some phylogenetics ... unless you're attached to a group
+working with one of these tools, you're pretty much on your own.</p>
+<p><strong>Lisp, Scheme, etc.:</strong> What? You're kidding me.</p>
+<p><strong>PHP:</strong> Despite the routine denigration PHP gets, it does drive a huge
+number of websites (including Facebook and the NHS) and is easy to pick
+up and there's a cornucopia of resources for (non-bioinformatic)
+programming. There's also a BioPHP. But there's not a lot of activity
+here, and outside of web development it would be different to find any
+positive reason why you should opt for this choice.</p>
+<p><strong>(Visual/Real/whatever) Basic:</strong> I know that Basic has been used to do
+bioinformatics, because I've done it. It seemed like a good idea at the
+time to quickly throw together a user interface in an afternoon, the
+program looked good. Fast-forward a few years and some feature creep,
+and I'm trying to write simulated annealing and tree-walking code in
+Basic. Admittedly, it may be simple for people to learn and get pretty
+apps up on the screen fast, but scientific computation are not a natural
+fit. The developer community is large but the bio community is near
+non-existent. And you're dealing with proprietary tools again,
+complicated by non-standardized dialects across competing tools. Maybe
+suitable for a simple one-off GUI with a very restricted scope.</p>
+<p><strong>C# / .Net / etc.:</strong> There's a small number of C-Sharp bioinformatic
+apps about. Apart from the obvious community-size problems, I'm not sure
+if it would be suited for one-off scripts, and there doesn't seem to
+much activity in the way of bioinformatic libraries (for exceptions see
+<a class="reference external" href="http://biocoders.net/groups/biomono/">here</a> and
+<a class="reference external" href="http://www.bioinformatica.mx/biomono/">here</a>). The status of the
+non-proprietary implementation (Mono) is a little worrying. Still, this
+may be useful for doing a desktop GUI app.</p>
+<p><strong>Shell languages / Awk / etc.:</strong> Yes, you could do bio-analysis with
+shell scripts. But why would you? Again, see <a class="reference external" href="http://www.codinghorror.com/blog/2007/07/the-principle-of-least-power.html">Atwood's
+law</a>.
+Stop punching yourself in the face and use a proper language.</p>
+<div class="section" id="links">
+<h2>Links</h2>
+<ul class="simple">
+<li><a class="reference external" href="http://www.linkedin.com/groupAnswers?viewQuestionAndAnswers=&amp;discussionID=56367017&amp;gid=54503&amp;commentID=43829102&amp;trk=view_disc">Linked-in</a></li>
+<li><a class="reference external" href="http://ask.metafilter.com/125801/Best-language-for-highschool-bioinformatics-course">Metafilter</a></li>
+<li>Biostar has had several goes at this question:
+<a class="reference external" href="http://biostar.stackexchange.com/questions/10098/best-language-for-introductory-programming-course-from-within-an-introduction-cou/10111">here</a>
+and
+<a class="reference external" href="http://biostar.stackexchange.com/questions/34/which-are-the-best-programming-languages-for-a-bioinformatician">here</a>
+and <a class="reference external" href="http://biostar.stackexchange.com/questions/1995/what-programming-language-is-best-to-learn-for-getting-into-web-based-bioinformat">once about bioinformatics web
+programming</a>.</li>
+<li>A <a class="reference external" href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2267699/">BMC Bioinformatics article comparing
+languages</a>
+although it looks a lot at performance which I'm not convinced is all
+that important.</li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

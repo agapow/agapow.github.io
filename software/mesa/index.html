@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>MeSA - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Background Phylogenies are smoking guns. An evolutionary history carrys in its very shape the fingerprints of every process that effected its creation: extinctions, key adaptations, radiations, colonizations, changes in the tempo and mode of macroevolution. Unfortunately analysing phylogenies is difficult. The calculations of interest to any investigator are sometimes intricate …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="MeSA">
+	<meta name="twitter:description" content="Background Phylogenies are smoking guns. An evolutionary history carrys in its very shape the fingerprints of every process that effected its creation: extinctions, key adaptations, radiations, colonizations, changes in the tempo and mode of macroevolution. Unfortunately analysing phylogenies is difficult. The calculations of interest to any investigator are sometimes intricate …">
+	<meta name="twitter:url" content="/software/mesa/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>MeSA</h1>
+
+<div class="metadata">
+  <time datetime="2003-06-01T12:00:00+01:00" pubdate>2003-06-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/software/">software</a>
+<p class="tags">tagged <a href="//by-tag/software/">software</a>, <a href="//by-tag/python/">python</a>, <a href="//by-tag/phylogenetics/">phylogenetics</a>, <a href="//by-tag/macroevolution/">macroevolution</a>, <a href="//by-tag/biodiversity/">biodiversity</a></p></div>
+		<div class="summary">Macroevolutionary Analysis & Simulation.</div>
+
+
+
+
+
+<h3>Platforms & distributions</h3>
+<ul>
+      <li>Windows executable</li>
+      <li>Mac executable</li>
+      <li>Linux executable</li>
+</ul>
+
+
+<h3>Repositories</h3>
+<ul>
+      <li><A HREF="https://github.com/agapow/mesa-revenant">https://github.com/agapow/mesa-revenant</A></li>
+</ul>
+
+
+
+   <h3>Development status</h3>
+   <p>Stable.</p>
+
+<h3>Latest version</h3>
+<p>See below.</p>
+
+
+<div class="section" id="background">
+<h2>Background</h2>
+<p>Phylogenies are smoking guns. An evolutionary history carrys in its very
+shape the fingerprints of every process that effected its creation:
+extinctions, key adaptations, radiations, colonizations, changes in the
+tempo and mode of macroevolution.</p>
+<p>Unfortunately analysing phylogenies is difficult. The calculations of
+interest to any investigator are sometimes intricate and
+labour-intensive. They are also often across several programs, if there
+is a software implementation at all. The statistical significance of
+results often require the comparison of hundreds to thousands of trees.
+Finally, metrics may be fragile to the mode of evolution a phylogeny
+grew under. The result of these problems is that phylogenetic analysis
+is often hard work, and it is difficult to know what to make of the
+answers.</p>
+<p>MeSA is an software application designed to alleviate these problems.
+Although MeSA really only does four things, The big win for
+investigators is that all these are in the one software package and can
+be used in conjunction with each other, and semi-automated. Thus, the
+problems of transferring data between programs and possible corruption
+or misintepretation of results are avoided. The four big features of
+MeSA are:</p>
+<dl class="docutils">
+<dt>Manipulations:</dt>
+<dd>MeSA allows datasets to be manipulated in sophisticated ways.
+Phylogenetic trees and life history traits can be edited, duplicated
+or deleted. Branchlengths can be systematically modified, taxa
+deleted according to complex conditions, traits modified globally
+and selectively. The entire dataset can also be backed up and
+restored at any moment.</dd>
+<dt>Analyses:</dt>
+<dd>MeSA incorporates a large number of calculations that can analyse
+diversity within a phylogeny (e.g. phylogenetic diversity),
+diversity across communities (e.g. Shannon-Weiner index), measures
+of macroevolutionary process (e.g. Fusco-Cronk imbalance), and
+gather information selectively across taxa</dd>
+<dt>Simulations:</dt>
+<dd>MeSA allows phylogenies to be grown under sophisticated scenarios
+where speciation and extinction rates can be effected by the traits
+of the taxa involved or global attributes of the phylogeny.
+Simulations can be further adorned by mass extinctions and the
+evolution of life history traits.</dd>
+<dt>Automation:</dt>
+<dd>In order to allow the production and testing of a large number of
+phylogenies, MeSA lets users construct chains of actions
+(manipulations, analyses and simulations) that may be run as a
+single unit, looping over groups of commands, saving and restoring
+data. Thus one may easily generate test a large number of replicates
+for statistical validity.</dd>
+</dl>
+<p>MeSA is unrelated to the graphics library, spreadsheet, airline,
+academic association, college,search engine, engineering society, town
+or topographical feature of the same name.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation</h2>
+<ul class="simple">
+<li></li>
+</ul>
+</div>
+<div class="section" id="usage">
+<h2>Usage</h2>
+<p>A manual, of sorts, is included with the distribution.</p>
+</div>
+<div class="section" id="limitations">
+<h2>Limitations</h2>
+<p>Some caveats are given in the manual. In brief, when simulating the evolution of continuous traits it is necessary to discretize time. That is, for efficienecy MeSA simulates traits measured with real number as a series of &quot;jumps&quot; in time and trait value rather than smooth variation. If the jumps are small enough, this should not matter. The user may set the 'grain' of the simulation to determine the size of time steps. The smaller the value, the more accurate it will be, but the slower the simulation will run. Users should run tests and settle on a compromise value.</p>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<ul class="simple">
+<li><ul class="first">
+<li></li>
+</ul>
+</li>
+</ul>
+</div>
+
+
+
+<h2>Releases</h2>
+<ul>
+   <li><A HREF="/downloads/software/mesa">/downloads/software/mesa</A></li>
+</ul>
+
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li class="active"><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

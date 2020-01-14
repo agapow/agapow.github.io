@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Parsing Excel - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Some (very) quick notes on libraries for manipulating (mostly reading) Excel files in Ruby. Parseexcel This is the usual / traditional method for reading Excel Doesn't work on XSLX (modern Excel) There are a number of versions handing around the web, look on rubygems for latest version Appears to not call …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Parsing Excel">
+	<meta name="twitter:description" content="Some (very) quick notes on libraries for manipulating (mostly reading) Excel files in Ruby. Parseexcel This is the usual / traditional method for reading Excel Doesn't work on XSLX (modern Excel) There are a number of versions handing around the web, look on rubygems for latest version Appears to not call …">
+	<meta name="twitter:url" content="/programming/ruby/parsing-excel/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Parsing Excel</h1>
+
+<div class="metadata">
+  <time datetime="2011-03-01T12:00:00+00:00" pubdate>2011-03-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/ruby/">ruby</a>, <a href="//by-tag/excel/">excel</a>, <a href="//by-tag/programmning/">programmning</a></p></div>
+
+
+      <p>Some (very) quick notes on libraries for manipulating (mostly reading)
+Excel files in Ruby.</p>
+<div class="section" id="parseexcel">
+<h2>Parseexcel</h2>
+<ul class="simple">
+<li>This is the usual / traditional method for reading Excel</li>
+<li>Doesn't work on XSLX (modern Excel)</li>
+<li>There are a number of versions handing around the web, look on rubygems for latest version</li>
+<li>Appears to not call external libraries, uses it's own OLE module</li>
+<li>Uses a member on Excel cells called &quot;type&quot; which causes spurious deprecation warnings</li>
+<li>The project seems to be moribund, it was last touched in 2007</li>
+</ul>
+</div>
+<div class="section" id="writeexcel">
+<h2>Writeexcel</h2>
+<ul class="simple">
+<li>Counterpart to Parseexcel, and the usual / traditional method for writing</li>
+<li>An active project, last modified November 2010</li>
+</ul>
+</div>
+<div class="section" id="spreadsheet">
+<h2>Spreadsheet</h2>
+<ul class="simple">
+<li>Will read and write Excel</li>
+<li>Supposedly builds on Parseexcel</li>
+<li>&quot;Will&quot; handle other formats, but currently only does Excel</li>
+<li>A quiet project, last touched in 2009</li>
+<li>Will handle unicode</li>
+<li>There's an irritating error involving the calling of <tt class="docutils literal">new!</tt> method for a class that doesn't have it. Updating your Ruby OLE library should fix this.</li>
+</ul>
+</div>
+<div class="section" id="windows-ole-bridge">
+<h2>Windows OLE bridge</h2>
+<p>Possible to use this for getting at Excel, but useless if you aren't on
+Windows (and I'm not)</p>
+</div>
+<div class="section" id="roo">
+<h2>Roo</h2>
+<ul class="simple">
+<li>The most promising candidate, reads Excel (including XSLX), OpenOffice and Google Docs spreadsheets</li>
+<li>Unfortunately achieves this by importing 6 or so other libraries that gem doesn't seem to automatically installed alongside it</li>
+<li>Seems to have the best handling / guessing of cell type</li>
+<li>Has the Spreadsheet &quot;New!&quot; problem (see above)</li>
+<li>Has decent cell type inference</li>
+<li>Documentation is a little sketchy (and a little German) but mostly adequate</li>
+<li>Reading isn't quite as easy as in the other modules, which allow simple iteration over rows and cells. Instead requires setting the default worksheet, finding the index of the first and last row and columns and iterating over the indices.</li>
+<li>Generally the best, most functional and fully featured</li>
+</ul>
+</div>
+<div class="section" id="notes-on-the-code">
+<h2>Notes on the code</h2>
+<p>The sample program to test each library has the following parameters
+(based on a current work task):</p>
+<ul class="simple">
+<li>It should read a given spreadsheet with an unknown number of rows and return a hash for each row</li>
+<li>The keys for the hash are given by an initial header row, the values are the actual cell contents</li>
+<li>Column headers can be in any order and are transformed to a canonical form to allow for variations in case, spaces, etc.</li>
+<li>Blank cells should be caught and returned as nil</li>
+<li>Flanking whitespace is trimmed off</li>
+<li>Cell contents should ideally be returned as the best type (e.g. the float <tt class="docutils literal">1.23</tt> instead of the string <tt class="docutils literal">&quot;1.23&quot;</tt>)</li>
+<li>The reader should allow sub-classing, so as to allow custom handling of particular columns</li>
+</ul>
+<p>There are some small inconsistencies between the readers (as I changed
+my mind about the requirements) but they all clean up column headers in
+the same way (lowercase, trim, spaces to underscores) and all try to
+guess the cell type and convert it appropriately. There's specialised
+conversion for two columns. There's a a whole mess of code trying to
+infer date formats (some of which is plain guessing, e.g. is &quot;1/2/2011&quot;
+in January or February?) that for brevity is placed in a common file.
+Excel-formatted dates are stored as &quot;serial values&quot;, which is a float
+that has January 1, 1900 as day 1. This can be converted to an actual
+Ruby date thus:</p>
+<pre class="literal-block">
+def serial_to_date (s)
+   # round down and convert from string if need be
+   # zero day is actually &quot;Jan 0&quot; and indexing starts from 1, so subtract 2
+   s = s.to_i() - 2
+   # add to zero day
+   JAN_1_1900 = Date.new(1900, 1, 1)
+   return JAN_1_1900 + s
+end
+</pre>
+</div>
+<div class="section" id="test-programs">
+<h2>Test programs</h2>
+<ul class="simple">
+<li><a class="reference external" href="parsing-excel/excel-utils.rb">excel-utils.rb</a></li>
+<li><a class="reference external" href="parsing-excel/test-parseexcel.rb">test-parseexcel.rb</a></li>
+<li><a class="reference external" href="parsing-excel/test-spreadsheet.rb">test-spreadsheet.rb</a></li>
+<li><a class="reference external" href="parsing-excel/test-roo.rb">test-roo.rb</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

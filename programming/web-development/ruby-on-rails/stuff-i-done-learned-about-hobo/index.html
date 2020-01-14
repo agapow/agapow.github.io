@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Stuff I done learned about Hobo - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="In which I discover things, sometimes painfully. Unless otherwise stated, done using Ruby 1.9.2, Hobo 1.0.3 (and hence Rails 2.3.10): Permissions It seems that permissions in Hobo can be a little tricky, in so much as I've had a case where something that behaved …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Stuff I done learned about Hobo">
+	<meta name="twitter:description" content="In which I discover things, sometimes painfully. Unless otherwise stated, done using Ruby 1.9.2, Hobo 1.0.3 (and hence Rails 2.3.10): Permissions It seems that permissions in Hobo can be a little tricky, in so much as I've had a case where something that behaved …">
+	<meta name="twitter:url" content="/programming/web-development/ruby-on-rails/stuff-i-done-learned-about-hobo/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Stuff I done learned about Hobo</h1>
+
+<div class="metadata">
+  <time datetime="2011-05-01T12:00:00+01:00" pubdate>2011-05-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/ruby/">ruby</a>, <a href="//by-tag/ruby-on-rails/">ruby-on-rails</a>, <a href="//by-tag/web-development/">web-development</a></p></div>
+		<div class="summary">Stuff I done learned about Hobo</div>
+
+
+      <p>In which I discover things, sometimes painfully.</p>
+<p>Unless otherwise stated, done using Ruby 1.9.2, Hobo 1.0.3 (and hence
+Rails 2.3.10):</p>
+<div class="section" id="permissions">
+<h2>Permissions</h2>
+<p>It seems that permissions in Hobo can be a little tricky, in so much as
+I've had a case where something that behaved appropriately under a test
+environment, starting throwing permissions errors under development. In
+particular, the error “view of non-viewable field 'foo'” seemed to
+trigger problems where a link or foreign key field caused problems.
+Issues included:</p>
+<p><strong>Test for a guest then an admin then for user properties:</strong> otherwise
+the admin may fail on the user properties.</p>
+<p><strong>Write a permission method for the specific field:</strong> e.g.:</p>
+<pre class="literal-block">
+def poster_view_permitted?
+   true
+end
+</pre>
+<p><strong>Check the permissions on the referred class</strong></p>
+</div>
+<div class="section" id="scripts">
+<h2>Scripts</h2>
+<p>You can call “server” with -p to set the port and -P to set the path, so
+you can test serving the site at a subdomain:</p>
+<pre class="literal-block">
+.script/server -p 9123 -P /saird
+</pre>
+<p>You can pass an environment via -e or set the env with a bash call. This
+is useful for testing the production version:</p>
+<pre class="literal-block">
+RAILS_ENV=production ./script/server -e production
+</pre>
+<p>Do the migration of the production database from your development
+environment in a similar way:</p>
+<pre class="literal-block">
+RAILS_ENV=production rake db:migrate
+</pre>
+<p>Generate with -p to “pretend” (don't actually make the changes):</p>
+<pre class="literal-block">
+./script/generate hobo_migration -p
+</pre>
+</div>
+<div class="section" id="how-do-i-get-that-damn-irritating-creator-link-to-go-away">
+<h2>How do I get that damn irritating creator link to go away?</h2>
+<p>Pass the without-creator-link attribute to your show template:</p>
+<pre class="literal-block">
+&lt;show-page without-creator-link&gt; ... &lt;/show-page&gt;
+</pre>
+</div>
+<div class="section" id="customizing-templates">
+<h2>Customizing templates</h2>
+<p>DRYML is sufficiently strange that if you want to customize the
+appearance, it can be hard to know where to start. Some tips:</p>
+<p>1. Copy the appropriate template of another object, delete the object
+specific features and use</p>
+<ol class="arabic simple" start="2">
+<li>Copy the auto-generated template from app/views/taglibs/auto/rapid</li>
+<li>Use the psuedo tags</li>
+</ol>
+</div>
+<div class="section" id="anomalies">
+<h2>Anomalies</h2>
+<p>Had a very strange error where I was using Less (via More) and
+“sudddenly” (when I chnaged the less stylesheet for the first time in
+weeks), the site errored out, complaining “uninitialized constant
+Less::Engine). The More maintainers have since moved on to the Next Big
+Thing (converting .less via javascript) but I had no desire to follow.
+The solution turned out to be reinstalling the more plugin:</p>
+<pre class="literal-block">
+% ./script/plugin remove more % script/plugin install git://github.com/cloudhead/more.git
+</pre>
+<p>and regenerating the stylesheets manually:</p>
+<pre class="literal-block">
+% rake more:generate
+</pre>
+</div>
+<div class="section" id="cookiestore-cookieoverflow">
+<h2>CookieStore::CookieOverflow</h2>
+<p>“Status: 500 Internal Server Error
+ActionController::Session::CookieStore::CookieOverflow”</p>
+<p>Should you get this error, you're probably passing results or other data
+in the session, which by default is held in a cookie. You've overflowed
+the cookie data limit of 4K. Behaviour can be a bit subtle if you are
+using lazily evaluated records, as accessing a new fields can be enough
+to throw you over the limit. There are a few solution:</p>
+<ol class="arabic simple">
+<li>Store the session another way, say in the database</li>
+<li>If you're returning records, instead return the record ids and fetch
+them when you need them</li>
+</ol>
+<p>See: <a class="reference external" href="http://justbarebones.blogspot.com/2009/03/cookierstorecookieoverflow.html">http://justbarebones.blogspot.com/2009/03/cookierstorecookieoverflow.html</a></p>
+</div>
+<div class="section" id="wrong-number-of-arguments">
+<h2>&quot;wrong number of arguments&quot;</h2>
+<p>After creating a new model class and editing it, the subsequent
+migration failed with a cryptic error:wrong number of arguments (1 for
+2). Calling the generator with traceback enabled, pointed out the new
+class as the error:</p>
+<pre class="literal-block">
+./script/generate hobo_migration -t
+</pre>
+<p>That's because the ”:required” keyword on a field was spelt ”:requires”:</p>
+<pre class="literal-block">
+fields do
+   description :text, :requires
+end
+</pre>
+<p>Changed and fixed. Easy.</p>
+</div>
+<div class="section" id="strict-dryml">
+<h2>Strict DRYML</h2>
+<p>The DRYML parser is far less forgiving than your typical web browser -
+it has to be legalXML. So while a browser will put up with this:</p>
+<pre class="literal-block">
+&lt;input type=&quot;hidden&quot; name=&quot;submitted&quot; value=&quot;true&quot;&gt;
+</pre>
+<p>Hobo insist that it be like this:</p>
+<pre class="literal-block">
+&lt;input type=&quot;hidden&quot; name=&quot;submitted&quot; value=&quot;true&quot; /&gt;
+</pre>
+</div>
+<div class="section" id="cheatsheets">
+<h2>Cheatsheets</h2>
+<ul class="simple">
+<li><a class="reference external" href="http://zylstra.files.wordpress.com/2008/03/hobocheatsheet-011.pdf">http://zylstra.files.wordpress.com/2008/03/hobocheatsheet-011.pdf</a></li>
+<li><a class="reference external" href="http://conceptspace.wikidot.com/blog:hobo-page-structure">http://conceptspace.wikidot.com/blog:hobo-page-structure</a></li>
+</ul>
+</div>
+<div class="section" id="permissions-on-subordinate-objects">
+<h2>Permissions on subordinate objects</h2>
+<p><em>Discovered by Ali and recorded for when we encounter this again.</em></p>
+<p>A strange situation arose in the creation of a Hobo model that had
+children that were another model that could be created inline, a classic
+one-to-many:</p>
+<pre class="literal-block">
+class Foo &lt; ActiveRecord::Base
+   hobo_model # Don't put anything above this
+   [...]
+   has_many :bars, :accessible =&gt; true, :dependent =&gt; :destroy
+</pre>
+<p>and:</p>
+<pre class="literal-block">
+class Bar &lt; ActiveRecord::Base
+hobo_model # Don't put anything above this
+[...]
+belongs_to :foo
+</pre>
+<p>The aim was to allow users to create a Foo, with a variable number of
+children Bars created inline on the same form. Users would be unable to
+later edit or delete these objects. Thus permissions were set allowing
+non-admin users to create Foos and Bars but other actions were denied.</p>
+<p>A strange behaviour ensued: if an admin created a Foo, all fields
+appeared as expected, including the list of Bar children, with the
+javascript-enabled + and - buttons to add or delete children. If the
+user was non-admin, the children would not appear, although other
+relationships would.</p>
+<p>After a great deal of trial and error, the problem was identified.
+Non-admin users require the destroy permission for the bar children to
+appear, even on a form for the de novo creation of Foo. Perhaps this is
+because the child delete (minus) button requires this permission.
+Perhaps it's because the new form and edit forms are one and the same.
+More investigation is required.</p>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

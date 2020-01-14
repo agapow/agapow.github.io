@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Upgrading to 3.0 - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Despite the Plone community's tendency to dump everything and jump onto the latest version, I'd resisted the move to Plone 3.0. One good reason for this is that I'd repeatedly installed Plone 3.0 and it had - repeatedly - failed to startup. The symptoms weren't identical every time, but most …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Upgrading to 3.0">
+	<meta name="twitter:description" content="Despite the Plone community's tendency to dump everything and jump onto the latest version, I'd resisted the move to Plone 3.0. One good reason for this is that I'd repeatedly installed Plone 3.0 and it had - repeatedly - failed to startup. The symptoms weren't identical every time, but most …">
+	<meta name="twitter:url" content="/programming/web-development/plone/upgrading-to-3-0/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Upgrading to 3.0</h1>
+
+<div class="metadata">
+  <time datetime="2012-01-01T12:00:00+00:00" pubdate>2012-01-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/plone/">Plone</a></p></div>
+		<div class="summary">In which, again, Plone makes something simple complicated.</div>
+
+
+      <p>Despite the Plone community's tendency to dump everything and jump onto
+the latest version, I'd resisted the move to Plone 3.0. One good reason
+for this is that I'd repeatedly installed Plone 3.0 and it had -
+repeatedly - failed to startup. The symptoms weren't identical every
+time, but most commonly showed Plone failing to import or find a common
+submodule. For example:</p>
+<pre class="literal-block">
+[agapow&#64;iBook ~/Sites/zope-2.10.5-final]$ ./bin/runzope -X
+&quot;debug-mode=on&quot; 2008-02-04 14:35:23 INFO ZServer HTTP server started at
+Mon Feb 4 14:35:23 2008 Hostname: 0.0.0.0 Port: 8080 2008-02-04 14:35:27
+ERROR PortalTransforms Problem importing module
+web_intelligent_plain_text_to_html : No module named
+intelligenttext.transforms 2008-02-04 14:35:27 ERROR PortalTransforms
+Problem importing module html_to_web_intelligent_plain_text : No
+module named intelligenttext.transforms 2008-02-04 14:35:29 ERROR
+Application Could not import Products.ATContentTypes Traceback (most
+recent call last): File
+&quot;/Users/agapow/Applications/bin/zope-2.10.5-final/lib/python/OFS/Application.py&quot;,
+line 709, in import_product product=__import__(pname, global_dict,
+global_dict, silly) File
+&quot;/Users/agapow/Sites/zope-2.10.5-final/Products/ATContentTypes/__init__.py&quot;,
+line 64, in ? import Products.ATContentTypes.content File
+&quot;/Users/agapow/Sites/zope-2.10.5-final/Products/ATContentTypes/content/__init__.py&quot;,
+line 26, in ? import Products.ATContentTypes.content.link File
+&quot;/Users/agapow/Sites/zope-2.10.5-final/Products/ATContentTypes/content/link.py&quot;,
+line 39, in ? from Products.ATContentTypes.content.base import
+registerATCT File
+&quot;/Users/agapow/Sites/zope-2.10.5-final/Products/ATContentTypes/content/base.py&quot;,
+line 63, in ? from Products.CMFPlone.PloneFolder import
+ReplaceableWrapper File
+&quot;/Users/agapow/Sites/zope-2.10.5-final/Products/CMFPlone/__init__.py&quot;,
+line 215, in ? from browser import ploneview File
+&quot;/Users/agapow/Sites/zope-2.10.5-final/Products/CMFPlone/browser/ploneview.py&quot;,
+line 12, in ? from Products.CMFPlone import utils File
+&quot;/Users/agapow/Sites/zope-2.10.5-final/Products/CMFPlone/utils.py&quot;, line
+7, in ? from plone.i18n.normalizer.interfaces import IIDNormalizer
+ImportError: No module named i18n.normalizer.interfaces Traceback (most
+recent call last): File
+&quot;/Users/agapow/Applications/bin/zope-2.10.5-final/lib/python/Zope2/Startup/run.py&quot;,
+line 56, in ? run() File
+&quot;/Users/agapow/Applications/bin/zope-2.10.5-final/lib/python/Zope2/Startup/run.py&quot;,
+line 21, in run starter.prepare() File
+&quot;/Users/agapow/Applications/bin/zope-2.10.5-final/lib/python/Zope2/Startup/__init__.py&quot;,
+line 102, in prepare self.startZope() File
+&quot;/Users/agapow/Applications/bin/zope-2.10.5-final/lib/python/Zope2/Startup/__init__.py&quot;,
+line 278, in startZope Zope2.startup() File
+&quot;/Users/agapow/Applications/bin/zope-2.10.5-final/lib/python/Zope2/__init__.py&quot;,
+line 47, in startup _startup() File
+&quot;/Users/agapow/Applications/bin/zope-2.10.5-final/lib/python/Zope2/App/startup.py&quot;,
+line 45, in startup OFS.Application.import_products() File
+&quot;/Users/agapow/Applications/bin/zope-2.10.5-final/lib/python/OFS/Application.py&quot;,
+line 686, in import_products import_product(product_dir,
+product_name, raise_exc=debug_mode) File
+&quot;/Users/agapow/Applications/bin/zope-2.10.5-final/lib/python/OFS/Application.py&quot;,
+line 709, in import_product product=__import__(pname, global_dict,
+global_dict, silly) File
+&quot;/Users/agapow/Sites/zope-2.10.5-final/Products/ATContentTypes/__init__.py&quot;,
+line 64, in ? import Products.ATContentTypes.content File
+&quot;/Users/agapow/Sites/zope-2.10.5-final/Products/ATContentTypes/content/__init__.py&quot;,
+line 26, in ? import Products.ATContentTypes.content.link File
+&quot;/Users/agapow/Sites/zope-2.10.5-final/Products/ATContentTypes/content/link.py&quot;,
+line 39, in ? from Products.ATContentTypes.content.base import
+registerATCT File
+&quot;/Users/agapow/Sites/zope-2.10.5-final/Products/ATContentTypes/content/base.py&quot;,
+line 63, in ? from Products.CMFPlone.PloneFolder import
+ReplaceableWrapper File
+&quot;/Users/agapow/Sites/zope-2.10.5-final/Products/CMFPlone/__init__.py&quot;,
+line 215, in ? from browser import ploneview File
+&quot;/Users/agapow/Sites/zope-2.10.5-final/Products/CMFPlone/browser/ploneview.py&quot;,
+line 12, in ? from Products.CMFPlone import utils File
+&quot;/Users/agapow/Sites/zope-2.10.5-final/Products/CMFPlone/utils.py&quot;, line
+7, in ? from plone.i18n.normalizer.interfaces import IIDNormalizer
+ImportError: No module named i18n.normalizer.interfaces
+</pre>
+<p>Got all of that? Marvellous - you now have a small understanding of what Plone development is like: routine operations being interupted by enormous cryptic tracebacks.</p>
+<p>At one point, I'd found that several zope packages I had in my standard
+Python library site-packages were causing the problem, being loaded
+instead of those in the instance library. (Those in site-packages were
+more up-to-date that those in the instance. Backwards compatiability?
+What's that?) . This is despite the fact the PYTHONPATH for Zope was set
+to look at the instance library first. Clearing out the zope packages
+fixed things.</p>
+<p>Some minor revs later, I gave it another try. This time it failed with
+the above error message, but there were no zope packages in
+site-packages and none of the paths showed anything be drawn from there.
+Intrigued, I started up IPython and typed:</p>
+<pre class="literal-block">
+[1]: import zope
+ImportError: No module named zope
+[2]: import Plone
+[3]:
+</pre>
+<p>Uh-huh. Now it was a Plone module. Searching site-packages, a single
+package was found, that wasn't even part of the plone distribution but
+was using the plone namespace. This was enough to throw off the import.
+Removing that was enough to allow the instance to run. It seems that
+something like this is the cause of a lot of related problems:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.nabble.com/My-Plone-3-Linux-Environments-Became-Corrupted-After-Following-Instructions-To-Install-Plone.portlet.static-td14493633s6742.html">My Plone 3 Linux environments became corrupted</a></li>
+<li><a class="reference external" href="http://www.nabble.com/additional-zeo-instance-failed-to-load-products-p13132130s15482.html">Additional ZEO instance failed to load products</a></li>
+<li><a class="reference external" href="http://plone.org/products/ploneboard/issues/157">Ploneboard ticket</a></li>
+<li><a class="reference external" href="http://dev.plone.org/plone/ticket/7510">Dev.plone ticket</a></li>
+</ul>
+<p>The clean solution is to use a python installation dedicated to nothing
+but Plone, so that there is no other installed software to interfere
+with Plone. Suggested solutions in some of the incidents listed above
+include using a universal installer (doesn't help), a buildout recipe or
+virtualenv, which puts me in mind of the <a class="reference external" href="http://www.dorkypantsr.us/">Dilbert cartoon about cycling
+shorts</a>:</p>
+<blockquote>
+<p><strong>Problem:</strong> bicycle seats are hard. They hurt.</p>
+<p><strong>Analysis:</strong> There must be something wrong with your pants.</p>
+<p><strong>Solution:</strong> Dorky pants.</p>
+</blockquote>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

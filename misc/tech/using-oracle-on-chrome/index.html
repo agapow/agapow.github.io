@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Using Oracle webforms with Chrome - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="The problem For better or worse, a lot of HR systems, admin forms and clinical software have web front ends that are generated or driven by Oracle Forms or other Oracle tech. And, for reasons that are completely opaque, these web forms will frequently misbehave or refuse to run in …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Using Oracle webforms with Chrome">
+	<meta name="twitter:description" content="The problem For better or worse, a lot of HR systems, admin forms and clinical software have web front ends that are generated or driven by Oracle Forms or other Oracle tech. And, for reasons that are completely opaque, these web forms will frequently misbehave or refuse to run in …">
+	<meta name="twitter:url" content="/misc/tech/using-oracle-on-chrome/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Using Oracle webforms with Chrome</h1>
+
+<div class="metadata">
+  <time datetime="2016-04-01T12:00:00+01:00" pubdate>2016-04-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/misc/">misc</a>
+<p class="tags">tagged <a href="//by-tag/oracle/">oracle</a>, <a href="//by-tag/chrome/">chrome</a>, <a href="//by-tag/browser/">browser</a></p></div>
+		<div class="summary">All I wanted to do was fill in a form.</div>
+
+
+      <div class="section" id="the-problem">
+<h2>The problem</h2>
+<p>For better or worse, a lot of HR systems, admin forms and clinical software have web front ends that are generated or driven by Oracle Forms or other Oracle tech.  And, for reasons that are completely opaque, these web forms will frequently misbehave or refuse to run in any browser that isn’t Internet Explorer running on a Windows machine (sometimes complaining of a “registry.dat” failure). You’re on a Mac - what do you do?</p>
+</div>
+<div class="section" id="solutions">
+<h2>Solutions</h2>
+<div class="section" id="disguise-your-browser">
+<h3>Disguise your browser</h3>
+<p>In lines with what is written here (<a class="reference external" href="http://attiqahmed.wordpress.com/2012/08/02/running-oracle-application-on-google-chrome-2/">http://attiqahmed.wordpress.com/2012/08/02/running-oracle-application-on-google-chrome-2/</a>), install a Spoofer, a Chrome extension that will be able to manipulate the web traffic that identifies your browser. Then add the given custom domain.</p>
+<p>Note, the instructions are slightly outdated - you do not have to clear the browser history or restart it. Also, the custom domain is added to the “Permanent spoof list”. Another solution is the same (<a class="reference external" href="https://community.oracle.com/message/9786080">https://community.oracle.com/message/9786080</a>) but doesn’t use the custom domain.</p>
+<p><strong>Result:</strong> I had a bit of peculiar behaviour but this seems to mostly work.</p>
+</div>
+<div class="section" id="use-firefox">
+<h3>Use Firefox</h3>
+<p><strong>Result:</strong> This was reported to work but while the forms would load, there was some strange behaviour when interacting with the forms. It may have been something to do with my machine and/or installation of Firefox.</p>
+</div>
+<div class="section" id="run-ie-in-a-virtual-machine">
+<h3>Run IE in a virtual machine</h3>
+<p><strong>Result:</strong> it’s a pain, but this will work and you could potentially run any OS/ browser combination. Depending on you local network setup, there may also be some proxy issues to solve.</p>
+</div>
+<div class="section" id="install-a-different-chrome-extension">
+<h3>Install a different Chrome extension</h3>
+<p>There’s an extension (<a class="reference external" href="http://www.oracleebstech.com/2013/06/how-to-use-google-chrome-with-ebs/">http://www.oracleebstech.com/2013/06/how-to-use-google-chrome-with-ebs/</a>, <a class="reference external" href="https://blogs.oracle.com/ptian/entry/how_to_use_chrome_to">https://blogs.oracle.com/ptian/entry/how_to_use_chrome_to</a>) that supposedly lets you work with some recent Oracle versions. Success is apparently mixed. <a class="reference external" href="https://community.oracle.com/message/10613315">https://community.oracle.com/message/10613315</a></p>
+<p><strong>Result:</strong> didn’t try but will if there are further problems.</p>
+</div>
+</div>
+<div class="section" id="postcript">
+<h2>Postcript</h2>
+<p>There may be some further issues with Chrome. Some of the Oracle web forms use Java and it is reported that in at least some cases the minimal Java version is beyond that supported by Chrome on OSX. I did not encounter this but caveat browser.</p>
+<p>The reluctance of Oracle to support Chrome is inexplicable - it has over 40% of the browser market, no matter how measured, by many metrics more than IE. Oracle cites “low demand” (<a class="reference external" href="https://blogs.oracle.com/stevenChan/entry/plans_for_certifying_google_chrome">https://blogs.oracle.com/stevenChan/entry/plans_for_certifying_google_chrome</a>)</p>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li class="active"><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

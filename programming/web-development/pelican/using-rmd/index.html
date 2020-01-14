@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Using RMarkdown documents in Pelican - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="One of the big sells of Pelican is being able to use multiple markdup formats, being able to drop in notebooks and documents written in other contexts. One such format is RMarkdown (.rmd) documents, such as are used in knitr for reproducible analyses, allowing you to do an analysis and …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Using RMarkdown documents in Pelican">
+	<meta name="twitter:description" content="One of the big sells of Pelican is being able to use multiple markdup formats, being able to drop in notebooks and documents written in other contexts. One such format is RMarkdown (.rmd) documents, such as are used in knitr for reproducible analyses, allowing you to do an analysis and …">
+	<meta name="twitter:url" content="/programming/web-development/pelican/using-rmd/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Using RMarkdown documents in Pelican</h1>
+
+<div class="metadata">
+  <time datetime="2015-05-12T00:00:00+01:00" pubdate>2015-05-12</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/web-development/">web-development</a>, <a href="//by-tag/r/">r</a>, <a href="//by-tag/markdown/">markdown</a></p></div>
+
+
+      <p>One of the big sells of Pelican is being able to use multiple markdup formats, being able to drop in notebooks and documents written in other contexts. One such format is RMarkdown (<tt class="docutils literal">.rmd</tt>) documents, such as are used in knitr for reproducible analyses, allowing you to do an analysis and then just render it directly on your website.</p>
+<p>However, a number of things can go wrong along the way and Pelican's error messages aren't very helpful. Here's what I had to do to get it working.</p>
+<div class="section" id="install-the-reader">
+<h2>Install the reader</h2>
+<p>An obvious error, but you have to install the <tt class="docutils literal">rmd_reader</tt> to allow RMarkdown documents to be converted. If it isn't installed or Pelican can't find it, you'll get an odd error like:</p>
+<pre class="literal-block">
+ERROR: Could not process programming/foo.Rmd
+</pre>
+<p>or:</p>
+<pre class="literal-block">
+'Pelican does not know how to parse %s', '/content/programming/foo.Rmd'
+</pre>
+<p>Edit your <tt class="docutils literal">pelicanconf.py</tt>:</p>
+<pre class="literal-block">
+PLUGINS = [
+   'foo',
+   'rmd_reader',
+   'bar',
+]
+</pre>
+<p>Adding the fortmat to the markup directive may also be necessary:</p>
+<pre class="literal-block">
+MARKUP = ('md', 'ipynb', 'rmd')
+</pre>
+</div>
+<div class="section" id="problems-with-r">
+<h2>Problems with R</h2>
+<p>The reader calls R to convert Rmarkdown to plain markdown. But just because RStudio understands RMarkdown doesn't mean that your native R can. Find out which R you are calling and install the knitr and Rmarkdown packages:</p>
+<pre class="literal-block">
+r&gt; install.packages ('knitr')
+r&gt; install.packages ('rmarkdown')
+</pre>
+<p>Let me guess - R is bugging you about choosing a repository? Just because you've selected one in RStudio doesn't mean that R (under the hood) knows about it:</p>
+<pre class="literal-block">
+--- Please select a CRAN mirror for use in this session ---
+</pre>
+<p>And there seems be an odd error that sometimes causes this choice to hang. So you can define it in the install call:</p>
+<pre class="literal-block">
+install.packages ('knitr', repos='http://cran.us.r-project.org')
+</pre>
+<p>Longer term, put this in <tt class="docutils literal"><span class="pre">~/.Rprofile</span></tt>:</p>
+<pre class="literal-block">
+## Default repo
+local({r &lt;- getOption(&quot;repos&quot;)
+   r[&quot;CRAN&quot;] &lt;- &quot;http://cran.r-project.org&quot;
+   options(repos=r)
+})
+</pre>
+</div>
+<div class="section" id="problems-with-python">
+<h2>Problems with Python</h2>
+<p>At this point, you might have Pelican complaining that it can't find metadata (specifically, the title) in the document. How <tt class="docutils literal">rmd_reader</tt> works is that it uses R to convert RMarkdown to Markdown and then uses Python to convert that to HTML. However, more recent version of RMarkdown use a YAML block to detail metadata:</p>
+<pre class="literal-block">
+---
+title: &quot;Hadley’s vocabulary: part 1 - the basics&quot;
+output: html_document
+---
+</pre>
+<p>and older versions of the Python Markdown library don't understand this, giving complaints like:</p>
+<pre class="literal-block">
+ERROR: Skipping programming/r/vocabulary.Rmd: could not find information about 'title'
+</pre>
+<p>You can test the version of your Python library in Python:</p>
+<pre class="literal-block">
+python&gt; import markdown
+python&gt; markdown.version
+</pre>
+<p>Versions 2.5+ seem to work fine. If you have something older, update it:</p>
+<pre class="literal-block">
+% pip install --upgrade markdown
+</pre>
+</div>
+<div class="section" id="various-other-issues">
+<h2>Various other issues</h2>
+<ul class="simple">
+<li>While messing around with various inputs and configurations, Pelican's caching (and the dates of modification) can get in the way, preventing you from seeing changes. It might help to <tt class="docutils literal">touch</tt> the appropriate files and clear the cache (<tt class="docutils literal">rm <span class="pre">-rf</span> cache</tt>).</li>
+<li>The formatting of the metadata block in RMarkdown may be a little strict. It seems that it must bve the very first thing in the file and no blank lines are permitted.</li>
+<li>Charmingly, the markdown parser in the Atom editor, insists on &quot;correcting&quot; the metadata blocks into a title.</li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

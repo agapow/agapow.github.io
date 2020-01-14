@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Common tasks in Galaxy - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="It's all there in the documentation, but sometimes it's hard to find. This document gives you another place to look. So how do I ... ... create admin users? Curiously, the identity of admin users is hardcoded into the Galaxy configuration file. (Which makes it secure, I guess, but separate from the …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Common tasks in Galaxy">
+	<meta name="twitter:description" content="It's all there in the documentation, but sometimes it's hard to find. This document gives you another place to look. So how do I ... ... create admin users? Curiously, the identity of admin users is hardcoded into the Galaxy configuration file. (Which makes it secure, I guess, but separate from the …">
+	<meta name="twitter:url" content="/science/computational-biology/galaxy/common-tasks-in-galaxy/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Common tasks in Galaxy</h1>
+
+<div class="metadata">
+  <time datetime="2012-06-14T12:56:00+01:00" pubdate>2012-06-14</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/computational-biology/">computational biology</a>, <a href="//by-tag/galaxy/">galaxy</a></p></div>
+
+
+      <p><em>It's all there in the documentation, but sometimes it's hard to find.
+This document gives you another place to look.</em></p>
+<p>So how do I ...</p>
+<div class="section" id="create-admin-users">
+<h2>... create admin users?</h2>
+<p>Curiously, the identity of admin users is hardcoded into the Galaxy
+configuration file. (Which makes it secure, I guess, but separate from
+the rest of Galaxy's role mechanism.) Edit universe_wsgi.ini and set
+admin_users to a comma delimited list of user emails:</p>
+<pre class="literal-block">
+admin_users = user1&#64;hpa.org.uk,user2&#64;bbsrc.ac.uk
+</pre>
+<p>The Admin menu will then appear on the top menubar.</p>
+<p>See
+<a class="reference external" href="https://bitbucket.org/galaxy/galaxy-central/wiki/Admin/AdminInterface">https://bitbucket.org/galaxy/galaxy-central/wiki/Admin/AdminInterface</a></p>
+<p>Note: The admin document is as yet, a trifle incomplete. It's unclear
+what happens if one of these addresses is invalid (i.e. is for a
+non-existent user). Also note a confusion about identifying a user -
+sometimes Galaxy refers to user name and sometimes to user email
+address.</p>
+</div>
+<div class="section" id="disable-guest-access">
+<h2>... disable guest access?</h2>
+<p>By default, galaxy allows any jackass with a web-browser to run tools.
+(Although their history is not retained.) Again, edit universe_wsgi.ini
+and set require_login:</p>
+<pre class="literal-block">
+# Force everyone to log in (disable anonymous access).
+require_login = True
+</pre>
+</div>
+<div class="section" id="disable-self-registration">
+<h2>... disable self-registration?</h2>
+<p>By default, any guest (visitor) can register an account on a Galaxy
+instance. Once again, edit universe_wsgi.ini and set
+allow_user_creation</p>
+<pre class="literal-block">
+# Allow unregistered users to create new accounts (otherwise,
+# they will have to be created by an admin).
+#allow_user_creation = True
+</pre>
+</div>
+<div class="section" id="reset-a-user-s-password">
+<h2>... reset a user's password?</h2>
+<p>(Digression: of course, if a user forgets their password, they could
+just reset it themselves to have email sent to them. But we have a
+Galaxy instance without email configured an so another way is needed.)</p>
+<p>In the admin menu, go to manage users, select the user and then &quot;reset
+password&quot;. You'll come to a page where you can actually set their
+password.</p>
+</div>
+<div class="section" id="stop-a-job">
+<h2>... stop a job?</h2>
+<p>Perhaps it's a runaway job. Perhaps it's been running for too long.
+Maybe you're just bored. The important thing is that THE JOB MUST DIE.</p>
+<p>When logged in as an adminstrator, go to the admin menu and then the
+manage jobs tool. A message can be sent to the user when this is done.
+This can also be used to stop new jobs from being dispatched, such as
+when preparing for shutdown.</p>
+</div>
+<div class="section" id="make-someone-an-admin-for-this-data-library-whatever-and-nothing-else">
+<h2>... make someone an admin for this data / library / whatever and nothing else?</h2>
+<p>Can't be done. Galaxy has a fairly simple idea of admins: a superuser is
+a superuser is a superuser. An administrator can do _anything_. You
+can give someone permissions management over a data library, but that's
+it.</p>
+</div>
+<div class="section" id="do-x-by-directly-editing-the-database">
+<h2>... do X by directly editing the database?</h2>
+<p>Don't. It's severely messy down there and anything could go wrong.
+Seriously - the schema is complex and it's hard to make even simple
+edits.</p>
+</div>
+<div class="section" id="maintain-galaxy">
+<h2>... maintain Galaxy?</h2>
+<p>Users are advised to run the scripts in
+<em>&lt;galaxy-dist&gt;/scripts/cleanup_datasets/cleanup_dataset.py</em> regularly
+/ daily, so as to mop up old and deleted data. (Although there's so many
+scripts in that dir, it'd be nice to get a heads-up about which did what
+and were how important.) A cron'd script to call them all like this
+should do the job:</p>
+<pre class="literal-block">
+#!/bin/sh
+cd /home/galaxy/galaxy-dist
+bash ./scripts/cleanup_datasets/delete_datasets_main.sh
+bash ./scripts/cleanup_datasets/delete_userless_histories_main.sh
+bash ./scripts/cleanup_datasets/purge_histories_main.sh
+bash ./scripts/cleanup_datasets/purge_datasets_main.sh
+</pre>
+<p>From Greg Von Kuster
+&lt;<a class="reference external" href="http://lists.bx.psu.edu/pipermail/galaxy-dev/2010-February/001987.html">http://lists.bx.psu.edu/pipermail/galaxy-dev/2010-February/001987.html</a> &gt;</p>
+</div>
+<div class="section" id="make-development-easier">
+<h2>... make development easier?</h2>
+<p>Strangely, there's a really useful utility for devs hidden in the Admin
+menu: &quot;Reload a tool's configuration&quot;. It seesm to do what it says on
+the tin - reload the tooo configuration files, which normally would take
+an instance restart. Oddly, the reload is only offered for a subset of
+the installed tools, so there may be some subtleties involved here.</p>
+</div>
+<div class="section" id="also-see">
+<h2>Also see</h2>
+<ul class="simple">
+<li>Notes from the Mattick Lab <a class="reference external" href="http://matticklab.com/index.php?title=Setting_up_Galaxy">http://matticklab.com/index.php?title=Setting_up_Galaxy</a></li>
+<li>The Galaxy wiki <a class="reference external" href="http://bitbucket.org/galaxy/galaxy-central/wiki">http://bitbucket.org/galaxy/galaxy-central/wiki</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

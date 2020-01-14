@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Mysteriously a tuple - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Not the first time I've been stung by this, so it's worth recording the problem. Symptoms A function or call inexplicably returns not as the expected type but as a tuple containing the said type. After a furious amount of debugging, you determine that everything is acting as it should …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Mysteriously a tuple">
+	<meta name="twitter:description" content="Not the first time I've been stung by this, so it's worth recording the problem. Symptoms A function or call inexplicably returns not as the expected type but as a tuple containing the said type. After a furious amount of debugging, you determine that everything is acting as it should …">
+	<meta name="twitter:url" content="/programming/python/mysteriously-a-tuple/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Mysteriously a tuple</h1>
+
+<div class="metadata">
+  <time datetime="2012-06-14T12:56:00+01:00" pubdate>2012-06-14</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+</div>
+		<div class="summary">When a result is inexplicably of the wrong type</div>
+
+
+      <p>Not the first time I've been stung by this, so it's worth recording the
+problem.</p>
+<div class="section" id="symptoms">
+<h2>Symptoms</h2>
+<p>A function or call inexplicably returns not as the expected type but as
+a tuple containing the said type. After a furious amount of debugging,
+you determine that everything is acting as it should and returning the
+types that it should. Yet, somehow, the value you capture from a
+particular line is a tuple.</p>
+<p>Your code will look something like this:</p>
+<pre class="literal-block">
+f =&nbsp;radio_input ('Pathogen', 'pathogen', pathogen_choices,
+        env=d,&nbsp;... ...
+        helptext=&quot;Which organism are you looking for matches with?&quot;,
+        default=None),
+</pre>
+</div>
+<div class="section" id="diagnosis">
+<h2>Diagnosis</h2>
+<p>You may have spotted this already but it's the trailing comma. Easy to
+miss when you're scanning complex code and a series of nested calls, but
+instead of this:</p>
+<pre class="literal-block">
+x = long_complicated_stuff
+</pre>
+<p>you're doing this:</p>
+<pre class="literal-block">
+x =&nbsp;long_complicated_stuff,
+</pre>
+<p>which evalulates to this:</p>
+<pre class="literal-block">
+x = (long_complicated_stuff, )
+</pre>
+<p>i.e. an implicit one-element tuple</p>
+</div>
+<div class="section" id="solution">
+<h2>Solution</h2>
+<p>Remove the comma, obviously.</p>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

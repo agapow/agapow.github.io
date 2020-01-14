@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>IPython notebooks in Pelican - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="IPython notebooks are an incredibly useful way to do reproducible research and illustrate chunks of code. Obviously you'd like to put some of them on the web. Surely there must be an easy way to include them in a Pelican-based website. So why hasn't anyone done it yet? They have …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="IPython notebooks in Pelican">
+	<meta name="twitter:description" content="IPython notebooks are an incredibly useful way to do reproducible research and illustrate chunks of code. Obviously you'd like to put some of them on the web. Surely there must be an easy way to include them in a Pelican-based website. So why hasn't anyone done it yet? They have …">
+	<meta name="twitter:url" content="/programming/web-development/pelican/ipython-notebooks-in-pelican/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>IPython notebooks in Pelican</h1>
+
+<div class="metadata">
+  <time datetime="2016-09-05T12:00:00+01:00" pubdate>2016-09-05</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/python/">python</a>, <a href="//by-tag/pelican/">pelican</a>, <a href="//by-tag/web-development/">web-development</a>, <a href="//by-tag/programming/">programming</a></p></div>
+		<div class="summary">Adding an obvious feature to Pelican.</div>
+
+
+      <p>IPython notebooks are an incredibly useful way to do reproducible research and illustrate chunks of code. Obviously you'd like to put some of them on the web. Surely there must be an easy way to include them in a Pelican-based website. So why hasn't anyone done it yet?</p>
+<p>They have. In several different ways. Just none that I'm happy with.</p>
+<p>This is how I made a reader for <tt class="docutils literal">.ipynb</tt> files to include them in my website.</p>
+<div class="section" id="other-solutions">
+<h2>Other solutions</h2>
+<p>Google for possible solutions and you'll often get directed to <a class="reference external" href="https://github.com/getpelican/pelican-plugins/tree/master/liquid_tags">liquid tags</a>, a Pelican plugin for extended markup. Basically, it provides a tag for linking to and including IPython notebooks in articles. Liquid tags also need a bit of template hacking to get this inclusion to work. Which seems more difficult than it should be. I just want to drop the notebook in a directory and have Pelican render it.</p>
+<p><a class="reference external" href="http://www.southampton.ac.uk/~fangohr/blog/blogging-with-the-ipython-notebook.html">Elsewhere</a>, it's been suggested that notebooks be converted into another form (ReST) and are then dropped into Pelican. Also too hard and how do we handle images? Others have suggested converting the pages to HTML and then including them in Pelican.</p>
+<p><a class="reference external" href="http://mail.scipy.org/pipermail/ipython-dev/2014-April/013843.html">Put then up on another site</a> like Github or Wakari? Then I still have to write a page that points to them.</p>
+<p>Daniel Rodriguez <a class="reference external" href="http://danielfrg.com/blog/2013/03/08/pelican-ipython-notebook-plugin/">wrote a plugin</a> that more or less does what I want. (<a class="reference external" href="https://github.com/danielfrg/pelican-ipynb">Github repo here</a>. The explanatory text doesn't quite match the repo, so obviously it's evolved some.) This is where I'll start hacking.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This shouldn't be construed as criticism of any of the above solutions, which arguably are more flexible and may fit their creators needs better. But, being a lazy type, I'm willing to sacrifice power for simplicity. And thanks to Daniel for doing the heavy lifting of actually writing a ipynb reader.</p>
+</div>
+</div>
+<div class="section" id="hacking-the-reader">
+<h2>Hacking the reader</h2>
+<p>The repo for my hacked and modified reader can be found at: <a class="reference external" href="https://github.com/agapow/pelican-ipynb">https://github.com/agapow/pelican-ipynb</a></p>
+<div class="section" id="appearance">
+<h3>Appearance</h3>
+<p>Getting an included IPython notebook to look right is tricky. While you can just call on IPython to spit out the HTML for a page, that includes a whole mess of embbedded CSS styles. The Rodriguez reader injects it's own CSS to this end, but then this will interact with the CSS in your chosen Pelican theme and It. All. Gets. A. Bit. Complicated. In addition, the generated webpages looked different under Safari and Chrome for me.</p>
+<p>There's no universal solution to this, it really depends on the Pelican theme you're using. But:</p>
+<ul class="simple">
+<li>I rejigged the reader so the the custom CSS is added after the document CSS, not before</li>
+<li>The <tt class="docutils literal">!important</tt> directive may be useful in getting the right look.</li>
+</ul>
+</div>
+<div class="section" id="better-figures">
+<h3>Better figures</h3>
+<p>Notebooks include images as embedded data, encoded as Base64. Unfortunately the <a class="reference external" href="http://github.com/getpelican/pelican-plugins/tree/master/better_figures_and_images">better_figures_and_images</a> Pelican plugin can't handle these, at least not under Python 3. Nothing to do but disable the plugin.</p>
+</div>
+<div class="section" id="metadata">
+<h3>Metadata</h3>
+<p>The Rodriguez plugin reads the notebook header for metadata, which you can edit in IPython. I made a few small changes, like mapping the <tt class="docutils literal">name</tt> field to <tt class="docutils literal">title</tt>, and looking at the first cell for a title. There's also an oddity where - depending on the source - metadata is not always processed. Fixed. (That code was a little suspicious anyway, as it deleted dictionary keys it was iterating over.)</p>
+</div>
+<div class="section" id="header-levels">
+<h3>Header levels</h3>
+<p>The headers in a normal Pelican document are sensibly set to the right level: <tt class="docutils literal">H1</tt>, <tt class="docutils literal">H2</tt> etc. But the headers in an notebook are hardcoded in. Longer term, it would be sensible to rewrite them or trim off an initial header, but just be aware that if the notebook starts with a <tt class="docutils literal">H1</tt>, you'll end with an article with two headers of the same level.</p>
+</div>
+<div class="section" id="caching">
+<h3>Caching</h3>
+<p>This is more of a general development tip, but when I was hacking on the reader, changes didn't seem to appear. I narrowed it down to using <tt class="docutils literal">make devserver</tt>, which was puzzling until I realised that Pelican only recompiles content if it sees changes in the site content, theme or settings. Plugins are outside that loop. Flushing the cache directory fixed everything.</p>
+</div>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

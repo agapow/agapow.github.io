@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Hitchhikers guide to Biopython: Sequences &amp; alphabets - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="(Originally published on BiocodersHub.) If you’re doing bioinformatics in Python, you’re probably using Biopython. Actually, Biopython is a good reason for using Python. But it can be formidable to newcomers: there’s a lot there and there’s not a huge amount of learning material. This then is …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Hitchhikers guide to Biopython: Sequences &amp; alphabets">
+	<meta name="twitter:description" content="(Originally published on BiocodersHub.) If you’re doing bioinformatics in Python, you’re probably using Biopython. Actually, Biopython is a good reason for using Python. But it can be formidable to newcomers: there’s a lot there and there’s not a huge amount of learning material. This then is …">
+	<meta name="twitter:url" content="/science/computational-biology/biofoo/hitchhikers-guide-to-biopython-sequences-alphabets/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Hitchhikers guide to Biopython: Sequences &amp; alphabets</h1>
+
+<div class="metadata">
+  <time datetime="2013-07-11T13:30:00+01:00" pubdate>2013-07-11</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/biopython/">BioPython</a>, <a href="//by-tag/biosequences/">biosequences</a>, <a href="//by-tag/computational-biology/">computational biology</a>, <a href="//by-tag/python/">Python</a></p></div>
+
+
+      <p>(Originally published on BiocodersHub.)</p>
+<p>If you’re doing bioinformatics in Python, you’re probably
+using  <a class="reference external" href="http://biopython.org/">Biopython</a>. Actually, Biopython is a
+good reason for using Python. But it can be formidable to newcomers:
+there’s a lot there and there’s not a huge amount of learning material.
+This then is the first of a series of rapid introductions to Biopython.</p>
+<div class="section" id="what-is-it-for">
+<h2>What Is It For?</h2>
+<p>What sort of features does it provide? Seemingly everything:</p>
+<ul class="simple">
+<li>Reading and writing common sequence (and other) file formats</li>
+<li>Classes for the usual datatypes (sequences, alignments etc.)</li>
+<li>Functions for the usual things you’d do with those datatypes (alignments, Blasting)</li>
+<li>Facilities for data base queries</li>
+<li>A very large etc., etc. There’s a lot in there.</li>
+</ul>
+<p>The downsides are:</p>
+<ul class="simple">
+<li>Some of it is frankly under-documented</li>
+<li>Having been written by many different authors, there’s a certain inconsistency across the library</li>
+<li>The library is still evolving and some of it is a little bleeding edge</li>
+</ul>
+<p>However these points are improving steadily. There’s been a marked
+improvement over the last few years to where BioPython could arguably be
+regarded as the best of the BioFoo libraries.</p>
+<div class="section" id="installation">
+<h3>Installation</h3>
+<p>Installing Biopython is mercifully easy:</p>
+<pre class="literal-block">
+% easy_install biopython
+</pre>
+<p>if you
+have  <a class="reference external" href="https://pypi.python.org/pypi/setuptools">setuptools</a> or
+something similar installed. If not, there are tarballs and binary
+packages available. If you’re on a Linux system, there should be a
+prebuilt package for most package managers. If you don’t have root
+access, Biopython works well with things
+like  <a class="reference external" href="https://github.com/utahta/pythonbrew">python-brew</a>. There are
+a few suggested dependencies (NumPy, ReportLab) but you can install
+these later.</p>
+<p>So how do you call the Biopython library? Like this:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; import Bio
+</pre>
+</div>
+</div>
+<div class="section" id="sequences">
+<h2>Sequences</h2>
+<p>The most ubiquitous entity in BioPython would be  <em>Seq</em>, a class for
+simple biosequences:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; from Bio import Seq
+&gt;&gt;&gt; mySeq = Seq.Seq('ACGTTTGCGC')
+</pre>
+<p>This represents a biosequence in the simplest possible way, with it
+acting like a string, allowing indexing, using  <em>len()</em> to get
+length, slicing, etc.:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; import Bio
+&gt;&gt;&gt; from Bio import Seq
+&gt;&gt;&gt; mySeq = Seq.Seq ('acggtcggtggggccc')
+&gt;&gt;&gt; mySeq
+Seq ('acggtcggtggggccc', Alphabet())
+&gt;&gt;&gt; mySeq[0]
+Seq ('a', Alphabet())
+&gt;&gt;&gt; mySeq[:5]
+Seq ('acggt', Alphabet())
+&gt;&gt;&gt; mySeq[:5] + mySeq[-3:]
+Seq ('acggtccc', Alphabet())
+</pre>
+<p>Note that the  <em>Seq</em> class is found inside the  <em>Seq</em> module,
+which invariably confuses novices.</p>
+<p>Another point for confusion is that there is another
+class  <em>SeqRecord</em>. What’s the different? A  <em>SeqRecord</em> wraps
+a  <em>Seq</em> and all the ancillary information about a sequence, like
+annotations and so on. A  <em>Seq</em> is <em>just</em> the sequence,
+a  <em>SeqRecord</em> is the sequence and all associated data. Be warned:
+some Biopython functions take Seqs, others take SeqRecords.</p>
+<p>Just for the moment, I’m going to ignore  <em>SeqRecords</em> because we
+need to talk about …</p>
+</div>
+<div class="section" id="alphabets">
+<h2>Alphabets</h2>
+<p>You would have noticed  <em>Alpbabet</em> in the code up above. Obviously
+the legal “letters” in a (say) mRNA sequence differ from those in a
+protein transcript. A Biopython alphabet dictates the allowable symbols
+in a sequence and how they are used. An  <em>Alphabet</em> governs the
+conversion &amp; compatibility of sequences. You can’t combine two Seqs with
+incompatible alphabets. Common alphabets are defined
+in  <em>Bio.Alphabet.IUPAC</em>, with useful functions being held
+in <em>Bio.Alphabet</em>.</p>
+<p>(It may seem like I’m spending a lot of words on Alphabets: this is due
+to my observation that they’re one of the more neglected and
+misunderstood areas in Biopython. But once you know what they do, you
+largely can ignore them.)</p>
+<p>There’s a whole hots of standard alphabets defined by Biopython. But
+what if you need to make your own?</p>
+<blockquote>
+<pre class="literal-block">
+&gt;&gt;&gt; import Bio
+&gt;&gt;&gt; from Bio import Alphabet
+&gt;&gt;&gt; from Alphabet import IUPAC
+&gt;&gt;&gt; GAPPEDAMBIG_DNA_ALPHABET = Alphabet.Gapped (
+IUPAC.ambiguous_dna, '-')
+&gt;&gt;&gt; LegalDnaLetters = IUPAC.ambiguous_dna.letters
+&gt;&gt;&gt; LegalGappedDnaLetters = GAPPEDAMBIG_DNA_ALPHABET.letters
+</pre>
+</blockquote>
+<p>Simple.</p>
+<p>As said, you can only combine sequences with compatible alphabets types.
+This means, DNA with DNA, protein with protein etc. If you combined two
+sequences with compatible but different alphabets, the result ‘promotes’
+to more general type. By and large, this works as you would expect:</p>
+<blockquote>
+<pre class="literal-block">
+&gt;&gt;&gt; seq_ud = Seq ('acgt', unambiguous_dna)
+&gt;&gt;&gt; seq_ad = Seq ('acgt', ambiguous_dna)
+&gt;&gt;&gt; seq_ur = Seq ('acgt', unambiguous_rna)
+&gt;&gt;&gt; seq_p = Seq ('acgt', protein)
+</pre>
+</blockquote>
+<p>What happens?:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; seq_ud + seq_ad
+Seq('acgtacgt', IUPACAmbiguousDNA())
+&gt;&gt;&gt; seq_ud + seq_ur
+TypeError Traceback (most recent call last)
+...
+TypeError: Incompatible alphabets IUPACUnambiguousDNA() and IUPACUnambiguousRNA()
+&gt;&gt;&gt; seq_ud + seq_p
+TypeError Traceback (most recent call last)
+...
+TypeError: Incompatible alphabets IUPACUnambiguousDNA() and IUPACProtein()
+</pre>
+<p>Note that alphabets are no guarantee. It is still entirely possible to
+assign rubbish letters into a sequence. The
+method  <em>Seq.verify_alphabet()</em> can be used to manually check if a
+seq conforms to an alphabet.</p>
+</div>
+<div class="section" id="back-to-sequences">
+<h2>Back to sequences</h2>
+<p>Having considered alphabets, we can now look at some of
+the  <em>Seq</em> methods that use alphabets. For example, getting the
+complement of a sequence will obviously depend on the alphabet:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; mySeq = Seq ('acggtcggtggggccc')
+&gt;&gt;&gt; mySeq.complement()
+Seq('tgccagccaccccggg', Alphabet())
+&gt;&gt;&gt; mySeq.reverse_complement()
+Seq('gggccccaccgaccgt', Alphabet())
+</pre>
+<p>Transcription can be handled by standalone functions in  <em>Seq</em> (the
+module) not  <em>Seq</em> (the class):</p>
+<ul class="simple">
+<li><em>transcribe(seq_or_str)</em>: DNA to RNA</li>
+<li><em>back_transcribe(seq_or_str)</em>: RNA to DNA</li>
+</ul>
+<p>DNA to protein Translation can be most simply handled by the
+method  <em>translate</em>:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; mySeq.translate()
+Seq('TVGGA', ExtendedIUPACProtein())
+</pre>
+</div>
+<div class="section" id="reading-and-writing-sequences">
+<h2>Reading and writing sequences</h2>
+<p>A warning: there are actually many ways of reading and writing sequence
+data in Biopython. Most of them are old, clunky and deprecated. The new
+hotness is  <em>SeqIO</em> and you should use only that. Behold:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; from Bio import SeqIO
+&gt;&gt;&gt; in_hndl = open ('myseqs.fasta', 'rU')
+&gt;&gt;&gt; for s in SeqIO.parse (in_hndl, 'fasta'):
+# do something with the sequence you just read
+print s
+&gt;&gt;&gt; in_hndl.close()
+</pre>
+<p>In plain English:  <em>SeqIO.parse</em> takes an open file (or file-like
+object) and the name of the format (in lower case) and iterates over the
+SeqRecords within. (Note:: SeqRecords not Seqs). Format  <em>SeqIo</em> can
+understand include clustal, genbank, qual, fastq, nexus …</p>
+<p>What if you just want to capture of the the sequences in a file, say in
+a list. Do something like this:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; in_hndl = open (&quot;opuntia.aln&quot;, &quot;rU&quot;)
+&gt;&gt;&gt; seq_list = [s for s in SeqIO.parse (in_hndl, &quot;clustal&quot;)]
+&gt;&gt;&gt; in_hndl.close()
+</pre>
+<p>or even:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; records = list (SeqIO.parse (open (&quot;myaln.fasta&quot;, 'rU'), &quot;fasta&quot;)
+</pre>
+<p>Note: SeqIO will not guess at the format of a file from the name.
+Conversely, the file name extension doesn’t have to match the actual
+format.</p>
+<p>Writing out sequences is just as deliriously easy. Feed a list of
+SeqRecords, a file handle and a format to  <em>Bio.SeqIO.write()</em>:</p>
+<pre class="literal-block">
+# my_seqs is a list or iterator of seqrecords
+&gt;&gt;&gt; out_hndl = open (&quot;dump.fasta&quot;, &quot;w&quot;)
+&gt;&gt;&gt; SeqIO.write (my_seqs, out_hndl, &quot;fasta&quot;)
+&gt;&gt;&gt; out_hndl.close()
+</pre>
+</div>
+<div class="section" id="resources">
+<h2>Resources</h2>
+<ul class="simple">
+<li><a class="reference external" href="http://www2.warwick.ac.uk/fac/sci/moac/currentstudents/peter_cock/python/sequences/">Coming to grips with BioPythons alphabet system</a></li>
+<li><a class="reference external" href="http://www.pasteur.fr/recherche/unites/sis/formation/python/ch11s03.html">Seq &amp; SeqRecord</a></li>
+<li><a class="reference external" href="http://biopython.org/wiki/SeqIO">SeqIO</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

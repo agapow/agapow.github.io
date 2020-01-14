@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title> - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+
+<h1>Posts categorized under: </h1>
+
+<article class="summary">
+<div class="metadata">
+  <time datetime="2012-10-14T12:56:00+01:00" pubdate>2012-10-14</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/ruby/">ruby</a>, <a href="//by-tag/ruby-on-rails/">ruby-on-rails</a>, <a href="//by-tag/web-development/">web-development</a></p></div>  <div>
+    <h2>
+      <a href="/programming/web-development/ruby-on-rails/using-paperclip-for-attachments/" rel="bookmark" title="Permalink to Using Paperclip for attachments">Using Paperclip for attachments</a>
+    </h2>
+		<div class="summary">Doing something more than a toy example</div>
+   <p>This is not as straightforward as it seems.</p>
+<p>In development, it works fine. Simply declare that the model has an
+attachment:</p>
+<pre class="literal-block">
+class Download &lt; ActiveRecord::Base
+        ...
+        has_attached_file :attachment
+</pre>
+<p>and stuff will work automagically. A directory “system” will be created
+in your public folder and the attachments will be created in there …</p>
+  </div>
+</article><article class="summary">
+<div class="metadata">
+  <time datetime="2012-06-14T12:56:00+01:00" pubdate>2012-06-14</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+</div>  <div>
+    <h2>
+      <a href="/programming/web-development/ruby-on-rails/general-field-validation-in-rails/" rel="bookmark" title="Permalink to General Field Validation In Rails">General Field Validation In Rails</a>
+    </h2>
+   
+  </div>
+</article><article class="summary">
+<div class="metadata">
+  <time datetime="2012-06-14T12:56:00+01:00" pubdate>2012-06-14</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+</div>  <div>
+    <h2>
+      <a href="/programming/web-development/ruby-on-rails/naming-an-association-in-rails/" rel="bookmark" title="Permalink to Naming an association in Rails">Naming an association in Rails</a>
+    </h2>
+   <p>Naming an association in Rails</p>
+<p>In which we thwart the magic of Ruby on Rails.</p>
+<p>The automagically generated and named rails associations (:has_many,
+:belongs) are handy, but I ran into problems when trying to give an
+association a name other than the default based on the class name (e.g …</p>
+  </div>
+</article><article class="summary">
+<div class="metadata">
+  <time datetime="2012-04-01T12:00:00+01:00" pubdate>2012-04-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/ruby-on-rails/">ruby-on-rails</a>, <a href="//by-tag/ruby/">ruby</a>, <a href="//by-tag/web-development/">web-development</a></p></div>  <div>
+    <h2>
+      <a href="/programming/web-development/ruby-on-rails/can-i-use-rmagick/" rel="bookmark" title="Permalink to Can I use RMagick?">Can I use RMagick?</a>
+    </h2>
+		<div class="summary">A simple question, with the answer simply laid out for you.</div>
+   <p>RMagick is necessary for a lot of Ruby packages, so the restrictions on
+using it are critical (and very annoying). Here are the constraints on
+what can be used where:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="43%" />
+<col width="43%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">&nbsp;</th>
+<th class="head">&nbsp;</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Ruby 1.8</td>
+<td>RMagick 1</td>
+<td>RMagick 1</td>
+</tr>
+<tr><td>Ruby 1.9</td>
+<td>RMagick 2</td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Or to put it another way: if you …</p>
+  </div>
+</article><article class="summary">
+<div class="metadata">
+  <time datetime="2012-01-01T12:00:00+00:00" pubdate>2012-01-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+</div>  <div>
+    <h2>
+      <a href="/programming/web-development/ruby-on-rails/page-specific-assets-in-rails/" rel="bookmark" title="Permalink to Page-specific assets in Rails">Page-specific assets in Rails</a>
+    </h2>
+		<div class="summary">A common task that is surprisingly obscure.</div>
+   <p>A common use-case in web development is including some asset (e.g. a
+stylesheet or javascript file) only for certain pages. The situation
+gets trickier if the inclusion has to be in the page header. Finding how
+do do this in RoR is surprisingly tricky, due to outdated or bad …</p>
+  </div>
+</article><article class="summary">
+<div class="metadata">
+  <time datetime="2011-05-01T12:00:00+01:00" pubdate>2011-05-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/ruby/">ruby</a>, <a href="//by-tag/ruby-on-rails/">ruby-on-rails</a>, <a href="//by-tag/web-development/">web-development</a></p></div>  <div>
+    <h2>
+      <a href="/programming/web-development/ruby-on-rails/stuff-i-done-learned-about-hobo/" rel="bookmark" title="Permalink to Stuff I done learned about Hobo">Stuff I done learned about Hobo</a>
+    </h2>
+		<div class="summary">Stuff I done learned about Hobo</div>
+   <p>In which I discover things, sometimes painfully.</p>
+<p>Unless otherwise stated, done using Ruby 1.9.2, Hobo 1.0.3 (and hence
+Rails 2.3.10):</p>
+<div class="section" id="permissions">
+<h2>Permissions</h2>
+<p>It seems that permissions in Hobo can be a little tricky, in so much as
+I've had a case where something that behaved …</p></div>
+  </div>
+</article><article class="summary">
+<div class="metadata">
+  <time datetime="2011-02-01T12:00:00+00:00" pubdate>2011-02-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/ruby/">ruby</a>, <a href="//by-tag/web-development/">web-development</a>, <a href="//by-tag/ruby-on-rails/">ruby-on-rails</a>, <a href="//by-tag/hobo/">hobo</a></p></div>  <div>
+    <h2>
+      <a href="/programming/web-development/ruby-on-rails/creating-a-hobo-project/" rel="bookmark" title="Permalink to Creating a Hobo project">Creating a Hobo project</a>
+    </h2>
+		<div class="summary">A step-by-step guide to setting up Hobo development.</div>
+   <p><a class="reference external" href="http://hobocentral.net">Hobo</a> is a nifty thing, a better Rails than
+Rails, but there are a number of small roadbumps to getting a project
+started. This is a list of one possible way through the maze.</p>
+<div class="section" id="assumptions">
+<h2>Assumptions</h2>
+<ul class="simple">
+<li>You're working in a Unix-like environment</li>
+<li>For development purposes, you will be building a sandboxed …</li></ul></div>
+  </div>
+</article>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

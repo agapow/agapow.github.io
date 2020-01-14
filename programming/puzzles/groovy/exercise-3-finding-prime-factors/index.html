@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Exercise 3: finding prime factors - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Exercise 3: finding prime factors What is the largest prime factor of the number 600851475143? // What is the largest prime factor of the number 600851475143? target = 600851475143 factors = [] residue = target residue_is_prime = false // NOTE: ``#`` is not a comment character! // While the residue is not prime, keep extracting factors and adding to …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Exercise 3: finding prime factors">
+	<meta name="twitter:description" content="Exercise 3: finding prime factors What is the largest prime factor of the number 600851475143? // What is the largest prime factor of the number 600851475143? target = 600851475143 factors = [] residue = target residue_is_prime = false // NOTE: ``#`` is not a comment character! // While the residue is not prime, keep extracting factors and adding to …">
+	<meta name="twitter:url" content="/programming/puzzles/groovy/exercise-3-finding-prime-factors/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Exercise 3: finding prime factors</h1>
+
+<div class="metadata">
+  <time datetime="2012-06-14T12:56:00+01:00" pubdate>2012-06-14</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+</div>
+
+
+      <p>Exercise 3: finding prime factors</p>
+<p>What is the largest prime factor of the number 600851475143?</p>
+<p>// What is the largest prime factor of the number 600851475143? target =
+600851475143 factors = [] residue = target residue_is_prime = false //
+NOTE: ``#`` is not a comment character! // While the residue is not
+prime, keep extracting factors and adding to list while (!
+residue_is_prime) { // A factor could be from 2 to half the residue,
+try until one is found // NOTE: don't get integer division automatically
+in groovy, so have to // explicitly cast // NOTE: originally used
+``each``, but ``break`` only works inside loops println
+(&quot;Factoring ${residue} ...&quot;) half = (long) (residue / 2) found_factor =
+false for (i=2; i &lt;= half; i++) { // If it's a factor, stop looking, add
+to list &amp; reduce residue if (residue % i == 0) { residue = (long)
+(residue / i) println (&quot;Reduce to ${i} &amp; ${residue}&quot;) // NOTE: this is
+how you append to a list factors &lt;&lt; i found_factor = true break } } //
+If you haven't found a factor, then the residue must be prime // NOTE:
+groovy doesn't have `not`, `and` or `or` as syntactic sugar if (!
+found_factor) { factors &lt;&lt; residue residue_is_prime = true } }
+println (&quot;Factors are ${factors}.&quot;) println (&quot;Max factor is
+${factors.max()}.&quot;) # =&gt; 6857</p>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

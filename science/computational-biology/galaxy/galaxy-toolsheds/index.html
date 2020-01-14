@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Galaxy toolsheds - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Galaxy toolsheds Relatively painless tool-sharing This is a more recent innovation in Galaxy, which can make it a somewhat confused one: the concept of the toolshed has changed over its lifetime, the documentation is incomplete, and there's a slightly strange emphasis in the documentation that exists. So … Mile-high description Toolsheds …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Galaxy toolsheds">
+	<meta name="twitter:description" content="Galaxy toolsheds Relatively painless tool-sharing This is a more recent innovation in Galaxy, which can make it a somewhat confused one: the concept of the toolshed has changed over its lifetime, the documentation is incomplete, and there's a slightly strange emphasis in the documentation that exists. So … Mile-high description Toolsheds …">
+	<meta name="twitter:url" content="/science/computational-biology/galaxy/galaxy-toolsheds/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Galaxy toolsheds</h1>
+
+<div class="metadata">
+  <time datetime="2012-06-14T12:56:00+01:00" pubdate>2012-06-14</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/computational-biology/">computational biology</a>, <a href="//by-tag/galaxy/">galaxy</a></p></div>
+
+
+      <p>Galaxy toolsheds</p>
+<p>Relatively painless tool-sharing</p>
+<p>This is a more recent innovation in Galaxy, which can make it a
+somewhat confused one: the concept of the toolshed has changed over its
+lifetime, the documentation is incomplete, and there's a slightly
+strange emphasis in the documentation that exists. So …</p>
+<div class="section" id="mile-high-description">
+<h2>Mile-high description</h2>
+<p>Toolsheds are webapps just like Galaxy. They provides a way of sharing
+Galaxy tools, installing them into a Galaxy instance from within that
+instance (i.e. through the web), and being notified and obtaining
+updates to those tools. There's an official toolshed, a test one and you
+can set up your own.</p>
+</div>
+<div class="section" id="installing-tools-from-the-standard-sheds">
+<h2>Installing tools from the standard sheds</h2>
+<p>You need to be an administrator. Go into the admin menu and on the
+side you will see “Search and browse tool sheds”. Click this and you
+will get a list of the sheds available to you. Click on any of these and
+you get the choices for the individual repository: browse, search for
+tools, search for workflows.  **
+** <strong>NOTE:</strong> an irritating feature of the way the sheds are set up is
+that as you descend into the shed, there's few explicit up/back links to
+take you to where you just were or a category higher. You'll have to use
+your back button.    By search or browse, you'll end up on an index page
+listing tools. These will (strangely) give a button going to the tool, a
+description, the versions available and the owner/creator. Click on the
+button for one and you'll get a popup “Preview and install”. This is a
+complicated way of saying “go to the individual tool page”. Do that. The
+tool page will a bunch of information of the tool - actually tools if
+the package installs more than one. But the important button is in the
+top-right: “Install to Local Galaxy”. (the other button “Too shed
+asctions”, is a duplicate of the top level button giving you browse or
+search choices. It's an odd UI.) If you click the install button, you'll
+be offered the choice of putting the new tool(s) in a pre-existing
+section or a new one you create. Make a choice and then click “install”
+at the bottom of the page. After some minutes, it will appear in your
+instance.    <strong>NOTE:</strong> downloaded tools are actually placed in a
+directory ../shed_tools, i.e. outside your actual galaxy directory.
+(Strange, but an illustration of the point that tools can actually live
+anywhere.) They're also stored
+as  <a class="reference external" href="http://mercurial.selenic.com/">mercurial</a> repositories.</p>
+</div>
+<div class="section" id="running-your-own-toolshed">
+<h2>Running your own toolshed</h2>
+<p>You might want to do this if you want to manage custom tools for your
+own Galaxy instance that you don't want to pass to the outside world.
+And it's dead easy. The toolshed app is included with the main Galaxy
+distribution and lives alongside it. Three key points:</p>
+<ol class="arabic simple">
+<li>The configuration details for the toolshed live
+in community_wsgi.ini</li>
+<li>You run the toolshed with sh run_community.sh</li>
+<li>The toolshed uses a different database to the main Galaxy instance</li>
+</ol>
+<p>Various of the necessary web configuration details can be found in the
+links below and are similar to those used by Galaxy. Some points worth
+highlighting:</p>
+<ul class="simple">
+<li>port &amp; host: should be set to where you want the toolshed to be
+available from</li>
+<li>database_file: this is if you want to use the sqlite3 db. I had some
+problems with this, which were eventually solved by setting the path
+correctly for insertion in an sqlite protocol string
+(e.g./database/community.sqlite for a relative path setting the file
+in the database folder</li>
+<li>file_path: again, had some problems with this, which were solved by
+creating the directory for the file (e.g. &lt;galaxy
+inst&gt;/database/community_files) explicitly</li>
+<li>admin_users: like the main Galaxy installation, for setting the
+admins</li>
+</ul>
+<p>One more thing must be done before users can upload tools to your
+shed: an admin has to create categories before any tools can be
+uploaded. Look under Admin / Browse catgeories. (Oddly, users don't
+actually have to assign a tool to categories when they create them, But
+there must be a category.)</p>
+</div>
+<div class="section" id="using-a-local-toolshed">
+<h2>Using a local toolshed</h2>
+<p>Here we mean “using” in terms of putting tools up for other Galaxy
+installations to download. You'll have to sign up to your toolshed to do
+this - it may live in the same directory as the main app, but it doesn't
+share data. Look on the toolbar under  <em>User / Register</em> Now you have
+to create a create a repository to store your tool. Check out on the
+sidebar  <em>Create new repository</em>. You'll have to enter a bunch of
+descriptive text / metadata. Afterwards, you'll have the choice of
+uploading files to your new repo. While you can upload bz2 and gzipped
+archives, which are unpacked automagically. (There's some confusion
+here, where the examples also indicates that tar is unpacked, which some
+opaque nesting rules.)    You may run into an infuriating TypeError:
+array item must be char which is a problem that apparently occurs
+randomly, but is solved in more recent versions of the toolshed. Update
+your code.   Your account that the toolshed is running under will also
+need credentials for using mercurial. In it's home directory, there'll
+be a .hgrc file, which should look something like this:   [ui] username
+= My Name &lt;<a class="reference external" href="mailto:my-name&#64;example.com">my-name&#64;example.com</a>&gt; [web] allow_archive = bz2, gz, zip The
+last line defines the archive types that you can download source code
+as. Confusingly, the toolshed will offer you the choice of downloading
+types that aren't allowed (&quot;Download as [tar.gz|tar.bz2 ...]&quot;) and then
+spit back an error  &quot;Archive type is not allowed&quot;.</p>
+</div>
+<div class="section" id="further-reading">
+<h2>Further reading</h2>
+<p>Toolsheds have their  <a class="reference external" href="http://wiki.g2.bx.psu.edu/Tool%20Shed">wiki
+page</a>, although it is
+strangely preoccupied with running your own toolshed and the technical
+underpinnings</p>
+</div>
+<div class="section" id="installing-a-tool-manually">
+<h2>Installing a tool manually</h2>
+<p>The easiest way to get a tool is by using a recent version of Galaxy and
+downloading from the toolshed. But sometimes it happens that a tool is
+not available in the toolshed, or that it is a toolshed you're not
+linked to, or that a more recent version is available from elsewhere. So
+you're going to have to manually install the tool from source. The steps
+are essentially:</p>
+<ol class="arabic simple">
+<li>Obtain tarball/archive of tool</li>
+<li>Unpack</li>
+<li>Put folder in the tools folder of the galaxy instance</li>
+<li>Add the tool entry to the tool_conf.xml file</li>
+</ol>
+<div class="section" id="manually-downloading-from-toolshed">
+<h3>Manually downloading from toolshed</h3>
+<p>You can download a tool tarball from a toolshed, it's just a bit hidden.</p>
+<ol class="arabic simple">
+<li>Go to the toolshed site of your choice</li>
+<li>Find the index listing containing the tool you are interested in (the
+page with a table headed “Name … Synopsis … Author”)</li>
+<li>Click on the tool name/button to get to the individual tool page</li>
+<li>Click the button in the upper right labelled “repository actions” and
+on the popup select “Download as a ” in the desired format</li>
+</ol>
+<div class="section" id="configure-tool">
+<h4>Configure tool</h4>
+<p>Add an entry in an appropriate place to the tool-conf.xml in the root
+of your galaxy instance. It should look something like this: &lt;section
+name=&quot;Get Data&quot; id=&quot;getext&quot;&gt; &lt;tool file=&quot;data_source/upload.xml&quot;/&gt;
+&lt;tool file=&quot;MY_TOOL_DIR/MY_TOOL_CONF.xml&quot; /&gt; &lt;tool
+file=&quot;data_source/ucsc_tablebrowser.xml&quot; /&gt; ... where MY_TOOL_DIR is
+the name of the folder you placed in the tools dir and
+MY_TOOL_CONF.xml is the xml configuration file in that folder. See
+notes on tool development for further details. Restart your Galaxy
+instance to get it to pick up the new tool. If the tool does not show up
+in the right place on the tool menu, you've fucked up.</p>
+</div>
+<div class="section" id="what-it-looks-like-in-the-end">
+<h4>What it looks like in the end</h4>
+<p>So at the end your file hierarchy should look something like this:
+galaxy_dist (instance folder) - tool_conf.xml - tools - MY_TOOL_DIR
+- MY_TOOL_CONF.xml - (other tool files including executables)</p>
+</div>
+</div>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>"Indexing and slicing" - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Coming from other (arguably saner) programming languages, R's indexing behaviour kept catching me off guard. When should I use [] and when [[]]? What's the difference between accessing a member by name or using that name as an index? Why is iterating over a list so fiddly? Here's an example to clear …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content=""Indexing and slicing"">
+	<meta name="twitter:description" content="Coming from other (arguably saner) programming languages, R's indexing behaviour kept catching me off guard. When should I use [] and when [[]]? What's the difference between accessing a member by name or using that name as an index? Why is iterating over a list so fiddly? Here's an example to clear …">
+	<meta name="twitter:url" content="/programming/r/indexing-and-slicing/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>"Indexing and slicing"</h1>
+
+<div class="metadata">
+  <time datetime="2015-05-20T00:00:00+01:00" pubdate>2015-05-20</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/r/">r</a></p></div>
+
+
+      <p>Coming from other (arguably saner) programming languages, R's indexing behaviour kept catching me off guard. When should I use <code>[]</code> and when <code>[[]]</code>? What's the difference between accessing a member by name or using that name as an index? Why is iterating over a list so fiddly? Here's an example to clear things up. </p>
+<p>Imagine a list with a numbver of named members:</p>
+<div class="highlight"><pre><span></span>mylist <span class="o">&lt;-</span> <span class="kt">list</span> <span class="p">(</span>
+   foo<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;first&#39;</span><span class="p">,</span> <span class="m">1</span><span class="p">),</span>
+   bar<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;second&#39;</span><span class="p">,</span> <span class="m">2</span><span class="p">),</span>
+   baz<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;third&#39;</span><span class="p">,</span> <span class="m">3</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Of course, you can access each named element with the <code>$</code> syntax:</p>
+<div class="highlight"><pre><span></span>mylist<span class="o">$</span>foo
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] &quot;first&quot; &quot;1&quot;
+</pre></div>
+
+
+<p>But if you don't know the names in advance and have to access them programmaticaly, you'll have to use <code>[]</code> syntax:</p>
+<div class="highlight"><pre><span></span>mylist<span class="p">[</span><span class="s">&#39;foo&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## $foo
+## [1] &quot;first&quot; &quot;1&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="kr">for</span> <span class="p">(</span>n <span class="kr">in</span> names <span class="p">(</span>mylist<span class="p">))</span> <span class="p">{</span>
+   mylist<span class="p">[</span>n<span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>As you can see, these things produce two slightly different results. The distinction may be a little more obvious using <code>str</code>:</p>
+<div class="highlight"><pre><span></span>str <span class="p">(</span>mylist<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## List of 3
+##  $ foo: chr [1:2] &quot;first&quot; &quot;1&quot;
+##  $ bar: chr [1:2] &quot;second&quot; &quot;2&quot;
+##  $ baz: chr [1:2] &quot;third&quot; &quot;3&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>str <span class="p">(</span>mylist<span class="o">$</span>foo<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>##  chr [1:2] &quot;first&quot; &quot;1&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>str <span class="p">(</span>mylist<span class="p">[</span><span class="s">&#39;foo&#39;</span><span class="p">])</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## List of 1
+##  $ foo: chr [1:2] &quot;first&quot; &quot;1&quot;
+</pre></div>
+
+
+<p>You can see something similar happening here:</p>
+<div class="highlight"><pre><span></span>str <span class="p">(</span>mylist<span class="p">[</span><span class="m">1</span><span class="p">])</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## List of 1
+##  $ foo: chr [1:2] &quot;first&quot; &quot;1&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>str <span class="p">(</span>mylist<span class="p">[[</span><span class="m">1</span><span class="p">]])</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>##  chr [1:2] &quot;first&quot; &quot;1&quot;
+</pre></div>
+
+
+<p>In summary:</p>
+<ul>
+<li>
+<p><code>[]</code> returns a slice or subset of the original object, a sublist in this case.</p>
+</li>
+<li>
+<p><code>[[]]</code> and <code>$</code> return the actual values stored at that index. In effect, they strip off the name and one level of structure.</p>
+</li>
+</ul>
+<p>What happens if you use <code>[[]]</code> to return the values stored at multiple indices? Uh ...</p>
+<div class="highlight"><pre><span></span>mylist<span class="p">[[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">]]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## [1] &quot;1&quot;
+</pre></div>
+
+
+<p>There's probably some logic to this but I can't see it.</p>
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

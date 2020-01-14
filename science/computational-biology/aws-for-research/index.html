@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Using AWS for research computing - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="This is based upon my reply to a question on reddit concerning experiences with using Amazon Web Services (including ELastic Computing, Glacier, etc.) for research. I was part of a pan-European research consortium that used it for our shared computing infrastructure: databases, a few web apps and web sites, mailers …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Using AWS for research computing">
+	<meta name="twitter:description" content="This is based upon my reply to a question on reddit concerning experiences with using Amazon Web Services (including ELastic Computing, Glacier, etc.) for research. I was part of a pan-European research consortium that used it for our shared computing infrastructure: databases, a few web apps and web sites, mailers …">
+	<meta name="twitter:url" content="/science/computational-biology/aws-for-research/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Using AWS for research computing</h1>
+
+<div class="metadata">
+  <time datetime="2017-05-01T12:00:00+01:00" pubdate>2017-05-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/software/">software</a>, <a href="//by-tag/research/">research</a>, <a href="//by-tag/amazon/">amazon</a>, <a href="//by-tag/aws/">aws</a></p></div>
+		<div class="summary">Your own private computing cluster?</div>
+
+
+      <p>This is based upon my reply to a question on reddit concerning experiences with using Amazon Web Services (including ELastic Computing, Glacier, etc.) for research.</p>
+<p>I was part of a pan-European research consortium that used it for our shared computing infrastructure: databases, a few web apps and web sites, mailers, some ad hoc computation for big projects. Here's my distilled wisdom of the experience.</p>
+<div class="section" id="pros">
+<h2>Pros</h2>
+<ul class="simple">
+<li>You pay for what you use. If you're not using something, you can switch it off.</li>
+<li>You can reconfigure and set up stuff when and as needed, not having to worry about waiting for institutional IT, delays with ordering, problems with department policies and so on.</li>
+<li>Cloning and copying disks and machines through a web interface was a dream. Need a new machine: click-click. Need to make it bigger: click-click. I set up some &quot;base&quot; configurations, which I used for building individualised systems.</li>
+<li>Doing things through the commandline / scripting interface was very powerful. You could write scripts to duplicate and backup systems, to push data and reboot a system, to monitor their state.</li>
+<li>There's a lot of smart useful stuff in AWS. I especially loved Elastic Beanstalk: being able to deploy and scale a piece of software (not a machine) without all the fiddly details or the hardware and network surrounding it. The storage stuff (S3 and Glacier) was also funky. You could run an entire website out of static (and cheap) S3.</li>
+<li>AWS is robust. You would hear horror stories of companies losing infrastructure and data in AWS but these seemed to be the long tail of experiences and AWS &quot;just worked&quot; around the clock. Anyway, normal resilience procedures should be used just as in any infrastructure.</li>
+<li>AWS has solid and easy security (at least as far as I could tell). You could readily restrict at different portals to different IPs and stack these policies.</li>
+</ul>
+</div>
+<div class="section" id="cons">
+<h2>Cons</h2>
+<ul class="simple">
+<li>Universities and research centers are still struggling to cope with pay-as-you-go computation. They're much more comfortable for paying lump sums for hardware and depreciating it.</li>
+<li>Costs are a little unpredictable, especially data transfer costs which are down right opaque. Don't forget to monitor what you're running or you could get surprised by costs from forgotten machines idling along.</li>
+<li>There's the occasional issue where institutional IT won't let your external (AWS) system talk to or connect to an internal resource because of policy / security. Which I can understand: research IT is a big enough mess without increasing the complexity of the task.</li>
+<li>It's an evolving platform so things change. (Actually changes very rarely broke anything, mostly they actually made things easier.)</li>
+<li>There's the occasional thing that is difficult or impossible under AWS. For example, I remember mailing being a problem because mailing required all legal to and from addresses to be pre-specified. (Amazon is rightly concerned about being used by spammers as disposable mailhost.) I got around it, but it was extra work.</li>
+<li>There's still a lot of technical details and sysadmin work to do, setting up firewall rules, configuring machines, networking etc. And since this is your infrastructure and nothing to do with the research institute, there's no help to be found. And since this is research, you're probably a postdoc or PhD student and not an IT professional, right? AWS makes it easier to setup and run a research computing infrastructure but it is by no means a simple task.</li>
+</ul>
+</div>
+<div class="section" id="end-analysis">
+<h2>End analysis</h2>
+<p>In the end, I moved on and I believe the infrastructure largely migrated to one of the collaborators institutes, largely due to the first (cost) and last (expertise) cons. Still, I consider it a success. There was a lot that was good about using AWS.</p>
+</div>
+<div class="section" id="also-see">
+<h2>Also see</h2>
+<ul class="simple">
+<li><a class="reference external" href="https://www.reddit.com/r/bioinformatics/comments/68ugny/how_when_and_why_do_you_use_amazon_web_services/">How, when and why do you use Amazon Web Services in Bioinformatics?</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

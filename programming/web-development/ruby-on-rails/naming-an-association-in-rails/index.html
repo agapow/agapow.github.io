@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Naming an association in Rails - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Naming an association in Rails In which we thwart the magic of Ruby on Rails. The automagically generated and named rails associations (:has_many, :belongs) are handy, but I ran into problems when trying to give an association a name other than the default based on the class name (e.g …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Naming an association in Rails">
+	<meta name="twitter:description" content="Naming an association in Rails In which we thwart the magic of Ruby on Rails. The automagically generated and named rails associations (:has_many, :belongs) are handy, but I ran into problems when trying to give an association a name other than the default based on the class name (e.g …">
+	<meta name="twitter:url" content="/programming/web-development/ruby-on-rails/naming-an-association-in-rails/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Naming an association in Rails</h1>
+
+<div class="metadata">
+  <time datetime="2012-06-14T12:56:00+01:00" pubdate>2012-06-14</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+</div>
+
+
+      <p>Naming an association in Rails</p>
+<p>In which we thwart the magic of Ruby on Rails.</p>
+<p>The automagically generated and named rails associations (:has_many,
+:belongs) are handy, but I ran into problems when trying to give an
+association a name other than the default based on the class name (e.g.
+&quot;users&quot;). It would be better to use more informative names, especially
+where models may relate in a number of ways (e.g. &quot;authors&quot;, &quot;editors&quot;,
+&quot;artists&quot;).</p>
+<p>Unfortunately the Rails documentation is a little opaque on this, with
+many method options that _look_ as if they'll do the job (:source,
+:class_name, :foreign_key). Furthermore, there's are lots of partial
+solutions that partially work, making it hard to de-engineer what's
+going on.</p>
+<p>This is one possible solution, which can be summarized:</p>
+<ul class="simple">
+<li>Rename the association in the owning (has_many) model.</li>
+<li>Rename the association in intermediate model and give the class name
+of the model on the other side of the relationship.</li>
+</ul>
+<p>Note: this focuses on :has_many, because Hobo does not make full use of
+:has_many_and_belongs_to_many as yet.</p>
+<p>The situation: each shift can have several supervisors and each user can
+be a supervisor for multiple shifts, i.e. a classic many-to-many</p>
+<p>Version 1: with automatically deduced names based on the model classes:</p>
+<p># The supervisors are available through &quot;users&quot; class Shift &lt;
+ActiveRecord::Base has_many :shift_supervisors, :dependent =&gt; :destroy
+has_many :users, :through =&gt; :shift_supervisors end # intermediate
+table # the user is pointed at by &quot;user&quot;, and the shift by &quot;shift&quot; class
+ShiftSupervisor &lt; ActiveRecord::Base belongs_to :shift belongs_to
+:user end # The shifts are available through &quot;shifts&quot; class User &lt;
+ActiveRecord::Base has_many :shift_supervisors, :dependent =&gt; :destroy
+has_many :shifts, :through =&gt; :shift_supervisors end</p>
+<p>Version 2: renaming the association in Shift to something more logical:</p>
+<p># The supervisors are available through &quot;supervisors&quot;, just by renaming
+the # association class Shift &lt; ActiveRecord::Base has_many
+:shift_supervisors, :dependent =&gt; :destroy has_many :supervisors,
+:through =&gt; :shift_supervisors end # the user is pointed at by
+&quot;supervisor&quot;, with explicit naming of the model class ShiftSupervisor &lt;
+ActiveRecord::Base belongs_to :shift belongs_to :supervisor,
+:class_name =&gt; &quot;User&quot; end # unchanged class User &lt; ActiveRecord::Base
+has_many :shift_supervisors, :dependent =&gt; :destroy has_many :shifts,
+:through =&gt; :shift_supervisors end</p>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

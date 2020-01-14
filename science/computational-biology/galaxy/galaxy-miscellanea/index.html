@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Galaxy miscellanea - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Odds and ends and the surprising. Redirects If you are serving the installation with a proxy redirect (e.g. the galaxy server is running on port 7070 but is being redirect by Apache to appear at port 80 on /galaxy), while you can access Galaxy at both addresses, login will …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Galaxy miscellanea">
+	<meta name="twitter:description" content="Odds and ends and the surprising. Redirects If you are serving the installation with a proxy redirect (e.g. the galaxy server is running on port 7070 but is being redirect by Apache to appear at port 80 on /galaxy), while you can access Galaxy at both addresses, login will …">
+	<meta name="twitter:url" content="/science/computational-biology/galaxy/galaxy-miscellanea/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Galaxy miscellanea</h1>
+
+<div class="metadata">
+  <time datetime="2012-01-01T12:00:00+00:00" pubdate>2012-01-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/computational-biology/">computational biology</a>, <a href="//by-tag/galaxy/">galaxy</a></p></div>
+
+
+      <p><em>Odds and ends and the surprising.</em></p>
+<div class="section" id="redirects">
+<h2>Redirects</h2>
+<p>If you are serving the installation with a proxy redirect (e.g. the
+galaxy server is running on port 7070 but is being redirect by Apache to
+appear at port 80 on <em>/galaxy</em>), while you can access Galaxy at both
+addresses, login will only work on one. This is because Galaxy tracks
+where you are with cookies that record the path of the instance you are
+using, so you can use more than one Galaxy instance. This creates a
+slightly strange behaviour where you can login on the other port/path
+but are instantly logged out.</p>
+<p>The mixup between these cookies can leave you in a situation where you
+can't login to your account. The solution is to delete your cookies.</p>
+</div>
+<div class="section" id="pytz">
+<h2>Pytz</h2>
+<p>While uploading a sequence file (Upload File), a harmless error was
+issued that disrupted the upload:</p>
+<pre class="literal-block">
+/home/f0/paul/Installed/lib/python2.6/site-packages/pytz/tzinfo.py:5: DeprecationWarning: the sets module is deprecated from sets import Set
+</pre>
+<p>This can be easily fixed by installing the latest version of pytz:</p>
+<pre class="literal-block">
+% easy_install pytz
+</pre>
+</div>
+<div class="section" id="tool-config">
+<h2>Tool config</h2>
+<p>Interestingly, if your tool_conf.xml entry is incorrect (e.g. pointing
+at a non-existent directory), an error is written to the log and the
+tool just simply not appear in the menu. Note that changes to the config
+file will require a restart to be detected.</p>
+</div>
+<div class="section" id="duplicate-tool-ids">
+<h2>Duplicate tool ids</h2>
+<p>An interesting way to make an invisible mistake: if you register tools
+with the same id (the id in the specific tool configuration file), only
+the first one gets registered, the others silently fail:</p>
+<pre class="literal-block">
+&lt;tool id=&quot;hpa_seqtools_datelabel-seqs&quot; name=&quot;Do this thing&quot;&gt; ... &lt;tool id=&quot;hpa_seqtools_datelabel-seqs&quot; name=&quot;Do the other thing&quot;&gt;
+</pre>
+<p>The only way you can tell (apart from the tool not showing up) is to
+look in the output of a Galaxy instance run from the commandline. It
+prints the id of each tool being registered.</p>
+</div>
+<div class="section" id="only-sleeping">
+<h2>Only sleeping</h2>
+<p>It _seems_ as if when Galaxy has not been used for a while, going to
+its address produces a strange traceback. However, immediately reloading
+the page shows the usual appearance. It's unclear whether it is Galaxy
+or Apache, but it's just a cosmetic annoyance. This may be the result of
+our local setup.</p>
+</div>
+<div class="section" id="the-biopython-that-wasn-t-there">
+<h2>The BioPython that wasn't there</h2>
+<p>An odd incident that Galaxy provoked, although it was not at fault:
+Biopython was installed on the Galaxy python (the egg is in
+site-packages), but tools that imported it failed, saying:</p>
+<pre class="literal-block">
+from Bio import SeqIO ImportError: No module named Bio
+</pre>
+<p>This perplexed me for a while, until I went to the extent of unzipping
+the Biopython egg. It contained nothing but the metadata (i.e. the
+EGG-INFO), having no actual module or executables.</p>
+<p>I realise now that I'd seen this before when a library installation
+fails or is aborted. The lib can get &quot;half-installed&quot;, leading to the
+above problems. Solution: manually delete the egg, edit it's line out of
+<em>easy-install.pth</em> and reinstall the lib.</p>
+</div>
+<div class="section" id="templates-not-all-there">
+<h2>Templates not all there</h2>
+<p>The templating for building commandlines lacks one feature of fully
+blown Cheetah templates - you can't include Python code between angled
+braces, i.e.:</p>
+<pre class="literal-block">
+&lt;% foo = &quot;bar&quot; %&gt; #this won't work
+</pre>
+<p>This is because the xml parser can't cope with the angled brackets. No
+biggie.</p>
+</div>
+<div class="section" id="template-debugging">
+<h2>Template debugging</h2>
+<p>Some helpful tip from the galaxy-developers list.</p>
+<p>You can embed a direct python command after a ”#silent” directive. This
+can be used to print something to STDERR, that won't appear in the
+generated tool commandline:</p>
+<pre class="literal-block">
+#silent sys.stderr.write(&quot;Hello World from cheetah generated code &quot;);
+</pre>
+<p>All available parameters in a template can be dumped with:</p>
+<pre class="literal-block">
+#silent sys.stderr.write(&quot;!!!! Cheetah Template Variables !!!! &quot;) #silent sys.stderr.write(&quot; searchList = '%s' &quot; % (str($searchList)) ) #silent sys.stderr.write(&quot;!!!! end-of-list !!!! &quot;)
+</pre>
+<p><em>#breakpoint</em> stops template compilation at any given point and can be
+used to bisect template problems. i.e. If the template compiled fine,
+then all the statements above the breakpoint are valid.</p>
+</div>
+<div class="section" id="parameter-sanitizing">
+<h2>Parameter sanitizing</h2>
+<p>Something that is there in the documentation, but is easy to miss:
+Galaxy filters tool form text. As a result, a field like <em>%y-%m-%d</em> will
+get passed to the tool as <em>Xy-Xm-Xd</em>. You get around this by giving a
+&quot;sanitizer&quot; tag to the relevant param. This can switch off param
+cleaning, set the characters to be filtered and suggest substitutions:</p>
+<p><em>&lt;param name=&quot;date_fmt&quot; type=&quot;text&quot; label=&quot;Date format&quot;&gt; &lt;sanitizer&gt;
+&lt;valid initial=&quot;string.printable&quot;&gt; &lt;remove value=&quot;&amp;apos;&quot;/&gt; &lt;/valid&gt;
+&lt;/sanitizer&gt; &lt;/param&gt;</em></p>
+</div>
+<div class="section" id="stderr-is-an-error">
+<h2>STDERR is an error</h2>
+<p>If a tool writes anything to stderr, this is interpreted as a failure.</p>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

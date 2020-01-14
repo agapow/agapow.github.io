@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Upgrading to 2.1.x - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="The process of upgrading a Plone site can be intricate. The 2.0.x to 2.1.x jump is no different. (Anyone who has followed the series of quirks and bugs in Agapow.net over the early part of 2006 will have seen the evidence.) While you could just …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Upgrading to 2.1.x">
+	<meta name="twitter:description" content="The process of upgrading a Plone site can be intricate. The 2.0.x to 2.1.x jump is no different. (Anyone who has followed the series of quirks and bugs in Agapow.net over the early part of 2006 will have seen the evidence.) While you could just …">
+	<meta name="twitter:url" content="/programming/web-development/plone/upgrading-to-2-1-x/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Upgrading to 2.1.x</h1>
+
+<div class="metadata">
+  <time datetime="2006-09-01T12:00:00+01:00" pubdate>2006-09-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/plone/">plone</a>, <a href="//by-tag/web-development/">web-development</a></p></div>
+		<div class="summary">Some notes on the process of updating your Plone site software.</div>
+
+
+      <p>The process of upgrading a Plone site can be intricate. The 2.0.x to
+2.1.x jump is no different. (Anyone who has followed the series of
+quirks and
+<a class="reference external" href="http://www.agapow.net/programming/python/plone-zope/yes-i-know">bugs</a>
+in Agapow.net over the early part of 2006 will have seen the evidence.)
+While you could just avoid the move, there are compelling new features
+in the 2.1 release of Plone and several useful Products that work only
+in 2.1.</p>
+<p>Note: For reference, I was upgrading from Plone 2.0.5 and Zope 2.7.6,
+and hoping to get to Plone 2.1.2 (the latest stable).</p>
+<div class="section" id="general-notes">
+<h2>General notes</h2>
+<p>The first general principle is that Zope/Plone and their associated
+Products can be very version-sensitive. So you can't just leap from say)
+Zope 2.7 to 2.9. You may have to upgrade in several steps. Check the
+requirements.</p>
+<p>The second principle is that you upgrade from the top down. Update all
+your products, then upgrade Plone, then Zope, then Python (if
+necessary). Of course, updated versions of Products may lose
+compatibility with older versions of Plone and so on (c.v.
+RichDocument). Again, you may have to upgrade in several steps.</p>
+<p>Third principle, backup all along the way. The simplest way is just to
+copy the whole Products and var directories. This way, if you make a
+mistake or are forced to rollback the upgrade, you can just drop the old
+directories back and you're in business.</p>
+<p>See the <a class="reference external" href="http://plone.org/documentation/migration/2.1/">Plone migration
+how-to</a>.</p>
+</div>
+<div class="section" id="specifics">
+<h2>Specifics</h2>
+<p>Specifics: First I upgraded Zope from 2.7.6 to 2.7.8. (Previous
+experiments showed this was necessary.) Assuming you have several Zope
+installations on your host machine, this is done by simply by changing
+the paths listed in the the zope/bin/runzope and zope/bin/zopectl
+scripts. Test your installation by running it with runzope -X
+&quot;debug-mode=on and then shut it down.</p>
+<p>Then I downloaded the latest version of Plone (2.1.2), unpacked and
+copied - not moved! - all the resulting Products into your instance
+Products directory. This makes it easier if you have to reattempt the
+upgrade later. I tested the site with runzope again and it looked like a
+mess but this is to be expected. There's a migration script to bring
+content up to date, found in the ZMI in the site as the
+portal_migration tool. It showed that the site instance was an older
+version than that on disk, again what was expected. So I clicked Dry run
+and attempted a migration.</p>
+<p>Errors were reported and fixed before the migration was done for real.
+Then I checked the Add/Remove products panel of the actual site to see
+if anything needed to be updated or reinstalled.</p>
+</div>
+<div class="section" id="assorted-issues">
+<h2>Assorted issues</h2>
+<p>Plone 2.1 makes all your top level folders tabs, one of the (IMHO)
+uglier aspects of the Plone UI. The migration doc suggests a few ways to
+get rid of, but I found it was easiest to just use a bit of css:</p>
+<pre class="literal-block">
+#portal-globalnav { display: none; }
+</pre>
+<p>Migration can get stymied by what appears to be incorrect or incomplete
+folders, particularly the Members folder or those within it. If you
+examine the traceback given at migration failure, you should see which
+one is giving trouble. <a class="reference external" href="http://permalink.gmane.org/gmane.comp.web.zope.plone.setup/255">Several scripts have been suggested to fix
+this</a>
+but I favoured a simpler solution: cutting all the content out of the
+troublesome folder and then deleting it.</p>
+<p>Another problem occurred with a top-level object I had with the id news.
+The Plone migrator attempted to create a folder with the same id, and
+fell over when it couldn't. Solution: rename the old folder, migrate,
+and rename the new folder.</p>
+<p>Making the jump to Zope2.9 will require more editting of the zope run
+scripts, as the Python Zope module has been renamed to Zope2.</p>
+<p>After the migration, PloneSoftwareCenter was broken, with any file
+downloads from it silently failing. This can be fixed by installing the
+most recent plone-2.1-integration branch of PSC from the Plone
+collective SVN area, as well as the ExternalStorage product. This seems
+to fix things.</p>
+<p>CMFPhoto appears to be broken as well.</p>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Logging PHP errors - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="The scenario I try to avoid PHP as much as possible (just not my thing) but I'd installed a PHP-based webapp (REDCap) and there was something occuring that seemed like it should have generated an error. However I could not find any PHP errors logged anywhere on the machine. So …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Logging PHP errors">
+	<meta name="twitter:description" content="The scenario I try to avoid PHP as much as possible (just not my thing) but I'd installed a PHP-based webapp (REDCap) and there was something occuring that seemed like it should have generated an error. However I could not find any PHP errors logged anywhere on the machine. So …">
+	<meta name="twitter:url" content="/programming/web-development/logging-php-errors/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Logging PHP errors</h1>
+
+<div class="metadata">
+  <time datetime="2015-05-01T00:00:00+01:00" pubdate>2015-05-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/web-development/">web-development</a>, <a href="//by-tag/php/">php</a></p></div>
+		<div class="summary">Somehow, this feels like a personal failing.</div>
+
+
+      <div class="section" id="the-scenario">
+<h2>The scenario</h2>
+<p>I try to avoid PHP as much as possible (just not my thing) but I'd installed a PHP-based webapp (<a class="reference external" href="http://redcap.vanderbilt.edu/">REDCap</a>) and there was something occuring that seemed like it should have generated an error. However I could not find any PHP errors logged anywhere on the machine. So, in order to track down a <em>possible</em> error, I had to ensure PHP was logging errors at all, then test it with an actual error.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You may need to use <tt class="docutils literal">sudo</tt> for some parts of this.</p>
+</div>
+</div>
+<div class="section" id="php-configuration">
+<h2>PHP configuration</h2>
+<p>There's a lot of confusing advice out there regarding this issue, much is which is right and some of which is incomplete (especially regarding the issue of permissions). Here's what I found to be relevant:</p>
+<p>First, make sure that PHP is actually configured to log errors. In <tt class="docutils literal">php.ini</tt> (which is usually in <tt class="docutils literal">/etc</tt>), make sure that <tt class="docutils literal">log_errors = On</tt>.  There is a setting to &quot;display&quot; errors, but that shows errors on the webpage. Don't switch that on. It may also be worthwhile seeing what level of error PHP is logging, although the default value is sensible.</p>
+<p>(There is another suggestion that may be worthwhile: Set <tt class="docutils literal">log_errors_max_len = 0</tt>. I'm not sure if it's critical but it was in my &quot;working&quot; group of settings.)</p>
+<p>Next, set <tt class="docutils literal">error_log</tt> to the full path of where you want the log to appear. People often recommend that you put it in with the apache / httpd errors, but you could run into permission issues. (See below.) Just use <tt class="docutils literal">/var/log/</tt> and you should be fine.</p>
+<p>The file has to be writable by the webserver process, so find out what that is:</p>
+<pre class="literal-block">
+% ps aux | egrep '(apache|httpd)'
+</pre>
+<p>Then create the file and give it the correct owner:</p>
+<pre class="literal-block">
+% touch /var/log/php_error.log
+% chown apache /var/log/php_error.log
+</pre>
+<p>Now restart the webserver:</p>
+<pre class="literal-block">
+% service httpd restart
+</pre>
+</div>
+<div class="section" id="generate-an-error">
+<h2>Generate an error</h2>
+<p>To test that everything is working, create a webpage in a useful location:</p>
+<pre class="literal-block">
+% vi /var/www/html/error.php
+</pre>
+<p>and give it contents like this:</p>
+<pre class="literal-block">
+&lt;?php
+$denominator = 0;
+echo 2/ $denominator;
+?&gt;
+</pre>
+<p>Load that webpage and you should get something in the error log like:</p>
+<pre class="literal-block">
+[22-Apr-2015 14:21:59 UTC] PHP Warning:  Division by zero in /var/www/html/error.php on line 5
+[22-Apr-2015 14:22:23 UTC] PHP Parse error:  syntax error, unexpected T_VARIABLE in /var/www/html/error.php on line 5
+</pre>
+</div>
+<div class="section" id="postscript">
+<h2>Postscript</h2>
+<p>The &quot;error&quot; turned out to be in a user's botched analysis of the data they'd downloaded from the webapp. The app was running fine. Moral: check everything.</p>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

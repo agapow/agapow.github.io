@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Shifting to a new Mac via Time Machine - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="As my old (6 years) MacBook was struggling to do much of anything, it was time to move to a new machine. One of the great aspects of Apple's Time Machine backup software is how easy it makes it to do this - start the new machine up, plugin the backup …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Shifting to a new Mac via Time Machine">
+	<meta name="twitter:description" content="As my old (6 years) MacBook was struggling to do much of anything, it was time to move to a new machine. One of the great aspects of Apple's Time Machine backup software is how easy it makes it to do this - start the new machine up, plugin the backup …">
+	<meta name="twitter:url" content="/misc/mac/shifting-to-a-new-mac-via-time-machine/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Shifting to a new Mac via Time Machine</h1>
+
+<div class="metadata">
+  <time datetime="2012-08-21T13:14:00+01:00" pubdate>2012-08-21</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/misc/">misc</a>
+<p class="tags">tagged <a href="//by-tag/apple/">apple</a>, <a href="//by-tag/backblaze/">backblaze</a>, <a href="//by-tag/google-drive/">google-drive</a>, <a href="//by-tag/osx/">osx</a>, <a href="//by-tag/spotlight/">spotlight</a>, <a href="//by-tag/technology/">technology</a>, <a href="//by-tag/time-machine/">time-machine</a></p></div>
+		<div class="summary">Some notes on a procedure that's simple and at the same time complicated.</div>
+
+
+      <p>As my old (6 years) MacBook was struggling to do much of anything, it
+was time to move to a new machine. One of the great aspects of Apple's
+Time Machine backup software is how easy it makes it to do this - start
+the new machine up, plugin the backup in, after a while your disk will
+appear as it was, more or less.</p>
+<p>This page is about the more or less - the hiccups and issues
+encountered. To be fair to Apple, these mostly concern non-Apple
+software.</p>
+<div class="section" id="technical-details">
+<h2>Technical details</h2>
+<ul class="simple">
+<li>The backup is coming from a MacBook circa 2007 running OS X 10.6</li>
+<li>It is going to a MacBook Pro mid-2012 running OS X 10.8.4</li>
+</ul>
+</div>
+<div class="section" id="google-drive">
+<h2>Google Drive</h2>
+<p>... naturally fails. It reports that it can't find the Google Drive
+folder even if you point the software at it. From previous experience,
+there is only one solution for this - create a new GDrive folder and let
+the contents be re-downloaded.</p>
+</div>
+<div class="section" id="backblaze">
+<h2>Backblaze</h2>
+<p>This cloud backup does something unexpected but extremely logical when
+transferred to a new computer - it stops backing up. The service reasons
+that if a new computer is attached to an old backup, the most sensible
+thing to do is to preserve the old backup (making it &quot;frozen&quot;) in case
+of error.</p>
+<p>Unfortunately exchanging the backup to your new machine is awkward. You
+have to:</p>
+<ol class="arabic simple">
+<li>set up a backup from the new machine (which is added to your account as a time-limited trial)</li>
+<li>from the webpage for your account, check that both old and new machines are on it</li>
+<li>delete the old backup</li>
+<li>transfer the license to the new machine</li>
+</ol>
+<p>This unfortunately means that backup-wise you're flapping in the breeze
+for a while: the new machine has to upload itself entirely, building a
+wholly new backup. At Backblaze's usual speeds, this could take days or
+weeks.</p>
+<p>(Note: Backblaze can sometimes be a little piggy - the backup process
+occasionally consumes 0.5G of memory. I switched to a once-a-day backup
+schedule for after midnight to keep it out of my hair.)</p>
+</div>
+<div class="section" id="spotlight">
+<h2>Spotlight</h2>
+<p>Spotlight is notorious for getting out of hand and continually
+re-indexing, consuming CPU. (Look for the <em>mdsworker</em> process as a sight
+of this happening.) A common solution is to exclude from
+Spotlight certain problematic folders that are constantly changing but
+contain nothing interesting, e.g. cache and temporary folders including
+those associated with Backblaze. However, the list of excluded folders
+isn't carried across in a Time Machine restore, so you have to set them
+again.</p>
+<p>I chose to exclude <em>/Library</em>, <em>/System/Library</em> and <em>~/Library</em>, which
+captures the Backblaze files. Note that to select the ~/Library folder -
+which is hidden normally under OSX - can be shown in the select folder
+dialog by pressing <em>cmd-shift-.</em></p>
+</div>
+<div class="section" id="mendeley">
+<h2>Mendeley</h2>
+<p>This is possibly un-related to the upgrade procedure and just happened
+at the same time coincidentally. However:</p>
+<p>Post-upgrade, Mendeley was a little fragile - crashing occasionally,
+repairing the database, etc. Alerted to the availability of an update, I
+installed the new version. Whereupon Mendeley would crash within minutes
+of starting. If re-opened, it would repair the database, then crash.
+Rinse and repair.</p>
+<p>The solution to this ended up being the removal of Mendeley totally from
+the system, including any data and preference files (use Spotlight to
+search for them) and reinstallation. Mendeley then re-syncs your library
+including papers with the cloud storage, which takes forever.</p>
+</div>
+<div class="section" id="devtools-and-macports">
+<h2>DevTools and MacPorts</h2>
+<p>Things like <em>make</em>, <em>port</em> and other unix commandline things will
+probably be broken by the upgrade. Time to reinstall everything.</p>
+<p>This gets a bit messy. You can now install and maintain DevTools from
+the AppStore - which is a Good Thing - but it seems that this will
+install XCode in <em>/Applications</em>, where as older versions of XCode
+installed in <em>/Developer</em>. So you can end up with two versions of XCode
+on the one machine. Beware ...</p>
+<p>Having installed XCode, run it and install the commandline tools (find
+these in <em>Preferences &gt; Downloads</em>).</p>
+<p>MacPorts is broken horribly by an upgrade. There is a  <a class="reference external" href="https://trac.macports.org/wiki/Migration">migration
+guide</a> offered, but this is
+essentially &quot;uninstall and reinstall it&quot;.  Do that.</p>
+</div>
+<div class="section" id="disk-space">
+<h2>Disk space</h2>
+<p>I have a suspicion that moving computers and disks leads to cruft
+accumulating on the disk and consuming space. This is admittedly
+unproven and based solely on what seems to be the disappearance of spare
+room on the disk during transfers. It's therefore useful to cleanup the
+disk of large and useless files. I suggest these methods:</p>
+<ul class="simple">
+<li>Use a disk mapping program like Grand Perspective to see where the large files are on your disk. (By this method I was able to spot and delete several bulky virtual machine images, some pathologically large PDFs and a gigabyte of temporary files created by <em>Graphic Converter</em>, which I hadn't used in years.)</li>
+<li>Download the appropriate version of <em>Onyx</em> and use it to flush cache and temporary files.</li>
+<li>Housekeeping programs like <em>Hazel</em> - which keeps track of what files are installed and created by an application - can be invaluable when deleting old and useless applications from your disk. Otherwise the cruft from long-deleted apps can hang around forever.</li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li class="active"><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

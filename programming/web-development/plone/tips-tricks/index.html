@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Tips &amp; tricks - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Archetypes Ah, archetypes. How I adore thee. Other ways of constructing Plone content are as nothing before me. You are quick to develop, flexible in your approach, sensible in your defaults. But cryptic in your errors. A lesson or two on breaking archetypes: First, not all fields accept all widgets …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Tips &amp; tricks">
+	<meta name="twitter:description" content="Archetypes Ah, archetypes. How I adore thee. Other ways of constructing Plone content are as nothing before me. You are quick to develop, flexible in your approach, sensible in your defaults. But cryptic in your errors. A lesson or two on breaking archetypes: First, not all fields accept all widgets …">
+	<meta name="twitter:url" content="/programming/web-development/plone/tips-tricks/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Tips &amp; tricks</h1>
+
+<div class="metadata">
+  <time datetime="2008-12-01T12:00:00+00:00" pubdate>2008-12-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/web-development/">web-development</a>, <a href="//by-tag/plone/">plone</a>, <a href="//by-tag/zope/">zope</a></p></div>
+		<div class="summary">Some brutal experience gained while learning to love Zope.</div>
+
+
+      <div class="section" id="archetypes">
+<h2>Archetypes</h2>
+<p>Ah, archetypes. How I adore thee. Other ways of constructing Plone
+content are as nothing before me. You are quick to develop, flexible in
+your approach, sensible in your defaults. But cryptic in your errors.</p>
+<p>A lesson or two on breaking archetypes: First, not all fields accept all
+widgets. This is only logical - a Boolean field can't take a Multiselect
+widget. However, there are some other pairings that seem reasonable but
+are wrong. What happens in this case is that Plone prangs when trying to
+render the page and you end up with a cryptic message on the White Wordy
+Page of Error. The error clearly points to a problem in the archetype
+machinery and rendering, but doesn't identify which widget or field.
+Charming.</p>
+<p>Equally mysterious can be the errors that occur when you accidentally
+have two fields with the same name.</p>
+</div>
+<div class="section" id="structured-text">
+<h2>Structured text</h2>
+<p>Structured text is a fine format ... as long as the documents do not get
+too complicated. Once you get text with 3 or 4 nested levels of
+headings, it becomes difficult to keep track of the correct depth of
+indentation. Once you add in lists, preformatted chunks of text and the
+vagarity of the documentation, it can become impossible to render a
+document correctly. It also appears that there may be a few bugs in the
+STX implementation in Zope. I've had a case
+where a paragraph early in a document would persistently detach from its
+position and appear near the end of a document. Disecting the document
+showed no obvious cause. I eventually rewrote the doc in HTML.
+Restructured text (if available) is far easier to write and
+troubleshoot, and is also more powerful.</p>
+<p>Moral: simple structured text for simple documents.</p>
+<p>An under-publicised feature of structured text is that you can include
+HTML commands within it. For example, instead of using the primitive
+image include directives in STX (e.g. <tt class="docutils literal">&quot;My image&quot; :img:my_pic.jpg</tt>), you
+can use the more powerful HTML img command (e.g. <tt class="docutils literal">&lt;IMG <span class="pre">SRC=&quot;my_pic.jpg&quot;</span>
+<span class="pre">class=&quot;fancyframe&quot;</span> <span class="pre">align=&quot;right&quot;</span></tt>).</p>
+<p>[1] <a class="reference external" href="http://zwiki.org/WellUnderstoodProblems">Well understood problems in
+STX</a></p>
+<p>[2] <a class="reference external" href="http://zwiki.org/TextFormattingSurprises">Text Formatting Surprises in
+STX</a></p>
+</div>
+<div class="section" id="ids">
+<h2>IDs</h2>
+<p>Plone doesn't (and can't) validate all the names and ids you give to
+objects at creation. The wrong name can lead to odd effects. While
+porting a site, I recreated a file named <tt class="docutils literal">colophon</tt>. This caused Plone to
+spasm and complain about template errors if anything in that file was
+accessed. Eventually I had to delete the file using the ZMI.</p>
+</div>
+<div class="section" id="look-and-feel">
+<h2>Look-and-feel</h2>
+<p>While the visual design of Plone is excellent, one place it falls down
+is in distinguishing the lower order headers H3, H4 and beyond, which
+begin to be hard to dstinguish from each other and from the general
+text. As an improvement, I'd suggest making H1 and H3 larger and making
+headers stand out as a different colour or drop shadow. For example:</p>
+<pre class="literal-block">
+h1, h2, h3, h4, h5, h6 {
+   text-shadow: gray 0.1em 0.2em 0.15em;
+}
+
+h1 {
+   font-size: 180%;
+}
+
+h3 {
+   font-size: 140%;
+   border-bottom: none;
+   font-weight: normal;
+}
+</pre>
+<p>Changes you've made in your <tt class="docutils literal">ploneCustom.css</tt> not working when you insert
+dtml property directives like <tt class="docutils literal"><span class="pre">dtml-fontFamily</span></tt>? You've probably made the
+elementary mistake of not placing them between the <tt class="docutils literal"><span class="pre">dtml-with</span></tt> tags, which
+are necessary to interpret the directives:</p>
+<pre class="literal-block">
+/* &lt;dtml-with base_properties&gt; (do not remove this :) */
+/* &lt;dtml-call &quot;REQUEST.set('portal_url', portal_url())&quot;&gt;
+   (not this either :) */
+/* THIS WORKS */
+h3 {
+   font-size: 140%;
+   border-bottom: none;
+   font-weight: normal;
+}
+/* &lt;/dtml-with&gt; */
+/* THIS DOESN'T */
+pre {
+   color:&amp;dtml-fontColor;
+}
+</pre>
+</div>
+<div class="section" id="miscellaneous">
+<h2>Miscellaneous</h2>
+<p>The CMFBibliography product is a sophisticated way of managing
+references. However I've had nothing but problems with it. Twice when I
+attempted to uninstall it, it caused an error, rendering my plone site
+unsuable. <em>Caveat user</em>.</p>
+<p>It is almost impossible to develop and debug Zope without a decent
+debugger. The error messages are cyrptic enough that anyhting cou,d be
+hapening. On the Mac I make an alias debuzope which I define:</p>
+<pre class="literal-block">
+alias debugzope='sudo -u plone ./bin/runzope -X &quot;debug-mode=on&quot;'
+</pre>
+<p>The Safari broser seems to be very aggressive about caching. Thus
+changes in images and stylesheets may not immediately appear.</p>
+<p>Conversely page template seem to be loaded straight from the disk, so
+you can alter the appearance of page elemnts by editing the pages
+without restarting or reinstalling products.</p>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

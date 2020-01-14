@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Reference classes - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="A more recent development in R is Reference classes. These promise, at last, fully blown objects and classes like those of C++ and Java. Naturally, this innovation comes with some downsides: Reference classes are still, as yet, lightly documented They use their own form of syntax and idioms The C …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Reference classes">
+	<meta name="twitter:description" content="A more recent development in R is Reference classes. These promise, at last, fully blown objects and classes like those of C++ and Java. Naturally, this innovation comes with some downsides: Reference classes are still, as yet, lightly documented They use their own form of syntax and idioms The C …">
+	<meta name="twitter:url" content="/programming/r/reference-classes/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Reference classes</h1>
+
+<div class="metadata">
+  <time datetime="2013-05-09T14:20:00+01:00" pubdate>2013-05-09</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/oop/">OOP</a>, <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/r/">R</a></p></div>
+		<div class="summary">Also sometimes wittily referred to as S5 or R5.</div>
+
+
+      <p>A more recent development in R is Reference classes. These promise, at
+last, fully blown objects and classes like those of C++ and Java.
+Naturally, this innovation comes with some downsides:</p>
+<ul class="simple">
+<li>Reference classes are still, as yet, lightly documented</li>
+<li>They use their own form of syntax and idioms</li>
+<li>The C++/Java concept of classes that self-mutate and hold state doesn't sit entirely well with R's functional nature of functions without side effects.</li>
+</ul>
+<div class="section" id="basics">
+<h2>Basics</h2>
+<p>Let's sketch out a simple reference class, for recording sighting of
+wildlife:</p>
+<pre class="literal-block">
+Observation &lt;- setRefClass (&quot;Observation&quot;,
+   fields = c (species = &quot;character&quot;, count = &quot;numeric&quot;),
+   methods = c (
+      genus = function(level, ...) {
+         strsplit(species, &quot; &quot;)[[1]][1]
+      },
+      multiple = function() {
+         1 &lt; count
+      }
+   )
+)
+</pre>
+<p>A few details to highlight:</p>
+<ul class="simple">
+<li>As opposed to the class creation mechanisms of S4,  <em>setRefClass</em> does not just register a class name but creates a class and returns it to be kept in a variable. That is, the class is  <em>Observation</em> not the name/string  <em>&quot;Observation&quot;</em>.</li>
+<li><em>fields</em> is much like  <em>representation</em> in S4, a list of members and their defining data type</li>
+<li>There are true methods, called as functions  <em>of</em> the object and defined as the members of  <em>methods</em>.</li>
+</ul>
+<p><em>Note: fields and methods can be defined as a vector or a list. A vector
+is arguably shorter and just as easy to understand.</em></p>
+<p>This toy class allows us to set the species name and how many examples
+of the species we saw. It also allows us to ask what the genus name is
+(the first word in the species name) and ask whether more than one
+example was seen:</p>
+<pre class="literal-block">
+my_obs &lt;- Observation$new(species = &quot;Pongo pongo&quot;, count = 5)
+my_obs$species
+## [1] &quot;Pongo pongo&quot;
+my_obs$count
+## [1] 5
+my_obs$genus()
+## [1] &quot;Pongo&quot;
+my_obs$multiple()
+## [1] TRUE
+</pre>
+<p>Two important points here:</p>
+<ul class="simple">
+<li>Classes are instantiated with the  <em>new</em> method being called on the class.</li>
+<li>Class members and methods are called with the  <em>$</em> syntax: <em>obj$member</em> and <em>obj$method</em>.</li>
+</ul>
+</div>
+<div class="section" id="methods">
+<h2>Methods</h2>
+<p>As noted, Reference class methods are &quot;true&quot; methods: they are located
+in or attached to the object and they operate on the members of the
+object. Not how in the example above,  <em>species</em> and <em>count</em> are
+referred to in the method definitions are implicitly understood to be
+referring to the mebers of that object, i.e. self recursion.</p>
+<p>A number of builtin methods exist on every object, including:</p>
+<ul class="simple">
+<li><em>callSuper()</em>: pass execution to the superlcass of this object</li>
+<li><em>copy()</em>: make a copy of this object</li>
+<li><em>field (field_name, val)</em>: assign a value to the field of the given name</li>
+</ul>
+<p>If  <em>initialize()</em> and <em>finalize()</em> methods ares provided on a
+class, these are used as automatic constructor and destructor methods.</p>
+<p><em>(Note: there's a little oddity here in that Reference classes directly
+equate the arguments passed to a class constructor to the actual fields
+of an object, in a way mixing interface with implementation. But you can
+include arguments in the ''initialize'' method that create members,
+neither of which is listed as a field.)</em></p>
+</div>
+<div class="section" id="mutation">
+<h2>Mutation</h2>
+<p>R likes functions to have no side effects, i.e. changing data actually
+means creating a new copy of the original data with modified values. But
+reference classes allow you to mutate the state of objects without
+duplicating them. How does that work?</p>
+<p>Reference class methods can use the operator  <em>&lt;&lt;-</em>. This modifies
+the value of a field in place. Where the usual''&lt;-'' operator tpo be
+used, thoiis would just just create a new local object, as it it does
+normally in R. For example:</p>
+<pre class="literal-block">
+MyMut &lt;- setRefClass (&quot;MyMutCls&quot;,
+   fields = c(foo = &quot;character&quot;, bar = &quot;character&quot;),
+   methods = c(
+      initialize = function(a, b) {
+         foo &lt;&lt;- a
+         bar &lt;&lt;- b
+      },
+      mutate = function() {
+         foo &lt;- &quot;new_foo&quot;
+         bar &lt;&lt;- &quot;new_bar&quot;
+      }
+   )
+)
+## Warning: local assignment to field name will not change the field: foo &lt;-
+## &quot;new_foo&quot; Did you mean to use &quot;&lt;&lt;-&quot;? ( in method &quot;mutate&quot; for class
+## &quot;MyMutCls&quot;)
+</pre>
+<p>Notice how R warns you against the deliberate mistake in  <em>mutate()</em>.
+Now lets create an object and look at the starting values:</p>
+<pre class="literal-block">
+mut_obj &lt;- MyMut$new(a = &quot;old_val&quot;, b = &quot;old_val&quot;)
+mut_obj$foo
+## [1] &quot;old_val&quot;
+mut_obj$bar
+## [1] &quot;old_val&quot;
+</pre>
+<p>Then lets call the faulty  <em>mutate()</em> method and see what happens:</p>
+<pre class="literal-block">
+mut_obj$mutate()
+mut_obj$foo
+## [1] &quot;old_val&quot;
+mut_obj$bar
+## [1] &quot;new_bar&quot;
+</pre>
+<p><em>foo</em> is only changed locally. The state of  <em>bar</em> is changed
+permanently.</p>
+<p>If you want to do something clever with the whole object, the
+variable  <em>.self</em> can be used in methods to reference to the current
+(owning) object.</p>
+</div>
+<div class="section" id="inheritance">
+<h2>Inheritance</h2>
+<p>A class can inherit from another by simple use of
+the  <em>contains</em> argument to the class definition as per S4:</p>
+<pre class="literal-block">
+TimedObservation &lt;- setRefClass (&quot;TimedObservation&quot;,
+   fields = c(time = &quot;character&quot;),
+   contains = c(Observation)
+)
+## Error: the 'contains' argument should be the names of superclasses: got an
+## element of class &quot;refObjectGenerator&quot;
+</pre>
+<p>Methods in a subclass override those in a superclass and a subclass
+inherits all the fields of a superclass.</p>
+</div>
+<div class="section" id="summary">
+<h2>Summary</h2>
+<ul class="simple">
+<li>Reference classes are proper classes, for certain values of proper</li>
+<li>They have attached methods</li>
+<li>Ref classes can self mutate with aid of the  <em>&lt;&lt;-</em> operator.</li>
+</ul>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<ul class="simple">
+<li>Some discussion of the &quot;new&quot; classes:  <a class="reference external" href="http://stackoverflow.com/questions/5137199/what-is-the-significance-of-the-new-reference-classes">http://stackoverflow.com/questions/5137199/what-is-the-significance-of-the-new-reference-classes</a></li>
+<li>Hadley Wickham on R5:  <a class="reference external" href="https://github.com/hadley/devtools/wiki/R5">https://github.com/hadley/devtools/wiki/R5</a></li>
+<li>Inside R and a doc page that is actually useful:  <a class="reference external" href="http://www.inside-r.org/r-doc/methods/ReferenceClasses">http://www.inside-r.org/r-doc/methods/ReferenceClasses</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Version control systems for Mac OS X - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="This document was originally written in late 2003 / early 2004. The scene has changed some in the meanwhile, with various offshoots of Arch and Subversion gaining a lot of mindshare, and some of the URLs are probably now invalid. However, the broad conclusions still hold, and this is left here …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Version control systems for Mac OS X">
+	<meta name="twitter:description" content="This document was originally written in late 2003 / early 2004. The scene has changed some in the meanwhile, with various offshoots of Arch and Subversion gaining a lot of mindshare, and some of the URLs are probably now invalid. However, the broad conclusions still hold, and this is left here …">
+	<meta name="twitter:url" content="/programming/tools/version-control-systems-for-mac-os-x/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Version control systems for Mac OS X</h1>
+
+<div class="metadata">
+  <time datetime="2006-01-01T12:00:00+00:00" pubdate>2006-01-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/possibly-obselete/">possibly-obselete</a>, <a href="//by-tag/version-control/">version-control</a>, <a href="//by-tag/mac/">mac</a>, <a href="//by-tag/osx/">osx</a>, <a href="//by-tag/imported/">imported</a></p>     <div class="attention"><b>Attention:</b> This article has been imported from a previous website and has not yet been checked. It may be malformed or incomplete.
+     </div>
+     <div class="attention"><P><b>Attention:</b> This article may refer to information that is outdated or no longer relevant. It is left here for historical purposes.</P></div>
+</div>
+		<div class="summary">Some quick notes from my search for decent source code control.</div>
+
+
+      <p>This document was originally written in late 2003 / early 2004. The
+scene has changed some in the meanwhile, with various offshoots of Arch
+and Subversion gaining a lot of mindshare, and some of the URLs are
+probably now invalid. However, the broad conclusions still hold, and
+this is left here for informative value.</p>
+<p>In the world of the amateur programmer (and often that of the scientific
+programmer), version control systems / revision control / source code
+management are usually neglected or left in the &quot;we'll do that sometime&quot;
+basket. The arguments for using some form of code control have been
+expounded upon at length by wiser heads than my own. So I'll just say
+this:</p>
+<blockquote>
+Use some form of source code management. Even if it's just saving a
+copy of your development folder weekly. Eventually, there <em>will</em> be
+a disaster and you <em>will</em> need that backup.</blockquote>
+<p>With the advent of OS X, a whole bunch of VCS tools have made their way
+to the Macintosh. Below are a few very brief notes on the systems that
+I've tried, put here for the general use. Some other resources on this
+topic are:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.electricfish.com/hawkfish/macvcs/">Macintosh Version Control</a>: a survey of available systems by someone who should know (a VCS developer), that is far more detailed than these notes. My only complaint is that it tends to concentrate on the graphical systems and doesn't mention some of the newer commandline tools (Bitkeeper, Arx etc.)</li>
+<li><a class="reference external" href="http://www.mactech.com/articles/mactech/Vol.14/14.06/VersionControlAndTheDeveloper/">Version Control and the Single Developer</a>: an older article by the same author as above, but chattier about the whole subject of version control.</li>
+<li><a class="reference external" href="http://www.advogato.org/article/145.html">Version Control Systems: the next generation</a>: a lengthy and spirited discussion on many of the Unix VCS tools.</li>
+<li><a class="reference external" href="http://www.wikipedia.org/wiki/Revision_control">Revision Control</a>: a Wiki encyclopedia entry on the VCS in general.</li>
+<li><a class="reference external" href="http://developers.slashdot.org/developers/02/07/15/219203.shtml?tid=156">Designing a New Version Control System</a>: ... and in the process critiquing every system that already exists.</li>
+<li><a class="reference external" href="http://www.macslash.org/articles/03/04/11/1754250.shtml">Source Control: Not Just for the Big Boys</a>: MacSlash weighs in with its two cents worth, why you need VCS and what the pros and cons of the various systems are.</li>
+</ul>
+<div class="section" id="cvs-concurrent-versions-system">
+<h2>CVS (Concurrent Versions System)</h2>
+<p>The defacto standard for version control, CVS has near-universal use in
+the Unix world. It's been ported to just about everywhere, and exists in
+commandline and graphical versions, with many associated tools. It's
+free and has been used for massive projects. Project Builder interfaces
+directly with CVS.</p>
+<p>Having said that, I can't recommend using it. The whole system badly
+needs overhauling, it doesn't do atomic transactions or cope well with
+binary files. [unadorned opinion] I find CVS archaic, restrictive and
+frustratingly opaque. [/unadorned opinion]</p>
+<ul class="simple">
+<li><a class="reference external" href="http://developer.apple.com/internet/macosx/cvsoverview.html">Mac OS X: Version Control with CVS</a>: some notes from Apple.</li>
+</ul>
+</div>
+<div class="section" id="perforce">
+<h2>Perforce</h2>
+<p>Perforce is a commercial product but there is a free two-user demo for
+non-commercial developers. That last restriction has prevented me from a
+more than cursory examination of the product, but Perforce has lots of
+fans, is cross platform, has commandline and web interfaces, is fast and
+safe.</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.perforce.com/">Perforce</a></li>
+</ul>
+</div>
+<div class="section" id="bitkeeper">
+<h2>Bitkeeper</h2>
+<p>This has won a lot of fans but if you google for opinions on Bitkeeper,
+you'll end up with a lot of pages ranting on about how the Linux kernel
+development team shouldn't be using it, due to some admittedly strange
+licensing terms. [deep sigh] Still, if it's good enough for the Linux
+people, it's probably worth checking out. It's available for free with
+some minor restrictions and has a lot of nice features.</p>
+<p>The Mac OS X download for Bitkeeper comes as a .bin file that no
+dearchiving software wants to know about. Go to the commandline, change
+the name of the file and make it executable before running it. You also
+have to explicitly say where you want the executable installed:</p>
+<pre class="literal-block">
+downloads&gt; mv bk-301-macosx-ppc.bin bk
+downloads&gt; chmod +x bk
+downloads&gt; ./bk [... installation ensues ...]
+</pre>
+<ul class="simple">
+<li><a class="reference external" href="http://www.bitkeeper.com/">Bitkeeper</a></li>
+</ul>
+</div>
+<div class="section" id="voodoo">
+<h2>VOODOO</h2>
+<p>VOODOO is a well crafted, award-winning, commercial, GUI tool available
+in standalone and server versions, but only on the Macintosh. I ponied
+up the price for this a few years ago and used it for 6 months before
+moving on. It is a very good and robust product and undoubtably a lot of
+people will find it's just what they need. But ...</p>
+<p>... but I found it a bit too powerful and overwhelming for my own needs.
+The Mac-only aspect was a bit of a problem and I tangled repeatedly with
+the CodeWarrior plugin. You can set up CodeWarrior so that when you open
+a project, it checks all the necessary files out from VOODOO. However,
+you have to explicitly check them back in. Which means that if you close
+the project without checking the files back in or have a crash [you can
+see this coming, right?] ... when you next open the project, VOODOO
+overwrites all the files you changed. Whimper.</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.unisoftwareplus.com//">VOODOO at Uni Software</a></li>
+</ul>
+</div>
+<div class="section" id="subversion">
+<h2>Subversion</h2>
+<p>Subversion is an ambitious project aimed at correcting all the perceived
+problems with CVS and building a fully. Despite it's seemingly
+perpetually low version number, it is quite functional and has a lot of
+fans. It has a converter for CVS repositories, is designed to work over
+the Internet</p>
+<p>Unfortunately, to set up or host a Subversion repository, you have to
+setup your Apache webserver. As far as I'm concerned, setting up
+webservers is one of those TTIPOPTD (Things I Pay Other People To Do).
+Tom Lord (who designed Arch) has also expressed severe reservations
+about the direction of the Subversion project. This was therefore a
+no-go.</p>
+<p>(A posting on Slashdot asserted that you didn't need Apache to run
+Subversion. My reading of the FAQ said otherwise and if I was wrong, so
+much the better.)</p>
+<ul class="simple">
+<li><a class="reference external" href="http://subversion.tigris.org">Subversion</a></li>
+</ul>
+</div>
+<div class="section" id="arch-arx-etc">
+<h2>Arch , ArX etc.</h2>
+<p>Arch is a simple, light-weight VCS that's easy to learn and features
+distributed repositories and easy branching. It's what I've settled on
+for the moment as it seemed to be just powerful enough for my needs and
+no more. It's got a lot of complimentry press. At some point Arch forked
+and spawned another version, ArX, although there's little to pick
+between the two versions to my eye. There are also a number of more
+offbeat implementations.</p>
+<p>Written in some bizarre concoction of languages, against all
+expectations Arch works. One must pay close attention to the
+installation instructions however, for they must be followed to the
+letter otherwise strange errors messages are eventually produced.
+(Eventually - otherwise it would be easy to know what's gone wrong.)
+Even then, the test suite generates some errors. Despite these, it will
+install and run nicely. Just for reference, the steps I used for
+ArX-1.0pre7 are below. However, the accompanying documentation should
+always take precedence:</p>
+<pre class="literal-block">
+% cd ArX-1.0pre7
+% cd src
+% mkdir =build
+% cd =build
+% ../configure --prefix ~/bin/ [...]
+% make CFLAGS=-no-cpp-precomp CXX=c++ % make [...]
+% make test [...]
+% make install [...]
+</pre>
+<ul class="simple">
+<li><a class="reference external" href="http://www.agapow.net/programming/all-the-rest/arx-cheatsheet.html">A cheatsheet</a> I wrote for Arx.</li>
+<li><a class="reference external" href="http://arx.fifthvision.net/bin/view/Main/WebHome">http://arx.fifthvision.net/bin/view/Main/WebHome</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Py-qanda - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Background Interactive command-line programs need to query users for information, be it text, choices from a list, or simple yes-or-no answers. qanda is a module of simple functions to prompt users for such information, allowing validation and cleanup of answers, default responses, consistent formatting and presentation of help text, hints …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Py-qanda">
+	<meta name="twitter:description" content="Background Interactive command-line programs need to query users for information, be it text, choices from a list, or simple yes-or-no answers. qanda is a module of simple functions to prompt users for such information, allowing validation and cleanup of answers, default responses, consistent formatting and presentation of help text, hints …">
+	<meta name="twitter:url" content="/software/py-qanda/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Py-qanda</h1>
+
+<div class="metadata">
+  <time datetime="2011-09-14T12:56:00+01:00" pubdate>2011-09-14</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/software/">software</a>
+<p class="tags">tagged <a href="//by-tag/python/">python</a>, <a href="//by-tag/software/">software</a>, <a href="//by-tag/package/">package</a>, <a href="//by-tag/commandline/">commandline</a></p></div>
+		<div class="summary">Simple commandline questions</div>
+
+
+
+
+
+<h3>Platforms & distributions</h3>
+<ul>
+      <li>Python package</li>
+      <li>platform-independent source code</li>
+</ul>
+
+
+<h3>Repositories</h3>
+<ul>
+      <li><A HREF="http://pypi.python.org/pypi/qanda">http://pypi.python.org/pypi/qanda</A></li>
+      <li><A HREF="http://github.com/agapow/py-qanda">http://github.com/agapow/py-qanda</A></li>
+</ul>
+
+
+
+   <h3>Development status</h3>
+   <p>Stable.</p>
+
+<h3>Latest version</h3>
+<p>See below.</p>
+
+
+<div class="section" id="background">
+<h2>Background</h2>
+<p>Interactive command-line programs need to query users for information,
+be it&nbsp;text, choices from a list, or simple yes-or-no answers.
+<em>qanda</em>&nbsp;is a module of simple functions to prompt
+users for such information,&nbsp;allowing validation and cleanup of answers,
+default responses, consistent&nbsp;formatting and presentation of help text,
+hints and choices. It is not a&nbsp;replacement for textual interfaces like
+curses and urwid, but intended solely&nbsp;for simple console scripts with
+user input is required.</p>
+<p><strong>Status:</strong> <em>qanda</em>&nbsp;is in use by one other
+non-trivial library, and so is&nbsp;functional. However this is still an
+early release and the API may change.&nbsp;Comment is invited.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation</h2>
+<p>This package can be installed by the usual Pythonic methods:</p>
+<ol class="arabic">
+<li><p class="first">use your favourite installation tool:</p>
+<pre class="literal-block">
+% easy_install rst2beamer
+</pre>
+</li>
+<li><p class="first">or download the source, unpack it, change into the directory and call:</p>
+<pre class="literal-block">
+% python setup.py install
+</pre>
+</li>
+</ol>
+</div>
+<div class="section" id="usage">
+<h2>Usage</h2>
+<p>A full API is included in the source distribution.</p>
+<p>A few examples:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; from qanda import prompt
+&gt;&gt;&gt; prompt.string (&quot;What is your name&quot;)
+What is your name: Foo
+&gt;&gt;&gt; fname = prompt.string (&quot;Your friends name is&quot;,
+    help=&quot;I need to know your friends name as well before I talk to you.&quot;,
+    hints=&quot;first name&quot;,
+    default='Bar',
+)
+I need to know your friends name as well before I talk to you.
+Your friends name is (first name) [Bar]:
+&gt;&gt;&gt; print fname
+Bar
+&gt;&gt;&gt; years = prompt.integer (&quot;And what is your age&quot;, min=1, max=100)
+And what is your age: 101
+A problem: 101 is higher than 100. Try again ...
+And what is your age: 28
+</pre>
+<p><em>qanda</em>&nbsp;packages all question-asking methods in a <tt class="docutils literal">Session</tt> class. This
+allows&nbsp;the appearance and functioning of all these methods to be handled
+consistently and modified centrally. However, you don't necessarily have
+to create a Session&nbsp;to use it - there's pre-existing Session in the
+variable called <tt class="docutils literal">prompt</tt>:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; from qanda import Session
+&gt;&gt;&gt; s = Session()
+&gt;&gt;&gt; from qanda import prompt
+&gt;&gt;&gt; type (prompt) &lt;class 'qanda.session.Session'&gt;
+</pre>
+<p>The question methods are named after the type
+of data they elicit:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; print type(prompt.integer (&quot;Pick a number&quot;))
+Pick a number: 2
+&lt;type 'int'&gt;
+&gt;&gt;&gt; print type (prompt.string (&quot;Pick a name&quot;))
+Pick a name: Bob
+&lt;type 'string'&gt;
+</pre>
+<p>Many of the question methods
+with accept a list of &quot;converters&quot;, each of which&nbsp;is used to
+successively transform or validate user input. This follows the idiom&nbsp;of
+Ian Bicking's FormEncode: raw values are passed into &nbsp;a converter and
+the&nbsp;results are passed into the next. If input fails validation, the
+question is&nbsp;posed again. <em>qanda</em> supplies a number of basic
+validators:</p>
+<dl class="docutils">
+<dt>ToInt, ToFloat</dt>
+<dd>Convert inputs to other types</dd>
+<dt>Regex</dt>
+<dd>Only allow values that match a certain pattern</dd>
+<dt>Range</dt>
+<dd>Check that input falls within given bounds</dd>
+<dt>Length</dt>
+<dd>Check that input length falls within given bounds</dd>
+<dt>Synonyms</dt>
+<dd>Map values to other values</dd>
+<dt>Vocab</dt>
+<dd>Ensure values fall within a fixed set</dd>
+</dl>
+</div>
+
+
+
+<h2>Releases</h2>
+<ul>
+   <li><A HREF="/downloads/software/py-qanda">/downloads/software/py-qanda</A></li>
+</ul>
+
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li class="active"><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

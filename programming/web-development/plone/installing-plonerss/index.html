@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Installing PloneRSS - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="One of Plone's marked faults has been the lack of an out-of-the-box RSS aggregation product. Although there have been a number of attempts (CMFSin, CMFNewsFeed, CMFFeed), these are unfinished, quirky or only semi-functional. Fortunately, PloneRSS is a robust solution for gathering and publishing newsfeeds on your site. Unfortunately, installation is …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Installing PloneRSS">
+	<meta name="twitter:description" content="One of Plone's marked faults has been the lack of an out-of-the-box RSS aggregation product. Although there have been a number of attempts (CMFSin, CMFNewsFeed, CMFFeed), these are unfinished, quirky or only semi-functional. Fortunately, PloneRSS is a robust solution for gathering and publishing newsfeeds on your site. Unfortunately, installation is …">
+	<meta name="twitter:url" content="/programming/web-development/plone/installing-plonerss/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Installing PloneRSS</h1>
+
+<div class="metadata">
+  <time datetime="2007-12-01T12:00:00+00:00" pubdate>2007-12-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/plone/">plone</a>, <a href="//by-tag/web-development/">web-development</a>, <a href="//by-tag/possibly-obselete/">possibly-obselete</a></p>     <div class="attention"><P><b>Attention:</b> This article may refer to information that is outdated or no longer relevant. It is left here for historical purposes.</P></div>
+</div>
+		<div class="summary">Notes for the less persistent.</div>
+
+
+      <p>One of Plone's marked faults has been the lack of an out-of-the-box RSS
+aggregation product. Although there have been a number of attempts
+(CMFSin, CMFNewsFeed, CMFFeed), these are unfinished, quirky or only
+semi-functional. Fortunately, PloneRSS is a robust solution for
+gathering and publishing newsfeeds on your site. Unfortunately,
+installation is not straightforward. These are some notes I gathered
+from the last time I added PloneRSS to a site, to serve as an addenda to
+the official instructions.</p>
+<div class="section" id="step-1-obtain-plonerss">
+<h2>Step 1: Obtain PloneRSS</h2>
+<p>Unfortunately there are a number of stale links to this Product. The
+previous location (together with some documentation) was at
+<a class="reference external" href="http://encryptec.net/software/plonerss/">http://encryptec.net/software/plonerss/</a> but is no longer accessible. The
+current link is at <a class="reference external" href="http://plone.org/products/plonerss">http://plone.org/products/plonerss</a>. There are
+pointers back to documentation at the original site that no longer work.
+<a class="reference external" href="http://encryptec.net/Members/gareth/product-update-plonerss">This</a> appears to be the limits of the current documentation, although
+it points at an inaccessible project page. The product comes as a
+bzipped archive. Strangely, several unarchiving programs (on both
+Windows and Unix) failed to unpack the software correctly. This probably
+a software or bzip fault, but keep trying until you get a folder
+containing the PloneRSS product. Drop it into your sites 'Products'
+directory. The latest version (0.9.3) does not seem to be compatible
+with Plone 2.5, while the older 0.1build123 is.</p>
+</div>
+<div class="section" id="step-2-obtain-zmysqlda">
+<h2>Step 2: Obtain ZMySQLDA</h2>
+<p>Again, there are several rusty links and sites to this around the web.
+The best appears to be at SourceForge. Don't worry that the adaptor was
+last updated in 2001, it's quite functional. Download it and unpack it.
+It comes as a hierachy of folders designed to unpack onto your Zope
+installation (i.e. '/lib/python/Products/ZMySQLDA'). Find your Zope
+installation (the binaries, not the site) and copy ZMySQLDA into the
+'Products' folder in the Zope python library.</p>
+<p>Restart your site to pick up the new software.</p>
+</div>
+<div class="section" id="step-3-create-the-database">
+<h2>Step 3: Create the database</h2>
+<p>Although PloneRSS comes with a SQL file that will create the database
+for you if fed to MySQL, I've never managed to get this to work. (Note
+that the file also has a different name to that in the instructions.)
+It's simplest to open the folder and copy the SQL statements straight to
+MySQL. You should end up with a database called 'plonerss' containg a
+table 'feeds'.</p>
+<p>Unmentioned in the PloneRSS instructons (perhaps because it's obvious),
+you have to create a user with the appropriate privileges on the new
+database:</p>
+<pre class="literal-block">
+GRANT ALL ON plonerss.* TO plonerss_usr&#64;localhost
+   IDENTIFIED BY 'pr_pass';
+</pre>
+</div>
+<div class="section" id="step-4-create-and-test-the-database-connection">
+<h2>Step 4: Create and test the database connection</h2>
+<p>Go into the ZMI of your site and in the 'custom' skins folder, create a
+a ZMySQL Database Adaptor. Follow the instructions for giving a
+configuration string but <em>database user password</em> (e.g. <em>plonerss
+plonerss_user pr_pass</em>) should do. I had some difficulty getting it to
+pick up my installation (probably a local error) and had to add the
+socket location to get it to work:</p>
+<blockquote>
+plonerss plonerss_user plonerss_password /tmp/mysql.sock</blockquote>
+<p>Note that is must be named as per the instructions
+(PloneRSS_SQL_connection). Test the connection out from the ZMI, say
+with the string SHOW DATABASES;. Install PloneRSS from the &quot;Install
+products&quot; control panle of Plone.</p>
+</div>
+<div class="section" id="step-5-add-the-portlet">
+<h2>Step 5: Add the portlet</h2>
+<p>In the ZMI, go to the properties of your site and add the PloneRSS
+portlet to the right or left panel. If you have not installed PloneRSS,
+you'll get a site error when next you visit the front page. The portlet
+won't display until it has feeds available.</p>
+</div>
+<div class="section" id="step-6-add-feeds">
+<h2>Step 6: Add feeds</h2>
+<p>PloneRSS adds three objects, and it can be unclear as to what they do.
+The RSS Manager is essentially a control panel for your feeds, that
+displays the health and status of your feeds. It may be content, but you
+only need one per site and it serves as &quot;virtual folder&quot; where rss items
+are displayed. Make one. RSS Feeds are the basic content that represents
+(yes) a feed. Create a bunch of those. They won't start displaying until
+they have been published. RSS Instance is basically an aggregator, that
+gathers a group of selected feeds.</p>
+</div>
+<div class="section" id="assorted-issues">
+<h2>Assorted issues</h2>
+<p>After adding a certain feed, my RSS Manager refused to display due to a
+character encoding problem. (Something in the new feeds url or
+conetxet.) However it appears that the rest of the PloneRSS
+infrastructure works without any problems, so this wasn't regarded as a
+problem.</p>
+</div>
+<div class="section" id="notes">
+<h2>Notes</h2>
+<p><em>Updated early 2008 with new information and links.</em></p>
+<p><em>PloneRSS is largely superseded in Plone 3.x.</em></p>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>(Re-)building databases with csvsql - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="The scenario You have a bunch of related CSV files. Maybe they're the result of a raw database dump. Maybe they've been generated in some other way: experimental results, various public data sets, whatever. But the important thing is that you need to make a database from them. Perhaps because …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="(Re-)building databases with csvsql">
+	<meta name="twitter:description" content="The scenario You have a bunch of related CSV files. Maybe they're the result of a raw database dump. Maybe they've been generated in some other way: experimental results, various public data sets, whatever. But the important thing is that you need to make a database from them. Perhaps because …">
+	<meta name="twitter:url" content="/science/data-science/rebuilding-databases-with-csv2sql/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>(Re-)building databases with csvsql</h1>
+
+<div class="metadata">
+  <time datetime="2015-03-24T10:10:48+00:00" pubdate>2015-03-24</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/database/">database</a>, <a href="//by-tag/data-science/">data-science</a>, <a href="//by-tag/csv/">csv</a>, <a href="//by-tag/cssql/">cssql</a>, <a href="//by-tag/csvkit/">csvkit</a></p></div>
+		<div class="summary">Tips and traps when going from a database dump to a database</div>
+
+
+      <div class="section" id="the-scenario">
+<h2>The scenario</h2>
+<p>You have a bunch of related CSV files.</p>
+<p>Maybe they're the result of a raw database dump. Maybe they've been generated
+in some other way: experimental results, various public data sets, whatever. But the important thing is that you need to make a database from them. Perhaps because you need to query them in some way that's best suited to an SQL query  (references across tables, selecting some fields but not others, etc.) Perhaps you need to work with the information in a particular database but in the absence of a working db connection, you have to make do with a raw data dump. Perhaps the original database has been lost or is so severely dysfunctional that normal exttraction and reporting tools don't work.</p>
+<p>Just for example.</p>
+<p>In any event, you need to turn a bunch of CSV files into a working database.</p>
+</div>
+<div class="section" id="the-solution">
+<h2>The solution</h2>
+<p><em>csvsql</em> is part of the csvkit package and it does what the name suggests: converts a csv file into a table in an SQL database:</p>
+<pre class="literal-block">
+% csvsql --db sqlite:///foo.db --insert bar.csv
+</pre>
+<p>The above line converts the contents of <em>bar.csv</em> into the table <em>bar</em> in the sqlite database <em>foo.db</em>.  There are a multitude of options and features, but to pick a few:</p>
+<ul class="simple">
+<li>Instead of inserting the data, just generate the relevant SQL.</li>
+<li>Name the table to be created and specify a schema for it.</li>
+<li>Work with assorted databases like Access, Firebird, MySQL, etc.</li>
+</ul>
+<p>Multiple tables can be inserted with repeated calls:</p>
+<pre class="literal-block">
+% csvsql --db sqlite:///foo.db --insert bar.csv
+% csvsql --db sqlite:///foo.db --insert baz.csv
+% csvsql --db sqlite:///foo.db --insert quux.csv
+</pre>
+</div>
+<div class="section" id="possible-problems">
+<h2>Possible problems</h2>
+<p>When making a databse, <em>csvsql</em> has to construct a database schema, inferring a type (CHAR, INT, DATE, etc.) for every column from the original table structure.  All in all, it does a creditable job of this and guesses reasonable types that that you can later work with. Sometimes, however, it messes up and infers incorrectly. More to the point, this happens silently, so the problems may remain hidden.</p>
+<p>Text fields are generally not an issue. Where problems seem to result are with numeric data and dates. The first instance I ran across of this was with a record id column that was recorded as a number: 23456, 67890, etc. <em>csvsql</em> mostly and sensibly interpreted that as an integer. However, for a few tables it would occasionally cast it as a string. This problem only became obvious when I queried for certain records and was unable to find them, as I was looking for an integer value not a string. <em>csvsql</em> conversion was consistent for a table, but I was never able to discern what in the ids triggered the difference.</p>
+<p>This problem could be overcome in code in a number of ways: converting all ids to integer, doing a pre-processing step in which the database column types were altered, etc. However, a greater problem arose when <em>csvsql</em> interpreted columns with dates in them. It correctly recognised them as dates and cast the resultant database column as a date type, but incorrectly parsed the dates. As in, the year might be correct but the month and day were wrong.</p>
+<p>This was obviously a huge problem. Ultimately, it was probably a problem with date formats in the source tables, as it used three different datetime formats, one of which had double-spaces between the date and time. But the datetimes were formatted consistently, so <em>csvsql</em> messed up bad.</p>
+<p>There's a few possible solutions for these issues. <em>csvsql</em> can accept a schema, so it would be possible to do an initial conversion, alter the schema as desired and use it for the proper import. However, this fixes the integer issues but not the dates. Perhaps, some preprocessing of dates into a suitable and robust format might work, but I instead opted for a brute force approach. <em>csvsql</em> includes an option where no inference on column type takes place and everything is treated as text:</p>
+<pre class="literal-block">
+% csvsql --no-inference --db sqlite:///foo.db --insert bar.csv
+</pre>
+<p>Now, all keys are text (everything is text) and all dates are exactly as they are in the source. This may create additional problems. If you have a column without any data, <em>csvsql</em> bugs out when using <em>no-inference</em>, although a little bit of hacking can get you around this. Also, in a database where every column is text, comparative queries like <tt class="docutils literal">WHERE DepartmentSize &gt;= 100</tt> or <tt class="docutils literal">DateOfBirth &gt;= <span class="pre">'2000-12-25</span> 00:00:00.000</tt> will be impossible, and <tt class="docutils literal">ORDER</tt> will work on textual not numeric order. I settled for the all text conversion, and then writing a script to extract and transform data from the all-text database into a new database, so I could sculpt and change the schema.</p>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/onyxfish/csvkit">csvkit</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

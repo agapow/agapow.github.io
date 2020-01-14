@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>008 - paths across grid - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="See Problem 8: Find the greatest product of five consecutive digits in a 1000-digit number. This is fairly straightforward. First we define the number, using Python's implicit string continuation: numstr = '73167176531330624919225119674426574742355349194934' '96983520312774506326239578318016984801869478851843' '85861560789112949495459501737958331952853208805511' '12540698747158523863050715693290963295227443043557' '66896648950445244523161731856403098711121722383113' '62229893423380308135336276614282806444486645238749' '30358907296290491560440772390713810515859307960866' '70172427121883998797908792274921901699720888093776' '65727333001053367881220235421809751254540594752243' '52584907711670556013604839586446706324415722155397' '53697817977846174064955149290862569321978468622482' '83972241375657056057490261407972968652414535100474' '82166370484403199890008895243450658541227588666881' '16427171479924442928230863465674813919123162824586' '17866458359124566529476545682848912883142607690042' '24219022671055626321111109370544217506941658960408' '07198403850962455444362981230987879927244284909188' '84580156166097919133875499200524063689912560717606' '05886116467109405077541002256983155200055935729725' '71636269561882670428252483600823257530420752963450' …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="008 - paths across grid">
+	<meta name="twitter:description" content="See Problem 8: Find the greatest product of five consecutive digits in a 1000-digit number. This is fairly straightforward. First we define the number, using Python's implicit string continuation: numstr = '73167176531330624919225119674426574742355349194934' '96983520312774506326239578318016984801869478851843' '85861560789112949495459501737958331952853208805511' '12540698747158523863050715693290963295227443043557' '66896648950445244523161731856403098711121722383113' '62229893423380308135336276614282806444486645238749' '30358907296290491560440772390713810515859307960866' '70172427121883998797908792274921901699720888093776' '65727333001053367881220235421809751254540594752243' '52584907711670556013604839586446706324415722155397' '53697817977846174064955149290862569321978468622482' '83972241375657056057490261407972968652414535100474' '82166370484403199890008895243450658541227588666881' '16427171479924442928230863465674813919123162824586' '17866458359124566529476545682848912883142607690042' '24219022671055626321111109370544217506941658960408' '07198403850962455444362981230987879927244284909188' '84580156166097919133875499200524063689912560717606' '05886116467109405077541002256983155200055935729725' '71636269561882670428252483600823257530420752963450' …">
+	<meta name="twitter:url" content="/programming/puzzles/python/paths-across-grid/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>008 - paths across grid</h1>
+
+<div class="metadata">
+  <time datetime="2012-09-01T12:00:00+01:00" pubdate>2012-09-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/python/">python</a>, <a href="//by-tag/programming-puzzles/">programming puzzles</a>, <a href="//by-tag/project-euler/">project-euler</a></p></div>
+		<div class="summary">Project Euler problem #8.</div>
+
+
+      <p>See <a class="reference external" href="http://projecteuler.net/index.php?section=problems&amp;id=8">Problem 8</a>: Find the greatest product of five consecutive digits in a 1000-digit
+number.</p>
+<p>This is fairly straightforward. First we define the number, using
+Python's implicit string continuation:</p>
+<pre class="literal-block">
+numstr = '73167176531330624919225119674426574742355349194934'
+'96983520312774506326239578318016984801869478851843'
+'85861560789112949495459501737958331952853208805511'
+'12540698747158523863050715693290963295227443043557'
+'66896648950445244523161731856403098711121722383113'
+'62229893423380308135336276614282806444486645238749'
+'30358907296290491560440772390713810515859307960866'
+'70172427121883998797908792274921901699720888093776'
+'65727333001053367881220235421809751254540594752243'
+'52584907711670556013604839586446706324415722155397'
+'53697817977846174064955149290862569321978468622482'
+'83972241375657056057490261407972968652414535100474'
+'82166370484403199890008895243450658541227588666881'
+'16427171479924442928230863465674813919123162824586'
+'17866458359124566529476545682848912883142607690042'
+'24219022671055626321111109370544217506941658960408'
+'07198403850962455444362981230987879927244284909188'
+'84580156166097919133875499200524063689912560717606'
+'05886116467109405077541002256983155200055935729725'
+'71636269561882670428252483600823257530420752963450'
+</pre>
+<p>To avoid converting each number 5 times as the search moves over it, we
+use a functional programming construct:</p>
+<pre class="literal-block">
+numlist = map (int, numstr)
+</pre>
+<p>Then we move along the the length of the number and calculate for each
+frame (i.e. set of 5 consecutive numbers):</p>
+<pre class="literal-block">
+max_product = 0
+max_frame = None
+frame_size = 5
+from operator import mul
+for i in xrange (len (numlist) - frame_size):
+   curr_frame = numlist[i:i+frame_size]
+   if 0 in curr_frame:
+      continue
+   curr_product = reduce (mul, curr_frame)
+   if (max_product &lt; curr_product):
+      max_product = curr_product
+      max_frame = curr_frame
+print max_product, max_frame
+</pre>
+<p>The import mul / reduce code is just a simple trick pinched from <a class="reference external" href="http://jaynes.colorado.edu/PythonIdioms.html">Python
+Idioms</a> to calculate the product of a sequence. There some attempted
+efficiency here, where we abort calculations if a 0 appears in the
+frame, but it may not save much time. For interest, we also print out
+the maximum frame, but without these two features, a more compact
+version would be:</p>
+<pre class="literal-block">
+for i in xrange (len (numlist) - frame_size):
+   curr_frame = numlist[i:i+frame_size]
+   curr_product = reduce (mul, curr_frame)
+   max_product = max (max_product, curr_product)
+print max_product
+</pre>
+<p>Computation time is negligible.</p>
+<p>My initial solution for this problem tried to reduce the number of
+multiplications involved, by calculating the product for the initial
+frame and then shifting it along one. The product of the new frame would
+be that of the old one, multiplied by the value of the new position and
+divided by the position that has just dropped off:</p>
+<pre class="literal-block">
+[2 4 1 2 5] # product is 2*4*1*2*5=80
+[4 1 2 5 3] # product is 80*3/2=120
+</pre>
+<p>However, this fails utterly when 0s appear in the sequence.</p>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

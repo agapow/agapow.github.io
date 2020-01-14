@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Counting bouncy numbers - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="See Project Euler Problem 112: Find the point at which the porportion of bouncy numbers is 99%. This is a simple problem to state, but has some tricks. First in the conversion of a number into its component digits. This can be neatly done with the [int (x) for x …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Counting bouncy numbers">
+	<meta name="twitter:description" content="See Project Euler Problem 112: Find the point at which the porportion of bouncy numbers is 99%. This is a simple problem to state, but has some tricks. First in the conversion of a number into its component digits. This can be neatly done with the [int (x) for x …">
+	<meta name="twitter:url" content="/programming/puzzles/python/counting-bouncy-numbers/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Counting bouncy numbers</h1>
+
+<div class="metadata">
+  <time datetime="2012-09-01T12:00:00+01:00" pubdate>2012-09-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/python/">python</a>, <a href="//by-tag/programming-puzzles/">programming puzzles</a>, <a href="//by-tag/project-euler/">project-euler</a></p></div>
+		<div class="summary">Project Euler problem #112.</div>
+
+
+      <p>See Project Euler <a class="reference external" href="http://projecteuler.net/index.php?section=problems&amp;id=112">Problem 112</a>: Find the point at which the porportion of bouncy numbers is 99%.</p>
+<p>This is a simple problem to state, but has some tricks. First in the
+conversion of a number into its component digits. This can be neatly
+done with the [int (x) for x in str (n)] construct, which turns the
+number into a string, converts each character in the string into an int
+and builds a list with the result.</p>
+<p>Detecting the &quot;bounciness&quot; is done efficiently in the function by moving
+to each digit (but the first) and comparing it to the previous. Moves up
+and down are recorded and if at any point we have seen both, we need not
+check any further.</p>
+<p>The main loop runs from 100 to 5 million. There is no need to look
+before 100, because it is the first number that has an opportunity to up
+<em>and</em> down. (This introduces an interesting question as to whether the
+answer is meant to also count numbers below 100.) 5 million was
+arbitrarily chosen as an upper limit during development, just to catch
+any run-away loops.</p>
+<p>The final step, calculating when the percent bouncy numbers is <em>exactly</em>
+99% is tricky. We can't do this using floats because floating point
+arithmetic is inexact. (Unless we use decimal.) If we use integers, they
+will round off any residue ( 9/10 is 0). So multiplying by 100 allows us
+to make a comparison against 99. Even then rounding can occur (99001 /
+1000 is 99), so we check with the modulo that the numbers divide evenly
+into each other:</p>
+<pre class="literal-block">
+def is_bouncy (n):
+   num_list = [int (x) for x in str (n)]
+   goes_up = goes_down = False
+   for index in range (1, len (num_list)):
+      if (num_list[index-1] &lt; num_list[index]):
+         goes_up = True
+      elif (num_list[index-1] &gt; num_list[index]):
+         goes_down = True
+      if (goes_up and goes_down):
+         return True
+   return False
+
+# some test code
+for x in [100, 120, 138, 142, 144, 149]:
+   print x, is_bouncy (x)
+
+trials = 0
+bouncy = 0
+for i in range (100, 5000000):
+   trials += 1
+   if (is_bouncy (i)):
+      bouncy += 1
+percent_bouncy = bouncy * 100 / trials
+if (99 == percent_bouncy):
+   if ((1559844 * 100) % 1575600 == 0):
+      print &quot;Number:&quot;, i, &quot;trials:&quot;, trials, &quot;bouncy:&quot;, bouncy break
+</pre>
+<p>The answer is 1575699. Computation time about 20 seconds..</p>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

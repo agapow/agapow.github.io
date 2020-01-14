@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>What I done learned about REDCap - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="For those not in the know, REDCap is a platform for creating and editing databases through the web. And by and large, it works fine. It saves a lot of development effort. It provides good reporting tools for users. It's secure and robust. But there are some things to be …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="What I done learned about REDCap">
+	<meta name="twitter:description" content="For those not in the know, REDCap is a platform for creating and editing databases through the web. And by and large, it works fine. It saves a lot of development effort. It provides good reporting tools for users. It's secure and robust. But there are some things to be …">
+	<meta name="twitter:url" content="/science/data-science/what-i-done-learned-about-redcap/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>What I done learned about REDCap</h1>
+
+<div class="metadata">
+  <time datetime="2015-07-15T00:00:00+01:00" pubdate>2015-07-15</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/data-science/">data-science</a>, <a href="//by-tag/redcap/">redcap</a>, <a href="//by-tag/databases/">databases</a></p></div>
+		<div class="summary">A few surprises</div>
+
+
+      <p>For those not in the know, REDCap is a platform for creating and editing databases through the web. And by and large, it works fine. It saves a lot of development effort. It provides good reporting tools for users. It's secure and robust. But there are some things to be aware of, perhaps because of being insufficiently documented, perhaps because of expectations.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>REDCap jargon is a little odd. To avoid confusion, I'll use the REDCap terms but just to remind you how REDCap-ese maps to some common terms:</p>
+<dl class="last docutils">
+<dt>an instrument:</dt>
+<dd>is a form</dd>
+<dt>a field:</dt>
+<dd>is a field or column</dd>
+<dt>a label:</dt>
+<dd>is a field title</dd>
+<dt>a name:</dt>
+<dd>is an field ID, identifier or internal ID</dd>
+<dt>a record:</dt>
+<dd>is a record or row</dd>
+<dt>a record ID:</dt>
+<dd>is a unique ID or key</dd>
+</dl>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Most of these experiences are with REDCap version 5.12 through to 6.4.4. Of course, later versions may have fixed or adjusted some of this behaviour.</p>
+</div>
+<div class="section" id="field-labels">
+<h2>Field labels</h2>
+<p>You may be tempted to have fields with the same labels (i.e. the visible title). For example, you have a instrument for a subject's initial assessment. Within it, you record the date of that visit as &quot;Date&quot;. Then you have a later instrument for a later visit, which you again equip with a field &quot;Date&quot;. Don't do this. When data is exported in the &quot;labels&quot; format, you'll end up multiple columns with similar titles and confuse people. Give each field a unique label: &quot;Date of initial visit&quot;, &quot;Date of second visit&quot; ...</p>
+</div>
+<div class="section" id="character-or-less-ids">
+<h2>26 character or less IDs</h2>
+<p>REDCap warns you if you create a field with an name that is more than 26 characters long, but lets you do it anyway. <strong>Don't</strong>. I naively assumed that as it let me, the problems wouldn't be great and if there were any problems, they would be flagged-up.</p>
+<p>Foolish me.</p>
+<p>Eventually I discovered cases where the fields with the long names weren't appearing in downloaded data and reports, silent errors that caused huge problems. This may be dependent upon the format of exported data (e.g. R, CSV), but every field's name must be no more than 26 characters. Be very aware of this for checkboxes and radio buttons (see elsewhere). But also see notes on the &quot;complete&quot; fields below.</p>
+</div>
+<div class="section" id="checkboxes">
+<h2>Checkboxes</h2>
+<p>I used checkboxes for a number of REDCap fields, which on reflection may have been better or more simply implemented otherwise. Don't mistake me, they work, but there were some unobvious implications to using them.</p>
+<dl class="docutils">
+<dt>Automatic formation of choice values:</dt>
+<dd>It's hard to see how REDCap could do this better, but when you give it a list of choices (say for a multiple-choice checkbox), it just assigns them consecutive numbers. <tt class="docutils literal">Bar</tt> and <tt class="docutils literal">Baz</tt> will be represented by the coded internal values <tt class="docutils literal">0</tt> and <tt class="docutils literal">1</tt>. Which isn't very meaningful. There's no way around this but to insert more meaningful names yourself. Remember they are limited to an alphanumeric string with underscores. (No spaces!)</dd>
+<dt>Name formation:</dt>
+<dd><p class="first">If a REDCap checkbox (multichoice) field has the label <tt class="docutils literal">Foo</tt> (name <tt class="docutils literal">foo</tt>) and the choice values <tt class="docutils literal">bar, Bar</tt> and <tt class="docutils literal">baz, Baz</tt>, this will actually be represented as multiple fields: <tt class="docutils literal">Foo (Bar)</tt> (name <tt class="docutils literal">foo___bar</tt>) and <tt class="docutils literal">Foo (Baz) <span class="pre">``(name</span> ``foo___baz</tt>). Users can sometimes find these a bit confusing.</p>
+<p class="last">A far greater problem is that while REDCap warns you if you create a field with an name greater than 26 characters (see above), it does not alert you if a checkbox or radio button will result in a similar long name. (For example: <tt class="docutils literal">longfieldname___longchoicename</tt>). Watch out for these, they will result in the same problems as other long names.</p>
+</dd>
+<dt>Data export:</dt>
+<dd>If you export checkbox data in the &quot;labels&quot; format, it is rendered as the values <tt class="docutils literal">Checked</tt> and <tt class="docutils literal">Unchecked</tt>. Which is logical but a little surprising and frightens some users. (I have some easily scared users.)</dd>
+<dt>Blank values:</dt>
+<dd>REDCap is generally very tolerate of blank or missing values but checkboxes is one place where it is not. Say you have a checkbox name <tt class="docutils literal">foo</tt> with choices <tt class="docutils literal">bar</tt> and <tt class="docutils literal">baz</tt> and thus the columns <tt class="docutils literal">foo___bar</tt> and <tt class="docutils literal">foo___baz</tt>. If either is checked, they will have the value <tt class="docutils literal">1</tt>, otherwise <tt class="docutils literal">0</tt>. If you import data with those values, it will be set accordingly. However, there's the (logical) temptation to set unchecked fields as blank. Don't do this. I found cases where these blank checkbox fields acquired a random value. As near as I could tell, while imported blank fields are usually recorded faithfully (e.g. an empty field in the input leads to an empty text field in the database), if an imported checkbox field is blank, its value is not recorded and it seems like it might acquire a random value. Unchecked checkboxes and radiobuttons must be explicitly set as unchecked (i.e. recorded as '0')</dd>
+</dl>
+</div>
+<div class="section" id="complete-fields">
+<h2>Complete fields</h2>
+<p>Each instrument automatically acquires the field <tt class="docutils literal">foo_complete</tt>, which captures whether the form has been marked as complete. Users can be surprised by these fields when they &quot;mysteriously&quot; appear in exports, bearing values like &quot;unverified&quot;. For reference (and if you are importing data and wish to mark &quot;completeness&quot;), the possible values of this field are &quot;Incomplete&quot; (<tt class="docutils literal">0</tt>), &quot;Unverified&quot; (<tt class="docutils literal">1</tt>) and &quot;Complete&quot; (<tt class="docutils literal">2</tt>)</p>
+</div>
+<div class="section" id="importing-data">
+<h2>Importing data</h2>
+<p>REDCap import &quot;just works&quot; but it's worth underlining how it works.</p>
+<dl class="docutils">
+<dt>Record IDs:</dt>
+<dd>If you import a record with the same ID as a pre-existing record, the previous record is over-written. There is no exception or way of getting around this, it's a fundamental and largely useful behaviour of REDCap. See &quot;checkboxes&quot; for a delightful exception to this.</dd>
+<dt>Data import tool:</dt>
+<dd>&quot;Manually&quot; filling in a data import template and uploading works fine. However, REDCap is fairly slow at importing data and the process consumes a lot of memory, such as to limit the size of file you can upload. (It will depend on how your server is set up but as a rule of thumb, watch out as you tend towards megabyte-sized uploads.) So then you have to split your upload into multiple files, while retaining the header. There's a number of command-line and online tools for doing this, but the upload task gets to be fairly tedious. Select file, click upload, wait, confirm you want to commit records, select file ... If you have to a lot of data often, you can instead script something to use the REST interface. See &quot;PyCap&quot;.</dd>
+</dl>
+</div>
+<div class="section" id="exporting-data">
+<h2>Exporting data</h2>
+<p>Exporting is another thing that largely just works, but there are a few surprises on the system size:</p>
+<ul class="simple">
+<li>The process takes a <em>huge</em> amount of memory. Apparently the files are created entirely in-memory, and I would frequently see report and export fails because of running out of memory. Nothing for it but to boost the memory specs.</li>
+<li>If you look in the file storage area, you'll see lots and lots of files in lots of formats. It seems that when you generate a report, REDCap generates it in every possible format (<cite>.R</cite>, <cite>.sps</cite>, <cite>.csv</cite>, etc.) and then leaves it in the file storage area forever. I had a system run out of space due to a huge number of reports building up. It may help to periodically purge this area.</li>
+</ul>
+</div>
+<div class="section" id="pycap">
+<h2>PyCap</h2>
+<p>REDCap has a REST interface, which for those of you with a life means that there's a way to &quot;talk&quot; to the database over the web with other programs. This is very useful for writing scripts that automatically upload or download data. You could write these scripts direct to the interface, but there are a few libraries to help you out by wrapping the complexities of the interface. R has <a class="reference external" href="https://github.com/OuhscBbmc/REDCapR">REDCapR</a> and <a class="reference external" href="http://cran.r-project.org/web/packages/redcapAPI/index.html">redcapAPI</a> but I work largely in Python using <a class="reference external" href="https://pycap.readthedocs.org/en/latest/">PyCap</a>. It's a great module, but as always there are a few surprises.</p>
+<dl class="docutils">
+<dt>Not <cite>py</cite>, <cite>red</cite>:</dt>
+<dd>Remember, the module is called <tt class="docutils literal">PyCap</tt>, but it is imported under the name <tt class="docutils literal">redcap</tt>.</dd>
+<dt>Import scripts:</dt>
+<dd><p class="first">One of the most com on uses of the REST interface is to automate the (tedious) process of uploading a very large dataset. (See &quot;importing data&quot;.) But note that this doesn't get you around the issue of REDCap's memory limits. You may have to break up the dataset into smaller chunks. Even despite this I've often found the CPU of the REDCap server racing as it is bombarded with successive uploads. So you may want to pause between &quot;chunks&quot;. A piece of code like this will help:</p>
+<pre class="last literal-block">
+def upload_recs (proj, recs, chunk_sz, sleep=0):
+   total_len = len (recs)
+   for x in range (0, total_len, chunk_sz):
+      start = x
+      stop = min (total_len, x+chunk_sz)
+      print (&quot;Uploading records %s-%s of %s&quot; % (start, stop-1, total_len))
+      print (proj.import_records (recs[start:stop], overwrite='overwrite'))
+      if sleep and (stop != total_len):
+        time.sleep (sleep)
+</pre>
+</dd>
+<dt>Downloading data:</dt>
+<dd><p class="first">Once, when using PyCap to download data from a series of REdCap databases, for some reason it keep flaking out on a particular db. This was made even stranger by the fact that it had previously worked. The error was:</p>
+<pre class="literal-block">
+...
+File &quot;/Users/pagapow/anaconda/lib/python3.4/site-packages/redcap/project.py&quot;,
+   line 271, in export_records
+   pl[key] = ','.join(data)
+TypeError: sequence item 0: expected str instance, int found
+</pre>
+<p>What seemed to have happened here is that new records were added with a different naming scheme, i.e. what was <tt class="docutils literal">KDG102301</tt> was joined by <tt class="docutils literal">1510061</tt>. PyCap was forcing new identifiers to be interpreted as integers, but later expects them to be strings, tries to <tt class="docutils literal">join</tt> them together into a single comma delimited string and fails.</p>
+<p>The solution is to hack on PyCap, inserting a line like this around line 269 of <tt class="docutils literal">project.py</tt> just before it does the join:</p>
+<pre class="literal-block">
+data = [str(x) for x in data]
+</pre>
+<p>My <tt class="docutils literal">redcaphelper</tt> module does this for you.</p>
+<p>Much like the upload &quot;chunking&quot; problem, sometimes you have to break up downloads into smaller bits to avoid overloading REDCap. Code like this will do the download in parts and join it all together:</p>
+<pre class="last literal-block">
+def chunked_export (project, chunk_size=200):
+   &quot;&quot;&quot;
+   Download data in chunks to avoid memory errors.
+   &quot;&quot;&quot;
+   def chunks(l, n):
+      &quot;&quot;&quot;Yield successive n-sized chunks from list l&quot;&quot;&quot;
+      for i in range (0, len(l), n):
+         yield l[i:i+n]
+
+   record_list = project.export_records(fields=[project.def_field])
+   records = [r[project.def_field] for r in record_list]
+   try:
+      response = []
+      for record_chunk in chunks(records, chunk_size):
+         chunked_response = project.export_records(records=record_chunk)
+         response.extend(chunked_response)
+   except redcap.RedcapError:
+      msg = &quot;Chunked export failed for chunk_size={:d}&quot;.format(chunk_size)
+      raise ValueError (msg)
+   else:
+      return response
+</pre>
+</dd>
+<dt>Downloading the data dictionary:</dt>
+<dd><p class="first">Is a logical and useful thing to do. I make it part of my regular backup of REDCap. The data within isn't as useful if you don't have the so I the schema and layout of each database. PyCap actually captures the schema within it's <tt class="docutils literal">Project</tt> object, although in a way that's different to the data dictionary layout. Use a bit of script like this to record it:</p>
+<pre class="last literal-block">
+csv_txt = proj.export_metadata (format='csv')
+csv_rdr = csv.DictReader (io.StringIO (csv_txt))
+csv_recs = [r for r in csv_rdr]
+SCHEMA_FLD_ORDER = [
+  'field_name',
+  'form_name',
+  'section_header',
+  'field_type',
+  'field_label',
+  'select_choices_or_calculations',
+  'field_note',
+  'text_validation_type_or_show_slider_number',
+  'text_validation_min',
+  'text_validation_max',
+  'identifier',
+  'branching_logic',
+  'required_field',
+  'custom_alignment',
+  'question_number',
+  'matrix_group_name',
+  'matrix_ranking',
+]
+out_hndl = open ('datadict.csv', 'w')
+wrtr = csv.DictWriter (out_hndl, fieldnames=SCHEMA_FLD_ORDER)
+wrtr.writerows (csv_recs)
+</pre>
+</dd>
+</dl>
+</div>
+<div class="section" id="s3-storage">
+<h2>S3 storage</h2>
+<p>Good news! You can use Amazon (AWS) to store all the files generated and uploaded to REDCap, allowing you to load balance REDCap across multiple machines and abstract the service to things like Beanstalk or Docker images. Bad news! It's not as simple as it seems.</p>
+<p>The first (and easy) step is that you have to create an S3 bucket. Then you have to create a user - with access key and secret key - and give them access to that bucket. This is where it gets tricky: the permissions needed by REDCap are a little exotic. Here's the security policy I used, where <cite>redcap-file-storage</cite> is the name of the bucket:</p>
+<pre class="literal-block">
+{
+    &quot;Version&quot;: &quot;2012-10-17&quot;,
+    &quot;Statement&quot;: [
+        {
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Action&quot;: [
+                &quot;s3:ListBucket&quot;
+            ],
+            &quot;Resource&quot;: [
+                &quot;arn:aws:s3:::redcap-file-storage&quot;
+            ]
+        },
+        {
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Action&quot;: [
+                &quot;s3:PutObject&quot;,
+                &quot;s3:GetObject&quot;,
+                &quot;s3:DeleteObject&quot;,
+                &quot;s3:PutObjectAcl&quot;
+            ],
+            &quot;Resource&quot;: [
+                &quot;arn:aws:s3:::redcap-file-storage/*&quot;
+            ]
+        }
+    ]
+}
+</pre>
+<p>So note: the user list the bucket, they can put-get-delete objects in the bucket and they can put ACLs on objects in the bucket. (This last one gave me the greatest trouble - it's not obvious unless you read the REDCap code.) (Also note: the version field in AWS policies is under-explained in documentation. It's the version number for the <em>format</em>, and so it is fixed. It cannot be any other value.)</p>
+<p>Tools and code like <cite>boto</cite> and <cite>s3cmd</cite> are useful for debugging S3 connectivity.</p>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<ul class="simple">
+<li><a class="reference external" href="http://redcap.vanderbilt.edu/">REDCap</a></li>
+<li><a class="reference external" href="http://https://pycap.readthedocs.org/en/latest/">PyCap</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

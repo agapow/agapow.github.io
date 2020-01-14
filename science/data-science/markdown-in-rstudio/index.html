@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Markdown in R Studio - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="If you're doing reproducbility in R Studio, you're probably using knitr. And if you're using knitr, you're probably using Markdown. Unfortunately, due to the lack of a standard for Markdown (and the subsequent proliferation of various flavours and extensions), it's sometimes not clear what syntax is available to you. Consequently …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Markdown in R Studio">
+	<meta name="twitter:description" content="If you're doing reproducbility in R Studio, you're probably using knitr. And if you're using knitr, you're probably using Markdown. Unfortunately, due to the lack of a standard for Markdown (and the subsequent proliferation of various flavours and extensions), it's sometimes not clear what syntax is available to you. Consequently …">
+	<meta name="twitter:url" content="/science/data-science/markdown-in-rstudio/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Markdown in R Studio</h1>
+
+<div class="metadata">
+  <time datetime="2015-05-01T00:00:00+01:00" pubdate>2015-05-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/r/">r</a>, <a href="//by-tag/r-studio/">r-studio</a>, <a href="//by-tag/markdown/">markdown</a>, <a href="//by-tag/markup/">markup</a>, <a href="//by-tag/knitr/">knitr</a></p></div>
+		<div class="summary">What Markdown markup is allowed.</div>
+
+
+      <p>If you're doing reproducbility in <a class="reference external" href="http://www.rstuio.com">R Studio</a>, you're probably using knitr. And if you're using <a class="reference external" href="http://yihui.name/knitr/">knitr</a>, you're probably using <a class="reference external" href="https://daringfireball.net/projects/markdown/syntax">Markdown</a>. Unfortunately, due to the lack of a standard for Markdown (and the <a class="reference external" href="http://blog.codinghorror.com/the-future-of-markdown/">subsequent proliferation of various flavours and extensions</a>), it's sometimes not clear what syntax is available to you. Consequently, you tend to write in the lowest common denominator / most common syntax.</p>
+<p>This is an exploration of what markup is available should you use Markdown in R Studio, based on the <a class="reference external" href="https://github.com/rstudio/rmarkdown">source distribution</a>, <a class="reference external" href="http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html">documentation</a> and some experiments. I'm not trying to explain all of Markdown, just the oddities and extras you'll find in R Studio.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You can use reStructured Text instead of Markdown, it's more powerful and has more features, but Markdown is the first class citizen in the R Studio universe and you'll always be fighting the system in some way.</p>
+</div>
+<div class="section" id="technical-details">
+<h2>Technical details</h2>
+<p>R Studio v0.98 on Mac OSX 10.9, April 2015.</p>
+</div>
+<div class="section" id="general-issues">
+<h2>General issues</h2>
+<p>R Studio Markdown (henceforth <em>RSMarkdown</em>) is an R package that is based on <a class="reference external" href="http://pandoc.org/">pandoc</a>. While it is possible to install extensions for the package, it's not clear to me how to get RSMarkdown to use these extensions.</p>
+<p>Markdown is generally focused on HTML as an output. RSMarkdown is more general and allows other and mutliple output formats.</p>
+<p>Where a block of text must be indented, that indentation is a tab or at least 4 spaces.</p>
+</div>
+<div class="section" id="metadata-headers">
+<h2>Metadata &amp; headers</h2>
+<p>RSMarkdown explicitly allows for metadata, which may define title and output format. Multiple outputs can be defined, with variables that apply just in those contexts:</p>
+<pre class="literal-block">
+---
+title: &quot;Sample Document&quot;
+output:
+  html_document:
+    toc: true
+    theme: united
+  pdf_document:
+    toc: true
+    highlight: zenburn
+---
+</pre>
+<p>Possible output formats are:</p>
+<ul class="simple">
+<li><tt class="docutils literal">html_document</tt></li>
+<li><tt class="docutils literal">pdf_document</tt></li>
+<li><tt class="docutils literal">word_document</tt></li>
+<li><tt class="docutils literal">md_document</tt></li>
+<li><tt class="docutils literal">beamer_presentation</tt></li>
+<li><tt class="docutils literal">ioslides_presentation</tt></li>
+<li><tt class="docutils literal">slidy_presentation</tt></li>
+</ul>
+<p>This style of metadata is in fact <a class="reference external" href="http://yaml.org">YAML</a> and can include other fields:</p>
+<pre class="literal-block">
+---
+title:  'This is the title: it contains a colon'
+author:
+- name: Author One
+  affiliation: University of Somewhere
+- name: Author Two
+  affiliation: University of Nowhere
+tags: [nothing, nothingness]
+abstract: |
+  This is the abstract.
+
+  It consists of two paragraphs.
+---
+</pre>
+<p>Obscurely, RSMarkdown includes a second type of metadata, where the intial lines of a file can include 3 lines beginning with percent signs, giving bibliographic information:</p>
+<pre class="literal-block">
+% title
+% author(s)
+% date
+</pre>
+<p>The order and number of lines are fixed. It is unclear whether R Studio does anything with this info.</p>
+<p>Two styles of headers are permitted, covering slightly different levels of headings:</p>
+<pre class="literal-block">
+A level-one header
+==================
+
+A level-two header
+------------------
+
+## A level-two header
+
+### A level-three header
+
+#### etcetera
+</pre>
+<p>&quot;Leading hash&quot; style headers can have matching trailing hashes, e.g. <tt class="docutils literal">## FOO ##</tt>, which is arguably more readable.</p>
+</div>
+<div class="section" id="text-styling">
+<h2>Text styling</h2>
+<p>Strike-through text is flanked with double-tildes:</p>
+<pre class="literal-block">
+This ~~is deleted text.~~
+</pre>
+<p>Superscripts are flanked with the &quot;hat&quot; symbol, subscripts are flanked with a single tilde:</p>
+<pre class="literal-block">
+2^10^ is 1024, H~2~O is a liquid.
+</pre>
+<p>Verbatim / literal text is placed inside backticks:</p>
+<pre class="literal-block">
+What is the difference between `&gt;&gt;=` and `&gt;&gt;`?
+</pre>
+</div>
+<div class="section" id="quotes-code-blocks">
+<h2>Quotes &amp; code blocks</h2>
+<p>Quotes are precded with <tt class="docutils literal">&gt;</tt> marks. Only the first line need have one if subsequent lines are flush against the left margin:</p>
+<pre class="literal-block">
+&gt; This is a block quote. This
+&gt; paragraph has two lines.
+
+&gt; This is a block quote. This
+paragraph has two lines.
+</pre>
+<p>Literal quote blocks preserve linebreaks, such as you might want to do for addresses or for poetry. This are preceded with vertical bars <tt class="docutils literal">|</tt>:</p>
+<pre class="literal-block">
+| 200 Main St.
+| Berkeley, CA 94718
+</pre>
+<p>Code blocks are &quot;fenced&quot; with lines of 3 or more tildes, or indented:</p>
+<pre class="literal-block">
+~~~~~~~
+if (a &gt; 3) {
+ moveShip(5 * gravity, DOWN);
+}
+~~~~~~~
+
+   if (a &gt; 3) {
+     moveShip(5 * gravity, DOWN);
+   }
+</pre>
+</div>
+<div class="section" id="lists">
+<h2>Lists</h2>
+<p>Definition lists can be used, with the initial definition line preceded with <tt class="docutils literal">:</tt> and subsequent lines at the same depth. These lists must be indented:</p>
+<pre class="literal-block">
+Term 1
+
+:  Definition 1
+
+Term 2
+
+:  Definition 2
+
+   Third paragraph of definition 2.
+</pre>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">I've had a lot of trouble with definition lists, even after reading the spec and documentation. Regardless of what is written elsewhere, it seems like the whole list has to be indented and the definition has to be at the same level of indentation as the term.</p>
+</div>
+<p>Numbered lists can be constructed with <tt class="docutils literal">(&#64;)</tt>:</p>
+<pre class="literal-block">
+(&#64;)  My first example will be numbered (1).
+(&#64;)  My second example will be numbered (2)
+</pre>
+</div>
+<div class="section" id="tables">
+<h2>Tables</h2>
+<p>You can do tables in RSMarkdown. Lord, can you do tables. There's multiple ways to do them, but I'll drop a few simple examples here, from which the general form can be inferred. Note that no header is required and horizontal lines are
+fairly freeform:</p>
+<pre class="literal-block">
+ Right     Left     Center     Default
+-------    ------ ----------   -------
+    12     12        12           12
+   123     123       123          123
+     1     1         1            1
+
+-------  ------  ----------  -------
+     12  12           12          12
+    123  123         123         123
+      1  1            1            1
+-------  ------  ----------  -------
+
+-------------------------------------------------------------
+Centered    Default           Right  Left
+ Header     Aligned         Aligned  Aligned
+----------- ------- ---------------  ------------------------
+  First      row               12.0  Example of a row that
+                                     spans multiple lines.
+
+ Second      row                5.0  Here's another one. Note
+                                     the blank line between
+                                     rows.
+-------------------------------------------------------------
+</pre>
+<p>Tables can also be given a label that either proceeds or follows them:</p>
+<pre class="literal-block">
+Table:  Demonstration of simple table syntax.
+</pre>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Tables are tremendously fiddly. Get even a single character out of the column and RSMarkdown will foul it up. I've even had cases where a seemingly valid table won't format correctly for unclear reasons.</p>
+</div>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

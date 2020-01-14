@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>jsPhyloSVG - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="jsPhyloSVG (or JPS from this point) is a nifty Javascript library for displaying phylogenetic trees in your browser. It can: accept trees in a number of formats, encoded in the page or on file or loaded via Ajax allow these trees to be exported or saved as SVG display trees …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="jsPhyloSVG">
+	<meta name="twitter:description" content="jsPhyloSVG (or JPS from this point) is a nifty Javascript library for displaying phylogenetic trees in your browser. It can: accept trees in a number of formats, encoded in the page or on file or loaded via Ajax allow these trees to be exported or saved as SVG display trees …">
+	<meta name="twitter:url" content="/science/computational-biology/jsphylosvg/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>jsPhyloSVG</h1>
+
+<div class="metadata">
+  <time datetime="2010-03-01T12:00:00+00:00" pubdate>2010-03-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/science/">science</a>, <a href="//by-tag/tools/">tools</a>, <a href="//by-tag/phylogenetics/">phylogenetics</a>, <a href="//by-tag/web-development/">web-development</a></p></div>
+
+
+      <p><a class="reference external" href="http://jsphylosvg.com/">jsPhyloSVG</a> (or JPS from this point) is a
+nifty Javascript library for displaying phylogenetic trees in your
+browser. It can:</p>
+<ul class="simple">
+<li>accept trees in a number of formats, encoded in the page or on file or loaded via Ajax</li>
+<li>allow these trees to be exported or saved as SVG</li>
+<li>display trees in several formats</li>
+<li>also display tree annotations &amp; hyperlinks</li>
+</ul>
+<p>On the down side, the documentation is middling and there are several
+hidden traps when using it. Here are some pointers from hard-won
+experience.</p>
+<p>(Note added during editing: this is not to criticise the creators of JPS
+- at least they provide decent documentation and live examples. But the
+library is sufficiently powerful and large such that some points are
+missed or touched on only lightly, and it's easy for them to get lost.
+The below is what I consider to be a selection of the highlights and
+easiest things to misunderstand.)</p>
+<div class="section" id="does-it-work-in-internet-explorer">
+<h2>Does it work in Internet Explorer?</h2>
+<p>Given the dubious support within IE for SVG, this is a good question
+that the documentation fails to address. It works in IE 8+, but it's
+unclear what the story is with 7. Some font and minor features may
+appear different (not broken) across platforms.</p>
+</div>
+<div class="section" id="what-formats-does-it-accept">
+<h2>What formats does it accept?</h2>
+<p>Newick (the default), PhyloXml, NeXML, JSON (json-ized PhyloXML or
+NeXML). I assume Newick is what you're using. It's not very well-defined
+and there are lots of minor variants about which can cause issues (see
+below). But it's far more ubiquitous than the alternatives. However,
+several of the more advanced features of JPS can only be used with
+the XML formats.</p>
+</div>
+<div class="section" id="the-canonical-and-complete-basic-example">
+<h2>The canonical and complete basic example</h2>
+<p>Trees can be embedded in a webpage like thus:</p>
+<pre class="literal-block">
+&lt;html&gt;
+        &lt;head&gt;
+                &lt;script type=&quot;text/javascript&quot; src=&quot;raphael-min.js&quot;&gt;&lt;/script&gt;
+                &lt;script type=&quot;text/javascript&quot; src=&quot;jsphylosvg-min.js&quot;&gt;&lt;/script&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+        &lt;div id=&quot;svgCanvas&quot;&gt;&lt;/div&gt;
+        &lt;script type=&quot;text/javascript&quot;&gt;
+        var dataObject = { newick: '(foo:0.00823353,(bar:0.0127245,                     baz:0.141467),quux:0.00374251);' };
+        phylocanvas = new Smits.PhyloCanvas( dataObject, 'svgCanvas',
+                500, 500);
+        &lt;/script&gt;
+        &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+<p>Ideally you should pass the tree data and render it in an <tt class="docutils literal">onLoad</tt> - to
+postpone rendering until after the page loading is complete - but the
+above will work. JPS uses  <a class="reference external" href="http://raphaeljs.com/">Raphael</a> to do
+the drawing, but it is included in the package.</p>
+</div>
+<div class="section" id="newick-encoding">
+<h2>Newick encoding</h2>
+<p>The Newick format presents a few problems. By experimentation, these
+appear to be the limitations within JPS:</p>
+<ul class="simple">
+<li>In this case, the data object you must pass must have the property <tt class="docutils literal">newick</tt> with the Newick string as its value</li>
+<li>Taxa names cannot be quoted, e.g. <tt class="docutils literal">'foo'</tt></li>
+<li>Spaces within a taxa name are tolerated but not not outside a name. JPS appears to use non-alphanumerics to delimit taxa names and expects other taxanames / tree punctuation to follow immediately.</li>
+<li>While spaces might be okay in a name, hyphens are not</li>
+<li>Very small distances are okay</li>
+<li>The tree specification must be finished with a semi-colon.</li>
+</ul>
+<p>So this is okay:</p>
+<pre class="literal-block">
+(Whipped Cream:1,Chocolate Syrup:1,Cafe Mocha:3)
+</pre>
+<p>and this isn't:</p>
+<pre class="literal-block">
+('Whipped Cream':1, Chocolate-Syrup:1, Cafe Mocha:3)
+</pre>
+<p>If the tree does not meet these requirements, two things could happen:</p>
+<ul class="simple">
+<li>a malformed tree is drawn (look for brackets and other &quot;punctuation&quot; embedded in tree names</li>
+<li>the tree-parsing code (apparently) gets stuck in a loop and never returns, causing the page to apparently &quot;hang&quot;. IN Chrome, even stopping the page and reloading would often fail to fix this behaviour. I had to eventually close the tab.</li>
+</ul>
+<p>Also worth knowing is that branchlengths do not have to be provided on
+the tree. Absent ones are assumed to be 1.</p>
+</div>
+<div class="section" id="parameters">
+<h2>Parameters</h2>
+<p>JPS spends most of its time on the PhyloXML format, neglecting or only
+implying the parameters for direct calls. Here's a few examples. You
+can draw a radial tree, like this:</p>
+<pre class="literal-block">
+phylocanvas = new Smits.PhyloCanvas (
+        dataObject,   // a string in Newick or XML
+        'svgCanvas',  // the div within which to render the tree
+        1000, 1000,   // height &amp; width of tree after rendering, in pixels
+        'circular'    // draw a radial tree
+);
+</pre>
+<p>There's a few other odd things too. For unclear reasons, the circular
+depiction of the tree will sometimes overflow its box, giving it a odd
+cropped look. 1000 by 1000 seems to work under most circumstances. Note
+- and this is completely unclear in the documentation - in the radial
+pictures, the branch lengths are drawn as dotted beyond their actual
+lengths so that they reach the outer edge of the circle.</p>
+<p>&quot;Interactive features&quot; are restricted to the XML formats.</p>
+<p>Style parameters can be altered from Javascript. The documentation
+refers to a <tt class="docutils literal"><span class="pre">render-styles.js</span></tt> but actually everything is in the main
+JPS file. These can be altered directly in your code (or passed in
+the XML):</p>
+<pre class="literal-block">
+Smits.PhyloCanvas.Render.Style.line.stroke = 'rgb(0,0,255)';
+// Color lines blue
+Smits.PhyloCanvas.Render.Style.text[&quot;font-size&quot;] = 16;
+// Increase font size to 16pt
+</pre>
+</div>
+<div class="section" id="save-tree-as-svg">
+<h2>Save tree as SVG</h2>
+<p>There is an example in the documentation that shows how to do this.
+However, it's moderately complex and requires one of the
+major JS toolkits (JQuery, YUI) to do the necessary popups and handling.</p>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

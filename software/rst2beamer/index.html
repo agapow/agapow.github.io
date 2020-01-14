@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>rst2beamer - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Note rst2beamer has been wildly successful and used far beyond what I imagined. Further development has been taken on by Ryan Krauss and subsequently others. The source has been moved to its own repo on github and that (and the PyPi page) should be used as the primary sources. No …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="rst2beamer">
+	<meta name="twitter:description" content="Note rst2beamer has been wildly successful and used far beyond what I imagined. Further development has been taken on by Ryan Krauss and subsequently others. The source has been moved to its own repo on github and that (and the PyPi page) should be used as the primary sources. No …">
+	<meta name="twitter:url" content="/software/rst2beamer/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>rst2beamer</h1>
+
+<div class="metadata">
+  <time datetime="2006-10-01T12:00:00+01:00" pubdate>2006-10-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/software/">software</a>
+<p class="tags">tagged <a href="//by-tag/software/">software</a>, <a href="//by-tag/python/">python</a>, <a href="//by-tag/presentation/">presentation</a>, <a href="//by-tag/script/">script</a></p></div>
+		<div class="summary">A restructured text-based tool for preparing presentations.</div>
+
+
+
+
+
+<h3>Platforms & distributions</h3>
+<ul>
+      <li>Python package</li>
+      <li>platform-independent source code</li>
+      <li>commandline script</li>
+</ul>
+
+
+<h3>Repositories</h3>
+<ul>
+      <li><A HREF="http://pypi.python.org/pypi/rst2beamer">http://pypi.python.org/pypi/rst2beamer</A></li>
+      <li><A HREF="https://github.com/rst2beamer">https://github.com/rst2beamer</A></li>
+</ul>
+
+
+
+   <h3>Development status</h3>
+   <p>Stable, handed on.</p>
+
+<h3>Latest version</h3>
+<p>See below.</p>
+
+
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">rst2beamer has been wildly successful and used far beyond what I imagined.
+Further development has been taken on by Ryan Krauss and subsequently others. The source has been moved to its own
+repo on github and that (and the PyPi page) should be used as the primary sources. No more releases will be made vaialble via this site.</p>
+</div>
+<div class="section" id="background">
+<h2>Background</h2>
+<p>Writing a series of presentations is a pain.</p>
+<p>While preparing the slides for week 2 of a 6 week course, I realised the amount of time I was spending on
+minutiae - pasting code in, adjusting the formatting of said code, lining up boxes. It was all just bulletpoints and code and it was taking me ages to prepare the sldies for a single lecture.</p>
+<p>So I instead spent ages writing a tool that converted restructured text to slides.</p>
+<p>rst2beamer is basically a gloss on the docutils rst2latex tool, except that it converts ReST to Beamer, which is a LaTeX document class for slide presentations. This in turn may be converted to the usual LaTeX destinations: dvi, pdf, etc. rst2beamer have been used successfully across the globe in preparing presentations for lectures and conferences. It allows you to concentrate on <em>content</em> and <em>structure</em> and rely on the tool to generate a decent looking presentation.</p>
+<p>You may wish to explore some of the alternatives that have subsequently cropped up: rst2slides or rst2s5.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation</h2>
+<p>This package can be installed by the usual Pythonic methods:</p>
+<ol class="arabic">
+<li><p class="first">use your favourite installation tool:</p>
+<blockquote>
+<p>% easy_install rst2beamer</p>
+</blockquote>
+</li>
+<li><p class="first">or download the source, unpack it, change into the directory and call:</p>
+<blockquote>
+<p>% python setup.py install</p>
+</blockquote>
+</li>
+</ol>
+</div>
+<div class="section" id="usage">
+<h2>Usage</h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Depending on your platform, the scripts may be installed as <tt class="docutils literal">.py</tt> scripts, or some form of executable, or both.</p>
+</div>
+<p>rst2beamer can be called:</p>
+<pre class="literal-block">
+rst2beamer.py infile.txt &gt; outfile.tex
+</pre>
+<p>where <tt class="docutils literal">infile.txt</tt> contains the source text and <tt class="docutils literal">outfile.tex</tt> contains the produced
+Beamer LaTeX. It can takes all the arguments that <tt class="docutils literal">rst2latex</tt> does, save
+the documentclass option (which is fixed to <tt class="docutils literal">beamer</tt>) and hyperref options
+(which are already set in beamer).</p>
+<p><em>rst2beamer</em> should interpret a reasonable subset of restructured text and
+produce reasonable LaTeX. Not all features of beamer have been
+implemented, just a (large) subset that allows the quick production of
+good looking slides.</p>
+<p>These include:</p>
+<ul class="simple">
+<li>Overlay lists (i.e. those that appear point-by-point)</li>
+<li>Beamer themes</li>
+<li>Automatic centering and resizing of figures</li>
+<li>Embedded notes and the output of note slides.</li>
+<li>Arranging slide contents into columns.</li>
+</ul>
+<p>Consult the manual in the distribution for more detasils. Some examples can be found in the <tt class="docutils literal">docs/examples</tt> directory of the
+distribution. In practice, rst2beamer can be used &nbsp;with <tt class="docutils literal">pdflatex</tt> to get
+PDF versions of a presentation.</p>
+</div>
+<div class="section" id="limitations">
+<h2>Limitations</h2>
+<p>Earlier versions of rst2beamer did not work with docutils 0.4, seemingly
+due to changes in the LaTeX writer. While this has been fixed, most work
+has been done with docutils snapshots from version 0.5 and up. In
+balance, users are recommended to update docutils.</p>
+<p>Not all features of beamer are supported, and some - that deal with with
+page layout or presentation - may never be. Introducing complex syntax
+to achieve complex and specific page effects defeats the point of ReST's
+simple and easy-to-write format. If you need a complex presentation, use
+Powerpoint or Keynote.</p>
+<p>If the content for an individual slide is too large, it will simply
+overflow the edges of the slide and disappear. Arguably, this is a sign
+you should put less on each slide.</p>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<ul class="simple">
+<li><a class="reference external" href="http://en.wikipedia.org/wiki/Beamer_(LaTeX)">Beamer on Wikipedia</a></li>
+<li><a class="reference external" href="http://en.wikibooks.org/wiki/LaTeX/Presentations">LaTeX presentations on Wikibooks</a></li>
+</ul>
+</div>
+
+
+
+
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li class="active"><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

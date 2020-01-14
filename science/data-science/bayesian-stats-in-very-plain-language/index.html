@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Bayesian stats in very plain language - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Introduction Some years ago, I got into an argument with someone abut the relative merits of Bayesian versus Maximum Likelihood in phylogenetics. They asserted the two were basically the same or would come to the same answers. I countered that while they would often agree, they were measuring different things …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Bayesian stats in very plain language">
+	<meta name="twitter:description" content="Introduction Some years ago, I got into an argument with someone abut the relative merits of Bayesian versus Maximum Likelihood in phylogenetics. They asserted the two were basically the same or would come to the same answers. I countered that while they would often agree, they were measuring different things …">
+	<meta name="twitter:url" content="/science/data-science/bayesian-stats-in-very-plain-language/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Bayesian stats in very plain language</h1>
+
+<div class="metadata">
+  <time datetime="2016-07-01T12:00:00+01:00" pubdate>2016-07-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/bayesian/">bayesian</a>, <a href="//by-tag/statistics/">statistics</a>, <a href="//by-tag/likelihood/">likelihood</a></p></div>
+		<div class="summary">My pass at explaining the often misunderstood.</div>
+
+
+      <div class="section" id="introduction">
+<h2>Introduction</h2>
+<p>Some years ago, I got into an argument with someone abut the relative merits of Bayesian versus Maximum Likelihood in phylogenetics. They asserted the two were basically the same or would come to the same answers. I countered that while they would often agree, they were measuring different things. Our conversation subsequently got bogged down in a technical discussion that clarified nothing.</p>
+<p>Bayesian statistics can be difficult to explain, can involve several foggy and seemingly obscure concepts, and explanations are frequently illustrated (obsfucated?) with cryptic maths. So here is a maths-light approach to help you get an intuitive grasp on the concept.</p>
+<p>(Experts, be warned that I'll cut a few corners and gloss over a few things. Criticism is welcome, but be aware of what I'm trying to do here.)</p>
+</div>
+<div class="section" id="take-1-outcomes-and-models">
+<h2>Take 1: outcomes and models</h2>
+<p>I'll use a few ugly words here, but persist to the nice examples following.</p>
+<p>When talking about probability, we usually talk about <strong>data</strong> and <strong>models</strong>:</p>
+<ul class="simple">
+<li><strong>Outcomes</strong> (or <em>observations</em> or <em>data</em>) are the results, the countable things we are directly observing and counting: how many dice come up with a 6, which horse wins a race, how many red balls are pulled out of a bag, etc.</li>
+<li>The <strong>model</strong> (or <em>hypothesis</em> or <em>system</em>) is the thing that is producing the data, giving rise to it. So it's the set of dice you're rolling (and wether any of them are loaded), all the horses in the race and their relative speeds, the number and colour of all the balls in the bag.</li>
+</ul>
+<p>Armed with this idea, we can start to compare bayesian and conventional statistics ...</p>
+</div>
+<div class="section" id="take-2-explaining-the-model">
+<h2>Take 2: explaining the model</h2>
+<p>When we talk about chance and probability in everyday life, we usually talk about how a model explains or causes an outcome:</p>
+<ul class="simple">
+<li>The dice were loaded, so that's why you rolled three 6s.</li>
+<li>That horse was the fastest in the race, so it won.</li>
+<li>The bag has hardly any red balls in it, so you probably won't draw any.</li>
+</ul>
+<p>These conventional statistics, what we call <strong>frequentism</strong>, starts with a known model and predict or explain the results: <em>If half the balls in a bag are red, then it's likely half the balls we draw out of the bag will be red too ...</em></p>
+<p>But there's a problem here: often in life, it's not the result or outcome that we need to know or understand. We can see the result, what has happened. Instead we want to know about the system that produced the results:</p>
+<ul class="simple">
+<li>If I roll three 6s in a row, does that mean these dice are loaded?</li>
+<li>If a specific horse wins a race, what does that tell me about the relative speeds of all horses in the race?</li>
+<li>If I draw 6 red and 3 black balls out of a bag, what does that tell me about the contents of the bag?</li>
+</ul>
+<p>This sort of problem is common in scientific research. We do experiments to see how a complicated system (e.g. the human body, millions of years of evolution) behaves and use that to try and deduce how it works.</p>
+<p>It's a backwards sort of reasoning, and this is exactly what Bayesian statistics do: using the outcomes, look for the model that is best explained by the data. In contrast, methods like maximum likelihood looks for the model with the highest probability of producing the data.</p>
+<p>Confused? These two things are subtly different. Let me explain.</p>
+</div>
+<div class="section" id="take-3-cancer">
+<h2>Take 3: Cancer</h2>
+<p>This is a classic toy example that I've modified slightly.</p>
+<p>Assume there's a test for cancer. If someone has cancer, it will always detect it, 100% of the time. If they don't have cancer, it will usually correctly call this result, 90% of the time. However in 10% of these cases, it will incorrectly report they do have cancer. Looking at this in a table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="43%" />
+<col width="25%" />
+<col width="31%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>&nbsp;</td>
+<td>Cancer detected</td>
+<td>Cancer not detected</td>
+</tr>
+<tr><td>Patient has cancer</td>
+<td>100%</td>
+<td>0%</td>
+</tr>
+<tr><td>Patient doesn't have cancer</td>
+<td>10%</td>
+<td>90%</td>
+</tr>
+</tbody>
+</table>
+<p>This is what we'd call a 0% false negative and 10% false positive.</p>
+<p>Now let's assume that 1% of people actually have cancer. You go in for a test and unfortunately it reports you have cancer. Statistically, do you actually have cancer?</p>
+<p>By conventional statistical approaches, we would say yes:</p>
+<ul class="simple">
+<li>If you have cancer, there is a 100% probability we would get the result seen</li>
+<li>If you don't have cancer, theres a 10% result we would get a positive result</li>
+</ul>
+<p>So, the scenario with the greatest chance of probability of producing the result we've seen is that you have cancer. Sorry.</p>
+<p>What this approach misses out is the relative probability of the different scenarios. Bayesian stats refers to these things as a <strong>prior</strong>, what we know or believe about a system before we see any result. (Prior? Before? Get it?)</p>
+<p>Let's think of a population of 1000 people and put them into the table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="43%" />
+<col width="25%" />
+<col width="31%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>&nbsp;</td>
+<td>Cancer detected</td>
+<td>Cancer not detected</td>
+</tr>
+<tr><td>10 patients with cancer</td>
+<td>10</td>
+<td>0</td>
+</tr>
+<tr><td>990 patients without cancer</td>
+<td>99</td>
+<td>891</td>
+</tr>
+</tbody>
+</table>
+<p>So, of the 109 people that are detected with cancer, only 10 actually do have it. If you are detected as having cancer, there is a roughly 9% chance you actually do. It's far more likely that the test has got it wrong and you're a false positive.</p>
+<p>Put it this way:</p>
+<ul class="simple">
+<li>The explanation (model) that is most likely to say you have cancer, is that you have cancer</li>
+<li>If you have cancer, the most likely explanation (model) is that you do not have cancer</li>
+</ul>
+</div>
+<div class="section" id="take-4-maths">
+<h2>Take 4: maths!</h2>
+<p>I'll give way and actually put it into an equation here. This is Bayes Theorem:</p>
+<blockquote>
+P(A|B) = P(B|A) * P(A) / P(B)</blockquote>
+<p>Which in our case means:</p>
+<blockquote>
+Probability (you have cancer if you get a positive test) = Probability (you get a positive test if you have cancer) * Probability (you have cancer regardless of test result) / Probability (you get a positive result regardless of whether you have cancer)</blockquote>
+<p>Which is:</p>
+<blockquote>
+1.0 * 0.01 / 0.109 = 0.092</blockquote>
+<p>So, if you get a positive result, there's only about 9% chance you have cancer. Obviously this is a grossly simplified situation, and using Bayes theorem is overkill. But it illustrates a general principle: maximum likelihood picks the single &quot;best&quot; answer, while Bayesian approaches consider how likely the individual answers are.</p>
+</div>
+<div class="section" id="also-see">
+<h2>Also see</h2>
+<ul class="simple">
+<li><a class="reference external" href="http://oscarbonilla.com/2009/05/visualizing-bayes-theorem/">Thinking about Bayes theorem graphically</a></li>
+<li><a class="reference external" href="http://www.math.umass.edu/~lavine/whatisbayes.pdf">A more intricate example, that illustrates how things work when you don't have good prior knowledge</a></li>
+<li><a class="reference external" href="http://yudkowsky.net/rational/bayes">A more complicated and nuanced treatment of the cancer problem</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

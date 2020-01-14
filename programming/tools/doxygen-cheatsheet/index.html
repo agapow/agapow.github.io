@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Doxygen cheatsheet - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Doxygen is a free tool for documenting code. With a single command it can generate cross-referenced HTML documentation from any C++ or Java code. Furthermore, if the code is commented in a particualr styled, Doxygen can leverage that to enhance the documentation. The below is a selection of the most …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Doxygen cheatsheet">
+	<meta name="twitter:description" content="Doxygen is a free tool for documenting code. With a single command it can generate cross-referenced HTML documentation from any C++ or Java code. Furthermore, if the code is commented in a particualr styled, Doxygen can leverage that to enhance the documentation. The below is a selection of the most …">
+	<meta name="twitter:url" content="/programming/tools/doxygen-cheatsheet/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Doxygen cheatsheet</h1>
+
+<div class="metadata">
+  <time datetime="2006-01-10T12:00:00+00:00" pubdate>2006-01-10</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/imported/">imported</a>, <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/tools/">tools</a></p>     <div class="attention"><b>Attention:</b> This article has been imported from a previous website and has not yet been checked. It may be malformed or incomplete.
+     </div>
+</div>
+
+
+      <p>Doxygen is a free tool for documenting code. With a single command it
+can generate cross-referenced HTML documentation from any C++ or Java
+code. Furthermore, if the code is commented in a particualr styled,
+Doxygen can leverage that to enhance the documentation. The below is a
+selection of the most useful markup for Doxygen, to serve as quick
+introducton and reminder.</p>
+<div class="section" id="basic-markup">
+<h2>Basic markup</h2>
+<p>Documentation blocks usually precede the element they refer to. Code may
+be documented in a number of styles, including the &quot;JavaDoc&quot; style:</p>
+<pre class="literal-block">
+/**
+A brief description on a single line, ended by a period or blank line.
+
+A longer comment, which may stretch over several lines and may include other things like:
+- a list like this
+- special markup like below
+&#64;param myParam1 Description of 1st parameter.
+&#64;param myParam2 Description of 2nd parameter.
+&#64;returns Description of returned value.
+*/
+double myfunc (int&amp; myParam1, char myParam2) {
+   long theLocalVar1; ///&lt; a comment after a declaration
+   long theLocalVar2; /*!&lt; or like this */
+   long theLocalVar3; /**&lt; or like this */
+   // ...
+}
+
+/*! Commenting in the QT style.
+* Note that the intermediate asterisks are optional in the QT and
+* JavaDoc styles. Also, the brief description always starts the
+* block, and the the detailed description need not be separated
+* from it.
+*/
+#define ABS(x) (((x)&gt;0)?(x):-(x)) /// finally, you can comment via the tripleslash style
+bool myfunc2 (string&amp; myParam1, char* myParam2) {
+   return anotherFunc (myParam1, myParam2);
+}
+</pre>
+<p>To document global entities (functions, typedefs, enum, macros etc.),
+you <strong>must</strong> document the file in which they are defined using
+<tt class="docutils literal">/*! file */</tt> or <tt class="docutils literal">/** &#64;file */</tt>.</p>
+</div>
+<div class="section" id="advanced-markup">
+<h2>Advanced Markup</h2>
+<p>Text within comments can be marked up, which may effect how Doxygen
+parses the text in question, and/or how its appears in any output.
+Markup terms are preceded by ampersands &#64; (or backslashs ). Generally,
+tags can be used multiple times for the same entity (e.g. multiple
+authors, multiple warnings) and will be combined into a single
+paragraph.</p>
+<p>Markup for global information:</p>
+<dl class="docutils">
+<dt>&#64;file &lt;file-name&gt;</dt>
+<dd>Make comments for a source or header file called . The file name may
+include part of the path if the name alone is not unique. If no file
+name is given it is assumed this documentation belongs to the
+current file. Remember that global functions, variables, typedefs
+etc. will only be included in the output if the file they are in is
+documented as well.</dd>
+<dt>&#64;mainpage</dt>
+<dd>Include this information on the main page of the output, perhaps for
+important classes etc.</dd>
+<dt>&#64;page [name] &lt;title&gt;</dt>
+<dd>Indicates that this comment block is not specific to a class, file
+or member. but should appear as a new page.</dd>
+</dl>
+<p>Markup for general information:</p>
+<dl class="docutils">
+<dt>&#64;bug [description]</dt>
+<dd>Has the obvious meaning.</dd>
+<dt>&#64;todo [description]</dt>
+<dd>Describe an item or issue that must be resolved. A seperate &quot;To Do&quot;
+list will be generated and will cross-reference this entity.</dd>
+<dt>&#64;deprecated [description]</dt>
+<dd>Indicates this entity is deprecated and gives reasons, describes
+alternatives etc.</dd>
+<dt>&#64;invariant [description]</dt>
+<dd>Describes an invariant property of an entity. Multiple invariants
+can be mentioned in a single or separate paragraphs.</dd>
+<dt>&#64;warning [description]</dt>
+<dd>Describe a situation or detail that needs attention. As a suggested
+rule, this should be information the reader must heed, such as
+gotchas, limitations etc.. Similar to &#64;attention.</dd>
+<dt>&#64;note [text]</dt>
+<dd>Make a comment. As a suggested rule, this should only be information
+the reader can safely ignore, and of marginal interest like credits,
+inspirations and reasoning behind code. Similar to &#64;remarks.</dd>
+<dt>&#64;author [author-list]</dt>
+<dd>Has the obvious meaning. Multiple authors can be listed together or
+in separate statements.</dd>
+<dt>&#64;see [name-list]</dt>
+<dd>Make references to other entities or URLs. Names joined by either ::
+are intrepreted as a member of a class. Overloaded methods can be
+selected by incuding a list of argument types.</dd>
+</dl>
+<p>Some markup for functions:</p>
+<dl class="docutils">
+<dt>&#64;param &lt;name&gt; &lt;description&gt;</dt>
+<dd>For documenting function parameters.</dd>
+<dt>&#64;return &lt;description&gt;</dt>
+<dd>For documenting function return values.</dd>
+<dt>&#64;overload [function-declaration]</dt>
+<dd>Generates boilerplate documentation that refers to the earlier
+function.</dd>
+<dt>&#64;pre { description of the precondition }</dt>
+<dd>Describe the precondition (requirements) of a function. Multiple
+preconditions can be listed together or in separate statements.</dd>
+<dt>&#64;post [description]</dt>
+<dd>Describe the postcondition (required results) of a function.
+Multiple postcondition can be listed together or in seperate
+statements.</dd>
+</dl>
+<p>Some markup for appearance:</p>
+<dl class="docutils">
+<dt>&#64;code ... &#64;endcode</dt>
+<dd>For enclosing a literal block of code</dd>
+<dt>&#64;internal</dt>
+<dd>Marks paragraph out as internal information that will not appear in
+the output.</dd>
+</dl>
+</div>
+<div class="section" id="groups">
+<h2>Groups</h2>
+<p>Entities may be grouped into global modules, which appear together on a
+new page. Modules can include files, namespaces, classes etc. The group
+is created by using &#64;defgroup in a special comment block. An entity can
+be made part of the group by using <tt class="docutils literal">&#64;ingroup</tt> inside its documentation
+block. Entities can also be grouped by enclosing them with <tt class="docutils literal">&#64;{</tt> and <tt class="docutils literal">&#64;}</tt>.
+<tt class="docutils literal">&#64;addtogroup</tt> can be used instead of &#64;defgroup to avoid accidentally
+defining groups multiple times.</p>
+<p>Members of a file or class are automatically grouped on type and
+protection level, but can be made into member groups by use of <tt class="docutils literal"><span class="pre">//&#64;{</span></tt> and
+<tt class="docutils literal"><span class="pre">//&#64;}</span></tt> or <tt class="docutils literal"><span class="pre">/*&#64;{*/</span></tt> and <tt class="docutils literal"><span class="pre">/*&#64;}*/</span></tt>. Note these are different to the module
+grouping tags. Before the opening marker, a separate comment block may
+be placed that contains &#64;name and other information.</p>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<ul class="simple">
+<li>The Doxygen homepage
+&lt;<a class="reference external" href="http://www.stack.nl/~dimitri/doxygen/">http://www.stack.nl/</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

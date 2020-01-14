@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Installing and using PIL - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="While some people have reporting installing PIL on MacOSX without problems, there are legion reports that say otherwise. Frequently this revolve around PIL installing without JPEG support. There are a myriad of solutions (involving editing make files, configure flags, using fink to install dependencies, using package managers, casting goat entrails …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Installing and using PIL">
+	<meta name="twitter:description" content="While some people have reporting installing PIL on MacOSX without problems, there are legion reports that say otherwise. Frequently this revolve around PIL installing without JPEG support. There are a myriad of solutions (involving editing make files, configure flags, using fink to install dependencies, using package managers, casting goat entrails …">
+	<meta name="twitter:url" content="/programming/python/installing-and-using-pil/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Installing and using PIL</h1>
+
+<div class="metadata">
+  <time datetime="2005-09-15T12:00:00+01:00" pubdate>2005-09-15</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/python/">python</a>, <a href="//by-tag/pil/">pil</a>, <a href="//by-tag/imported/">imported</a>, <a href="//by-tag/possibly-obselete/">possibly-obselete</a></p>     <div class="attention"><b>Attention:</b> This article has been imported from a previous website and has not yet been checked. It may be malformed or incomplete.
+     </div>
+     <div class="attention"><P><b>Attention:</b> This article may refer to information that is outdated or no longer relevant. It is left here for historical purposes.</P></div>
+</div>
+		<div class="summary">Overcoming the sometimes tricky installation of the Python Imaging Library and improving image quality.</div>
+
+
+      <p>While some people have reporting installing
+<a class="reference external" href="http://www.pythonware.com/products/pil/">PIL</a> on MacOSX without
+problems, there are legion reports that say otherwise. Frequently this
+revolve around PIL installing without JPEG support. There are a myriad
+of solutions (involving editing make files, configure flags, using fink
+to install dependencies, using package managers, casting goat entrails,
+etcetera, etcetera ...), all of which I tried and had no joy with. The
+solution that finally worked was to grab the libjpeg package from
+<a class="reference external" href="http://macosx.forked.net/showcat.php?cat=Libraries&amp;sortmethod=reverse">here</a>
+and install that. Afterwards the PIL install proceded without problems
+and tested fine.</p>
+<p>While the image manipulations within the library are impressive, in some
+case the resultant image quality isn't quite good enough. To see one
+problem, create an image with a series of lines radiating out at various
+angles. Some of the lines will come out quite jagged and &quot;pixelly&quot;. Text
+also shows some of these defects. One solution is to draw your picture
+at a much larger size, and then shrink it down using the anti-alias
+filter.</p>
+<p>Another - and better - way is to use the
+<a class="reference external" href="http://effbot.org/zone/pythondoc-aggdraw.htm">aggdraw</a> library for
+drawing PIL images. It uses internally the <em>antigrain geometry</em> library
+for high quality anti-aliased images. (In plain langauge - it produces
+slight fuzzy but smoother images.) One catch is that for drawing text,
+<em>aggdraw</em> uses the <em>freetype</em> text library. If you're on Windows, you're
+in luck - <em>aggdraw</em> installer includes <em>freetype</em>. If you're on a Unix
+system, you have to download and install freetype yourself. Follow the
+instructions, make sure you're installing freetype v2 not v1 and you
+shouldn't have anyproblems. What may trip you up is getting <em>aggdraw</em> to
+recognise that freetype is installed and where. In the setup.py file of
+your aggdraw distribution, you'll find a line:</p>
+<pre class="literal-block">
+FREETYPE_ROOT = &quot;../../kits/freetype2011preblahblah&quot;
+</pre>
+<p>The instructions say to edit this as necessary, but it's not clear to
+what. In fact, <em>FREETYPE_ROOT</em> should point at the folder that holds
+the include directory that holds the freetype2 folder. On most system
+this will be:</p>
+<pre class="literal-block">
+FREETYPE_ROOT = &quot;/usr/local&quot;
+</pre>
+<p>Unfortunately, if you try and install <em>aggdraw</em> before installing
+<em>freetype</em>, it seems to have trouble later recognising if the freetype
+library has appeared. (At least I did.) Presumably the setup caches some
+results or code from the first time it is is run, that never get
+updated. The easiest solution is just to unpack and use a fresh copy of
+<em>aggdraw</em>.</p>
+<p>So you should install <em>freetype</em> to use <em>aggdraw</em> to use <em>PIL</em>. Simple.</p>
+<div class="section" id="addendum-july-2007">
+<h2>Addendum July 2007</h2>
+<p>More installs of PIL, more surprises. This time my extensive install
+notes failed me in new and curious ways. While the <a class="reference external" href="http://darwinports.com/">Darwin
+ports</a> installer has been useful in the
+past, this time it created a seemingly correct but non-functional copy
+of freetype. PIL would then bomb out during the compile. trying to
+install PIL via port ended up installing a whole new copy of Python.</p>
+<p>Eventually, the instructions on the <a class="reference external" href="http://wiki.python.org/moin/MacPython/UniversalLibrariesAndExtensions">Python
+wiki</a>
+on how to compile and PIL (via compiling and installing freetype and
+libjpeg) proved to work. Some notes:</p>
+<ul class="simple">
+<li>You may need to delete to remove any dysfunctional freetype, libjpeg etc before following the wiki install, or else PIL might keep finding the bad libraries.</li>
+<li>Some of the lines they have you delete in various make files don't appear exactly like they do in the notes, but it works anyway.</li>
+<li>Finally, the install set of PIL may complain about a missing directory for man files - you can either ignore this or create the directories yourself.</li>
+</ul>
+<p>As regards aggdraw, <a class="reference external" href="http://pythonmac.org/packages/">PythonMac</a> now
+has pre-compiled packages for it, which is a huge time saver.</p>
+</div>
+<div class="section" id="addendum-december-2010">
+<h2>Addendum December 2010</h2>
+<p>Y'know, maybe you should just use <a class="reference external" href="https://pillow.readthedocs.org/">Pillow</a> instead, a 'friendly' re-implementation of PIL.</p>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

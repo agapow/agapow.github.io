@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Ordnance Survey locations - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="The Ordinance Survey is a UK-peculiar geospatial format, ubiquitous via street atlases, hiking charts and (yes) farming and epidemiological maps. It is explained in great detail is several places, but here's a quick overview: The OS grid is a set of 25 squares, 500 kilometers a side, arranged 5-by-5 that …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Ordnance Survey locations">
+	<meta name="twitter:description" content="The Ordinance Survey is a UK-peculiar geospatial format, ubiquitous via street atlases, hiking charts and (yes) farming and epidemiological maps. It is explained in great detail is several places, but here's a quick overview: The OS grid is a set of 25 squares, 500 kilometers a side, arranged 5-by-5 that …">
+	<meta name="twitter:url" content="/science/geospatial/ordnance-survey-locations/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Ordnance Survey locations</h1>
+
+<div class="metadata">
+  <time datetime="2009-06-01T12:00:00+01:00" pubdate>2009-06-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/osgb/">osgb</a></p></div>
+		<div class="summary">Converting between OS grid references and longitudes-latitudes.</div>
+
+
+      <p>The Ordinance Survey is a UK-peculiar geospatial format, ubiquitous via
+street atlases, hiking charts and (yes) farming and epidemiological
+maps. It is explained in great detail is several places, but here's a
+quick overview:</p>
+<p>The OS grid is a set of 25 squares, 500 kilometers a side, arranged
+5-by-5 that is superimposed over the UK. These squares are addressed A
+to Z, excluding I, running west-to-east, north-to-south like so:</p>
+<pre class="literal-block">
+ABCDE
+FGHJK
+LMNOP
+QRSTU
+VWXYZ
+</pre>
+<p>In reality, only H, J, N, O, S &amp; T are used, as they cover the mainland
+UK and most of the prominent islands. These 500km squares are broken own
+again into 25 squares, 100 kilometres a side, arranged 5 by 5 as above.
+Within each of these minor squares, a position can be given as an
+east-north within that square, from its south-west corner. These are
+typically given as 3 digits each, so the lowest digit represents 100
+metres. Thus <em>114 525</em> is 11.4 kilometers east and 52.5 kilometres
+north of it's containing square. So a point just outside Ipswich (in
+south-east England) can be given as <em>TM 114 525</em>. (That is, 500km
+square T, 100km square M, 11.4 kilometers east and 52.5 kilometres north
+of the south-west corner of M.)</p>
+<p>Of course, there are complications. Formatting is variable, with the
+spaces sometimes omitted from the reference:</p>
+<pre class="literal-block">
+TM 114 525
+TM114 525
+TM114525
+TM 114525
+</pre>
+<p>It's unclear which, if any, is the canonical form. Further more, the
+eastings-northings can be given in higher resolutions up to 6 digits
+each, where the final digit represents 10cm. Therefore these all map to
+the same point:</p>
+<pre class="literal-block">
+TM 114 525
+TM 1140 5250
+TM 114000 525000
+</pre>
+<p>Converting these to a more widely-used coordinate system is non-trivial.
+First, the OS system is a true grid (i.e. square) unlike the
+conventional lon-lats that are squeezed by the earths shape. The OS grid
+is anchored to the conventional coordinates, at a point near the Channel
+Isles, but this point is projected so that all coordinates in the UK can
+be referred to with positive eastings-northings.</p>
+<p>Finally, the OS references are based on the OS1936 global projection,
+not the WGS84 or ETR projections. In plain English, these are models of
+the world's shape - the height and width of the ellipsoid - that the
+lon-lat grid is laid over. As a consequence, lon-lats in either system
+will disagree with the other, although perhaps only by metres.</p>
+<p>Right, now we can look at converting this with Python, elsewhere.</p>
+<div class="section" id="also-see">
+<h2>Also see</h2>
+<ul class="simple">
+<li><a class="reference external" href="/software/osgb">osgb, a Python module for converting Ordinance Survey coordinates</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

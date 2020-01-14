@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>biblio.webquery - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Background This package presents a number of methods for querying webservices for bibliographic information, and includes two scripts for querying and renaming files by ISBN. Installation This package can be installed by the usual Pythonic methods: use your favourite installation tool: % easy_install biblio.webquery or download the source, unpack it …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="biblio.webquery">
+	<meta name="twitter:description" content="Background This package presents a number of methods for querying webservices for bibliographic information, and includes two scripts for querying and renaming files by ISBN. Installation This package can be installed by the usual Pythonic methods: use your favourite installation tool: % easy_install biblio.webquery or download the source, unpack it …">
+	<meta name="twitter:url" content="/software/biblio-webquery/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>biblio.webquery</h1>
+
+<div class="metadata">
+  <time datetime="2008-06-01T12:00:00+01:00" pubdate>2008-06-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/software/">software</a>
+<p class="tags">tagged <a href="//by-tag/ebooks/">ebooks</a>, <a href="//by-tag/metadata/">metadata</a>, <a href="//by-tag/software/">software</a>, <a href="//by-tag/python/">python</a>, <a href="//by-tag/isbn/">isbn</a>, <a href="//by-tag/package/">package</a></p></div>
+		<div class="summary">Retrieving book data from online sources.</div>
+
+
+
+
+
+<h3>Platforms & distributions</h3>
+<ul>
+      <li>Python package</li>
+      <li>platform-independent source code</li>
+</ul>
+
+
+<h3>Repositories</h3>
+<ul>
+      <li><A HREF="http://pypi.python.org/pypi/biblio-webquery">http://pypi.python.org/pypi/biblio-webquery</A></li>
+      <li><A HREF="http://github.com/agapow/biblio-webquery">http://github.com/agapow/biblio-webquery</A></li>
+</ul>
+
+
+
+   <h3>Development status</h3>
+   <p>Stable.</p>
+
+<h3>Latest version</h3>
+<p>See below.</p>
+
+
+<div class="section" id="background">
+<h2>Background</h2>
+<p>This package presents a number of methods for querying webservices for
+bibliographic information, and includes two scripts for querying and
+renaming files by ISBN.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation</h2>
+<p>This package can be installed by the usual Pythonic methods:</p>
+<ol class="arabic">
+<li><p class="first">use your favourite installation tool:</p>
+<pre class="literal-block">
+% easy_install biblio.webquery
+</pre>
+</li>
+<li><p class="first">or download the source, unpack it, change into the directory and call:</p>
+<pre class="literal-block">
+% python setup.py install
+</pre>
+</li>
+</ol>
+<p>Depending on your platform, the scripts may be installed as <tt class="docutils literal">.py</tt> scripts, or some form of executable, or both.</p>
+</div>
+<div class="section" id="usage">
+<h2>Usage</h2>
+<p>This was initially written for my own purposes (querying webservices for book information so I could correct the metadata on my ebooks and name them appropriately), so the features may be a little eccentric and documentation is thin. However, the code is not complex and can be easily understood.</p>
+<p>Two scripts are installed with this package: <tt class="docutils literal">queryisbn</tt> and <tt class="docutils literal">renamebyisbn</tt>.</p>
+<p><tt class="docutils literal">queryisbn</tt> returns bibliographic information from webservices for supplied ISBNs. It is called:</p>
+<pre class="literal-block">
+% queryisbn.py [options] ISBNs ...
+</pre>
+<p>with the options:</p>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">--version</span></kbd></td>
+<td>show program's version number and exit</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
+<td>show this help message and exit</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--debug</span></kbd></td>
+<td>For errors, issue a full traceback instead of just a message.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-s <var>SERVICE</var></span>, <span class="option">--service=<var>SERVICE</var></span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>The webservice to query. Choices are xisbn (WorldCat xISBN), isbndb (ISBNdb). The default is xisbn.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-k <var>KEY</var></span>, <span class="option">--key=<var>KEY</var></span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>The access key for the webservice, if one is required.</td></tr>
+</tbody>
+</table>
+<p>For example:</p>
+<pre class="literal-block">
+% queryisbn.py 1568385048 1564145026
+1568385048
+title: Drop the rock: removing character defects
+authors: [Bill Pittman, Todd Weber]
+publisher: Hazelden
+year: 1999
+lang: eng
+1564145026:
+title: Stop clutter from stealing your life : discover why you clutter and how you can stop
+authors: [Mike Nelson]
+publisher: New Page Books
+year: 2001
+lang: eng
+
+% queryisbn.py --debug -s isbndb -k OPNH8HG2 1568385048 1564145026
+1568385048:
+title: Drop the Rock: Removing Character Defects
+authors: [Bill Pittman, Todd Weber]
+1564145026:
+authors: [Mike Nelson]
+</pre>
+<p><tt class="docutils literal">renamebyisbn</tt> extracts an ISBN from a file name, looks up the associated bibliographic information in a webservice and renames the file appropriately. It is called:</p>
+<pre class="literal-block">
+% renamebyisbn.py [options] FILES ...
+</pre>
+<p>with the options:</p>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">--version</span></kbd></td>
+<td>show program's version number and exit</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
+<td>show this help message and exit</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--debug</span></kbd></td>
+<td>For errors, issue a full traceback instead of just a message.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-s <var>SERVICE</var></span>, <span class="option">--service=<var>SERVICE</var></span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>The webservice to query. Choices are xisbn (WorldCat xISBN), isbndb (ISBNdb). The default is xisbn.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-k <var>KEY</var></span>, <span class="option">--key=<var>KEY</var></span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>The access key for the webservice, if one is required.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-c <var>CASE</var></span>, <span class="option">--case=<var>CASE</var></span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Case conversion of the new file name. Choices are orig, upper, lower.The default is orig.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--leave_whitespace</span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Leave excess whitespace. By default, consecutive spaces in names are compacted</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--replace_whitespace=<var>REPLACE_WHITESPACE</var></span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Replace whitespace in the new name with this string.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--strip_chars=<var>STRIP_CHARS</var></span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Remove these characters from the new name. By default this are ':!,'&quot;.?()'.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--overwrite</span></kbd></td>
+<td>Overwrite existing files.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">--dryrun</span></kbd></td>
+<td>Check function and without renaming files.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--template=<var>TEMPLATE</var></span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>The form to use for renaming the file. The fields recognised are auth (primary authors family name), title (full title of the book), short_title (abbreviated title), isbn, year (year of publication). The default is '%(auth)s%(year)s_%(short_title)s_(isbn%(isbn)s)'.</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">--unknown=<var>UNKNOWN</var></span></kbd></td>
+</tr>
+<tr><td>&nbsp;</td><td>Use this string if value is undefined.</td></tr>
+</tbody>
+</table>
+<p>The new name is generated first before the various processing options
+are applied. In order, characters are stripped from the name, excess
+whitespace is collapsed and then the case conversion is applied. We
+suggest you try a dryrun before renaming any files. The file extension,
+if any, is removed before renaming and re-applied afterwards.</p>
+<p>For example, working with 4 files called '0763718165.Jones Course.djvu',
+'helm_0671708821 (orig).pdf', 'tutor_9780198568322.rar',
+'unce.9783540237730.27380.pdf':</p>
+<pre class="literal-block">
+% renamebyisbn.py --dryrun books/*
+Original books/0763718165.JonesCourse.djvu ...
+extracted ISBN 0763718165 ...
+found Andersen - Data structures in Java : a laboratory course
+new name Andersen2001_Data structures in Java_isbn0763718165.
+new path books/Andersen2001_Data structures in Java_isbn0763718165.djvu. Original books/helm_0671708821 (orig).pdf ...
+extracted ISBN 0671708821 ...
+found Helmstetter - What to say when you talk about yourself.
+new name Helmstetter1990_What to say when you talk about yourself_isbn0671708821.
+new path books/Helmstetter1990_What to say when you talk about yourself_isbn0671708821.pdf.
+Original books/tutor_9780198568322.rar ...
+extracted ISBN 9780198568322 ...
+found Skilling - Data analysis : a Bayesian tutorial ; [for scientists and engineers]
+new name Skilling2006_Data analysis_isbn9780198568322.
+new path books/Skilling2006_Data analysis_isbn9780198568322.rar.
+Original books/unce.9783540237730.27380.pdf ...
+extracted ISBN 9783540237730 ...
+found McDaniel - Uncertainty and surprise in complex systems questions on working with the unexpected
+new name McDaniel2005_Uncertainty and surprise in complex systems questions on working with the unexpected_isbn9783540237730.
+new path books/McDaniel2005_Uncertainty and surprise in complex systems
+questions on working with the unexpected_isbn9783540237730.pdf.
+</pre>
+<p>If you use the package directly in code, <tt class="docutils literal">biblio.webquery</tt> presents several classes that may be useful:</p>
+<ul class="simple">
+<li><tt class="docutils literal">BaseWebQuery</tt>, a simple class for encapsulating queries to webservices</li>
+<li><tt class="docutils literal">BaseKeyedWebQuery</tt>, ditto except allowing for access keys</li>
+<li><tt class="docutils literal">XisbnQuery</tt> and <tt class="docutils literal">IsbndbQuery</tt>, for fetching bibliographic information from Worldcat xISBN and ISBNdb services respectively</li>
+<li><tt class="docutils literal">QueryThrottle</tt>, for limiting the frequency or total number of service queries.</li>
+<li><tt class="docutils literal">BibRecord</tt>, a general class for holding bibliographic information</li>
+<li><tt class="docutils literal">PersonalName</tt>, a class for holding a name along functions for parsing names into this class.</li>
+</ul>
+<p>Thanos Vassilakis has posted what looks like <a class="reference external" href="http://pypi.python.org/pypi/book">a very useful module</a> for querying by ISBN. However it seems to have disappeared from its home website.</p>
+<div class="section" id="limitations">
+<h3>Limitations</h3>
+<p>Note that all bibliographic databases contain a certain amount of malformed entries or inconsistent formatting. For example, edition may or may not be included in the title, authors can be given as 'Firstname Lastname' / 'Lastname, Firstname' / 'F Lastname' / etc. etc. and so on. To this end, the package uses a number of heuristics to nomrlaise the data.</p>
+<p>To use the ISBNdb, a key must be provided. This can be obtained for free by signing up on the website.</p>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<ul class="simple">
+<li><a class="reference external" href="http://isbndb.com">ISBNdb</a></li>
+</ul>
+</div>
+
+
+
+<h2>Releases</h2>
+<ul>
+   <li><A HREF="/downloads/software/biblio-webquery">/downloads/software/biblio-webquery</A></li>
+</ul>
+
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li class="active"><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

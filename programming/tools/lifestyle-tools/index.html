@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Lifestyle tools - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="I'll stick with LaTeX, thank you very much. Which is poking yourself in the eye with a tool perfectly designed for eye-poking after you get the configuration right, but the tool can't be held by human hands so you also need a pneumatic dingus to poke the poker and a …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Lifestyle tools">
+	<meta name="twitter:description" content="I'll stick with LaTeX, thank you very much. Which is poking yourself in the eye with a tool perfectly designed for eye-poking after you get the configuration right, but the tool can't be held by human hands so you also need a pneumatic dingus to poke the poker and a …">
+	<meta name="twitter:url" content="/programming/tools/lifestyle-tools/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Lifestyle tools</h1>
+
+<div class="metadata">
+  <time datetime="2015-03-27T00:00:00+00:00" pubdate>2015-03-27</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/plone/">plone</a>, <a href="//by-tag/opinion/">opinion</a>, <a href="//by-tag/rant/">rant</a>, <a href="//by-tag/bioinformatics/">bioinformatics</a>, <a href="//by-tag/c/">c++</a>, <a href="//by-tag/web-development/">web-development</a></p></div>
+		<div class="summary">All I wanted to do was compile this code.</div>
+
+
+      <blockquote class="epigraph">
+<p>I'll stick with LaTeX, thank you very much. Which is poking yourself in the eye with a tool perfectly designed for eye-poking after you get the configuration right, but the tool can't be held by human hands so you also need a pneumatic dingus to poke the poker and a robot arm to hold the poker+dingus combination. But man, your eye is really beautifully poked.</p>
+<p>(commenter on Metafilter)</p>
+</blockquote>
+<p>I've wasted too much time over the years on software, libraries and systems that promised a lot but ended up consuming huge amounts of my time. After the first few times, I started to develop a wary eye for software that demanded I do nothing but tend to it, and tools that you couldn't just adopt and solve a problem with, but that seemed to take all your available time just to get your job done. This is especially problematic when you're a lone developer, in a small team or (like me) use software simply as a means to an end.</p>
+<p>So here's some hard-won ideas about these &quot;lifestyle&quot; tools.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">I've put this piece in the 'programming' category, but it has a much
+wider occurence, from web development to data science and bioinformatics.
+Anywhere where there are tough problems, geeks and a lot of activity, you
+can expect lifestyle tools to pop up, promising to solve all your problems
+at the expense of all your time.</p>
+</div>
+<div class="section" id="ways-to-recognise-lifestyle-tools">
+<h2>Ways to recognise lifestyle tools</h2>
+<div class="section" id="the-software">
+<h3>The software</h3>
+<blockquote class="epigraph">
+<p>It hardly seems worth even having a bug system if the frequency of from-scratch rewrites always outstrips the pace of bug fixing ... But that's what happens when there is no incentive for people to do the parts of programming that aren't fun. Fixing bugs isn't fun.</p>
+<p>(Jamie Zawinski)</p>
+</blockquote>
+<ul class="simple">
+<li><strong>NIH (not invented here):</strong> It reinvents the wheel by providing its own idiosyncratic solutions to problems that have been repeatedly solved elsewhere, i.e. its own build solution, templating language, logging or database interface.</li>
+<li><strong>Functionality is an ever-moving target:</strong> You can never get things to &quot;just work&quot;. There's a niggling bug in the UI, the database connection only works with the version you got out of the repo, you had to write a birdnest of code to patch it but &quot;it will be easier in the next version&quot;.</li>
+<li><strong>Pervasive and ongoing incompatibility without and within:</strong> &quot;Oh yeah, that plugin doesn't work with version X. Get the new version from the repo / recompile all your tools and libraries / it'll be fixed in the next version ...&quot;</li>
+<li><strong>Has over-engineered tools to solve problems that shouldn't exist:</strong> i.e. build tools to manage build tools, complex caching to solve inherent performance issues,</li>
+<li><strong>Ornate configuration files and schema:</strong> And they're almost always in XML.</li>
+<li><strong>Logging:</strong> for some reason, lifestyle tools show an obsession with logging, perhaps because the only way you'll work out what's going wrong is by crawling through a gigabyte of function calls. It may also be connected with their abysmal error-handling.</li>
+<li><strong>Bug reports go unfixed</strong>: Possibly because no one can reproduce your error and/or the setup is so complex anything could be happening.</li>
+<li><strong>Feature churn:</strong> that horribly complex and poorly documented class definition system? We're not bothering to fix it because the Brand New Hotness is in the repo and it's nearly ready for use but undocumented and it would be too hard to fix the old one ... (See Jamie Zawinski's CADT model.)</li>
+<li><strong>System complexity increases monotonically with time:</strong> Things never get better and simpler, because you're patching over fundamentally rotten foundations that few understand and developers can't stop themselves from adding another layer.</li>
+</ul>
+</div>
+<div class="section" id="the-documentation">
+<h3>The documentation</h3>
+<blockquote class="epigraph">
+<p>That's one sure tip-off to the fact that you're being assaulted by an Architecture Astronaut: the incredible amount of bombast; the heroic, utopian grandiloquence; the boastfulness; the complete lack of reality. And people buy it! The business press goes wild! The hallmark of an architecture astronaut is that they don't solve an actual problem... they solve something that appears to be the template of a lot of problems. Or at least, they try.</p>
+<p>(Joel Spolsky)</p>
+</blockquote>
+<ul class="simple">
+<li><strong>Is patchy:</strong> No one really understands it well enough, the task of documenting the whole system is too great and anyway, who has time after rewriting your configuration files for the second time this week.</li>
+<li><strong>Requests for clarification are answered with &quot;Read the source&quot;:</strong> Because when I want to know how my microwave works, the best way is to dismantle it and read the engineering schematics.</li>
+<li><strong>The documentation has no clear entry-point:</strong> The complexity and interconnectivity of the product prevents any reasonable mile-high view. To do anything you have to know everything.</li>
+<li><strong>&quot;You don't do it that way any more.&quot;:</strong> The effort of documenting system features - and the churn of features - means that documentation is polluted by references to old and outdated features.</li>
+</ul>
+</div>
+<div class="section" id="the-community">
+<h3>The community</h3>
+<blockquote class="epigraph">
+<p>The community is  massive ECHO chamber, where nothing gets out, seriously no one cares. Even worse, nothing gets in, we are on a desert island, isolated, alone at sea.</p>
+<p>(Stevan Little)</p>
+</blockquote>
+<ul class="simple">
+<li><strong>Is large and (overly) active:</strong> Forums churn constantly with queries, because everyone has questions, the answers are not easy and it's often not clear what the correct answer is.</li>
+<li><strong>Reflexively and globally rejects any criticism:</strong> Raise even the smallest complaint about (say) arcane terminology, software instability or poor documentation and you can expect the pack to start baying. &quot;What are you saying? There's nothing wrong with that! Why my grandmother managed to set up a server! With no instructions! In 10 minutes!&quot; This may be something to do with human psychology and sunk costs.</li>
+<li><strong>Explanations are rife with jargon:</strong> &quot;Override your XAML template interface with a monkey-patched factory-factory product, adding a new schema supermodel.&quot; This goes double if the new terms duplicate already existing ones, or use existing ones but in a different way.</li>
+<li><strong>You have nothing better to do:</strong> Users are expected to spend all day keeping up-to-date, knowing instantly about changes and new releases, reading all the mailing lists. Heaven forbid that you actually spend time doing something with the software.</li>
+<li><strong>Hyperbole and dismissal:</strong> Adherents will claim that the software is good for every situation and/or that if you can't get it to work &quot;It's clearly not for you / It works here, it must be your problem&quot;.</li>
+<li><strong>100% of analysts sitting at my desk use ...:</strong> The community clings to surveys and reports that cast the software in a good light. <em>X had fewer security alerts last year than PHP!</em> Yes, and it also had 1% of the users.</li>
+<li><strong>You suck!:</strong> A popular feature of the community are conference talks and blog posts that &quot;demolish myths&quot;, by claiming that the problems don't exist, you're doing it wrong, how their product is secretly the innovative edge in it's domain that's inspiring all others, that if you're not prepared to help develop the product then GTFO, etc. etc. Adherents might also answer criticism by disingeniously wondering 'why are there are these haters' or arguing that complexity and unreliability are actually good things.</li>
+<li><strong>A closed system:</strong> Despite its (focused) expertise, the community is hermetic. You never meet anyone who is an enthusiast or expert in a lifestyle tool and something else. They will claim that no other system allows metaprogramming / is a more flexible CMS / has such unprecedented visualisation capabilities. Maybe this is because of their lack of knowledge, maybe they're just repeating talking points that have bounced around the community echo chamber without the benefit of verification.</li>
+<li><strong>Do more:</strong> The answer to any question is always to double-down: invest more time. Invest more effort. Use this new tool straight out of repo. Sift through the source. Then your code will work.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="where-do-lifestyle-tools-come-from">
+<h2>Where do lifestyle tools come from?</h2>
+<blockquote class="epigraph">
+<p>X Windows Is &quot;customizable&quot; ... And so is a molten blob of pig iron.</p>
+<p>(Don Hopkins)</p>
+</blockquote>
+<p>It's a good question. No one sets out to design one of these ugly, ungainly creatures, yet they keep cropping up.</p>
+<p>One theory is that great developers (or developers that want to be seen as great or poor developers that want to mask their incompetence) wish to visibly demonstrate their &quot;talent&quot;, so they develop mind-bendingly complex things that may not actually do the necessary job but are &quot;so cool!&quot;</p>
+<p>Alternatively, I think that many examples share a common origin: at some point, they they were a decent solution to a particular problem when there were few alternatives. Their feature set was much smaller and they worked well enough. As time passed and they accumulated users and features, fundamental architecture changes become difficult. Small problems ossified into larger issues. Old hands in the community instinctively understand how everything works, even if that explanation is unbelievably complex. New hands spend so much time trying to get up to speed, they lose sight of what's happening outside the community. Eventually, everyone has invested so much time and effort in the system, that the idea of using something else (&quot;throwing all that effort away&quot;) becomes anathema.</p>
+</div>
+<div class="section" id="what-happens-to-them">
+<h2>What happens to them?</h2>
+<p>On the upside, it seems to me that all lifestyle tools eventually perish. The size of and activity in the community will become unmanageable. Innovation grinds to a halt as few if any people understand what is going on. Someone will develop a simpler alternative. Projects based on the old tool will crash and burn - or simply fail to complete - while those based on alternatives will complete, the developers going on finish other projects.  People begin to talk up the alternatives and slowly the old dogma dies down.</p>
+</div>
+<div class="section" id="what-do-you-do">
+<h2>What do you do?</h2>
+<p>I suggest there is one key question to ask, to see if you're getting sucked into using a lifestyle tool:</p>
+<blockquote>
+Do you spend more time maintaining, learning about, debugging and managing the tool than doing anything with the problem domain you're supposed to be using the tool on?</blockquote>
+</div>
+<div class="section" id="candidates">
+<h2>Candidates</h2>
+<ul class="simple">
+<li>Maven: holy crap, it's just a build tool.</li>
+<li>Eclipse: why do you need <a class="reference external" href="https://en.wikipedia.org/wiki/Pulse_(ALM)">a tool to manage and update your IDE?</a></li>
+<li>Mozilla: not just a browser but an entire cross-platform toolkit. Just read the instructions for setting-up the Mozilla development on your harddisk.</li>
+<li>C++: Has arguably teetered on the edge of being a lifestyle tool, with features that were standardized before they were actually implemented, the overly verbose and cryptic template system, and puttering about minor syntax corrections. This may have been one of the reasons for the rise of Java ... which in turn has threatened to become a lifestyle tool. Maybe it's the large community that does it to a programming language.</li>
+<li>Java frameworks and ORMs are legendary for their steep learning curve and eccentric behaviours (c.v Hibernate, J2EE, ), with huge amounts of energy being invested into mundane issues like how logging takes place.</li>
+<li>Corba: Remember when Corba was going to solve all of our problems? Can you remember what it actually did or what those problems were?</li>
+<li>Perl 6: it wasn't that many years ago that someone described their Perl-based webtool as &quot;state of the art&quot; and practitioners eagerly devoured the many lengthy missives on Perl's new features. Now the community is literally dying out as adherents age and retire.</li>
+<li>Plone: guilty of most of the crimes above. This article was inspired by me noticing that mailing list activity had been dwindling steady for years, while several prominent community members had quietly slipped away. Seriously, the solution to theming is to invent <a class="reference external" href="http://davidjb.com/blog/2009/09/deliver-me-from-deliverance/">a filtering proxy that sits in front of your website and rewrites all the HTML?</a>.</li>
+</ul>
+</div>
+<div class="section" id="also-see">
+<h2>Also see</h2>
+<ul class="simple">
+<li>Joel Spolsky on <a class="reference external" href="http://www.joelonsoftware.com/articles/fog0000000018.html">architecture astronauts</a> (and <a class="reference external" href="http://www.joelonsoftware.com/items/2008/05/01.html">again</a>) and <a class="reference external" href="http://www.joelonsoftware.com/items/2009/09/23.html">over-engineering</a></li>
+<li>Richard Gabriel on <a class="reference external" href="http://www.jwz.org/doc/worse-is-better.html">worse is better</a></li>
+<li>Jamie Zawinski on the <a class="reference external" href="http://www.jwz.org/doc/cadt.html">Cascade of Attention-Deficit Teenagers model of development</a></li>
+<li>Stevan Little on <a class="reference external" href="https://speakerdeck.com/stevan_little/perl-the-detroit-of-scripting-languages">Perl, the Detroit of programming languages</a> and <a class="reference external" href="https://speakerdeck.com/stevan_little/perl-is-not-dead-it-is-a-dead-end">Perl is not dead, it's a dead end</a></li>
+<li>Don Hopkins on <a class="reference external" href="http://wolmarans.com/wordpress/?p=121">The X-Windows Disaster</a></li>
+<li><a class="reference external" href="http://bexhuff.com/2008/06/why-do-so-many-developers-love-bafflingly-complex-code">Why do so Many Developers Love Bafflingly Complex Code</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Some more things I done learned about REDCap - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Refer back to the previous article for the background and some introduction to REDCap. Note These notes are based upon REDCap version 6.4.4. Different versions may have fixed or adjusted some of this behaviour. Adding users To add a user, you need an email address to send a …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Some more things I done learned about REDCap">
+	<meta name="twitter:description" content="Refer back to the previous article for the background and some introduction to REDCap. Note These notes are based upon REDCap version 6.4.4. Different versions may have fixed or adjusted some of this behaviour. Adding users To add a user, you need an email address to send a …">
+	<meta name="twitter:url" content="/science/data-science/more-about-redcap/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Some more things I done learned about REDCap</h1>
+
+<div class="metadata">
+  <time datetime="2016-09-10T00:00:00+01:00" pubdate>2016-09-10</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/data-science/">data-science</a>, <a href="//by-tag/redcap/">redcap</a>, <a href="//by-tag/databases/">databases</a></p></div>
+		<div class="summary">A few more surprises</div>
+
+
+      <p>Refer back to the <a class="reference external" href="/science/data-science/what-i-done-learned-about-redcap">previous article</a> for the background and some introduction to REDCap.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">These notes are based upon REDCap version 6.4.4. Different versions may have fixed or adjusted some of this behaviour.</p>
+</div>
+<div class="section" id="adding-users">
+<h2>Adding users</h2>
+<p>To add a user, you need an email address to send a registration link to. No getting around it. (Which may seem like a trivial requirement, but this can be an issue when new staff are joining and IT is yet to assign them an address.)</p>
+<p>A small irritation is that if a new user has to be added to multiple projects, this has to be done, one-by-one, project-by-project. There's no getting around this.</p>
+</div>
+<div class="section" id="design">
+<h2>Design</h2>
+<p>You can set the type of a field via validation and use this to control the number of decimal figures a numerical values gets. For example, <tt class="docutils literal">integer, number, number_1dp, number_2dp</tt> can have no, any, one or two figures after the decimal point respectively. You can also set minimum and maximum values for the numeric figures.</p>
+<p>Here's the catch:</p>
+<p>Only <tt class="docutils literal">integer</tt> and <tt class="docutils literal">number</tt> pay any attention to the min/max fields. <tt class="docutils literal">number_1dp</tt> and <tt class="docutils literal">number_2dp</tt> ignore them. (Some REDCap gurus asserted that you shouldn't even see the mix/max options for <tt class="docutils literal">number_1dp</tt> and <tt class="docutils literal">number_2dp</tt> but maybe that's version-specific.)</p>
+<p>So here's your choice: to you want to limit the number of decimal figures <em>or</em> the minimum and maximum values?</p>
+</div>
+<div class="section" id="making-project-changes">
+<h2>Making project changes</h2>
+<p>While it would be best for any project to be completely designed before it is released to production, in reality changes will often have to be made to datasets that already in use: adding &amp; renaming columns, tweaking validation, etc. REDCap is good about preserving data in the face of schema change, but caution still needs to be exercised.</p>
+<ul class="simple">
+<li>When in doubt, save and re-upload all your data</li>
+<li>Making changes one-by-one in the browser (using the design GUI) tends to be much more robust and preserve more data than by uploading a new data dictionary. REDCap knows what data is being changed from and to in the first, but not in the second.</li>
+<li>Changing the primary key / identifier will likely bork all your data.</li>
+</ul>
+</div>
+<div class="section" id="choices">
+<h2>Choices</h2>
+<p>You can trip yourself up with single / multiple-choice fields in REDCap, although you have to try hard. Choices are written as id-title pairs, where the first is the value that is stored internally and the second is the value that is shown to users:</p>
+<pre class="literal-block">
+1=foo
+2=bar
+3=baz
+</pre>
+<p>Note that they appear in the order that they are written in the choice options. So in this case:</p>
+<pre class="literal-block">
+3=baz
+2=bar
+1=foo
+</pre>
+<p>sorting does not occur on the internal values, they appear in the order baz-bar-foo. And should you be crazy enough to later edit and shuffle up the ids and titles:</p>
+<pre class="literal-block">
+1=baz
+2=foo
+3=bar
+</pre>
+<p>REDCap will happily let you.</p>
+</div>
+<div class="section" id="memory">
+<h2>Memory</h2>
+<p>REDCap report generation is incredibly memory hungry. I've had cases where a 20Mb report needed more than 2Gb of memory. The explanation for this is that any report has to be assembled in memory, to allow for the various filters and selections, before it is converted to the downloadable text. In short: that's just the way it is.</p>
+<p>Downloading only part of the dataset (i.e. a subset of instruments or columns) will consume a correspondingly smaller amount of memory. Thus, a common riposte is to say that users shouldn't download the entire dataset. Good luck with that: you can provide an extensive list of report building and filtering mechanisms but people will insist on just downloading the entire dataset. A useful solution to this end is to install a plugin that dumps the data without filters. There's a useful implementation of this on the REDCap mailing list.</p>
+</div>
+<div class="section" id="elastic-beanstalk">
+<h2>Elastic beanstalk</h2>
+<p>REDCap is easily deploy-able to Amazon's EB service, which not only saves you the work of setting up a system but also gets you auto-scaling behaviour. The way I set up an EB-based REDCap system was:</p>
+<ol class="arabic">
+<li><p class="first">Set it up the conventional way. This probably isn't necessary but is handy to make sure the configuration values.</p>
+</li>
+<li><p class="first">Set up your database to use Amazon RDS (their database service)</p>
+</li>
+<li><p class="first">Set up the reports and files to use Amazon S3. You need to do this because the EB disk space is completely ephemeral. See the previous article for some gotchas about S3.</p>
+</li>
+<li><p class="first">You may have to insert a few config files via <tt class="docutils literal">.ebextensions</tt>. I've used two to adjust some environmental and PHP variables:</p>
+<pre class="literal-block">
+# configure environment variables:
+option_settings:
+  - option_name: PHP_MEMORY_LIMIT
+    value: 4000M
+
+# extra php configuration
+# this file will be placed in `php.d` and read after `php.ini`
+files:
+  &quot;/etc/php.d/project.ini&quot; :
+    mode: &quot;000644&quot;
+    owner: root
+    group: root
+    content: |
+      upload_max_filesize = 64M
+      post_max_size = 64M
+      memory_limit = 3900M
+</pre>
+</li>
+<li><p class="first">You may have to adjust some variables on your EB dashboard to configure</p>
+</li>
+<li><p class="first">Otherwise, it's a simple case of dropping the REDCap source code into the EB deploy directory and writing the db settings in the appropriate place.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="email-trapped-by-spam">
+<h2>Email trapped by spam</h2>
+<p>This is not a REDCap problem per se, but can be an issue depending on how you deploy it. If you use Elastic Beanstalk or one of the other Amazon deployment methods that pushes mail through Amazon's servers, many systems will mark this email as spam. It seems that many of the other systems sharing the email servers with you may be spamming and so the servers have ended up on blacklists. About the only thing you can do is use your own servers, Amazon SMS (Simple Message Service) or something similar.</p>
+</div>
+<div class="section" id="weird-characters">
+<h2>Weird characters</h2>
+<p>Generally, REDCap is alright with handling extended characters (accents, umlauts, etc.) but CSV files and the associated tools often will only handle ASCII. So it may be necessary to normalise everything to plain text or play around with encodings, which is never fun.</p>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<ul class="simple">
+<li><a class="reference external" href="http://www.biostat.wustl.edu/redcap/wp-content/uploads/2012/02/redcap_avoid_pitfalls.ppt">Avoiding common pitfalls in REDCap</a></li>
+<li><a class="reference external" href="http://https://pycap.readthedocs.org/en/latest/">PyCap</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+*.tmp
+*.bak
+*.pyc
+*.pid
+.Rhistory
+__pycache__
+.DS_Store
+.idea
+cache/*
+drafts/*

@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title> - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+
+<h1>Posts categorized under: </h1>
+
+<article class="summary">
+<div class="metadata">
+  <time datetime="2012-10-01T12:00:00+01:00" pubdate>2012-10-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/ruby/">ruby</a>, <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/documentation/">documentation</a>, <a href="//by-tag/tools/">tools</a>, <a href="//by-tag/rdoc/">rdoc</a></p></div>  <div>
+    <h2>
+      <a href="/programming/ruby/rdoc-the-essentials/" rel="bookmark" title="Permalink to Rdoc, the essentials">Rdoc, the essentials</a>
+    </h2>
+		<div class="summary">A short memory jogger.</div>
+   <pre class="literal-block">
+= Top level title
+
+== 2nd level / sub-title
+
+----
+
+A horizontal rule is at least 4 dashes
+
+----
+
+Text can be _italic_, *bold* or +monospaced typewriter+.
+
+   Verbatim / literal text is indented. But look out
+   if it's after a list, as they must be idented to a
+   different extent
+
+----
+
+   * Indent your lists and use stars …</pre>
+  </div>
+</article><article class="summary">
+<div class="metadata">
+  <time datetime="2012-06-14T12:56:00+01:00" pubdate>2012-06-14</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/ruby/">ruby</a>, <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/irb/">irb</a></p></div>  <div>
+    <h2>
+      <a href="/programming/ruby/a-useful-irbrc-file/" rel="bookmark" title="Permalink to A useful .irbrc file">A useful .irbrc file</a>
+    </h2>
+		<div class="summary">Tweaking irb.</div>
+   <p>For better or worse, programming in Ruby means that you will be spending
+a lot of time in <tt class="docutils literal">irb</tt>. You can customise its behaviour in your <tt class="docutils literal">.irbrc</tt>
+file, usually found in your home directory. The tweaks in mine were
+gathered from various places across the 'net:</p>
+<pre class="literal-block">
+require &quot;rubygems&quot;
+require &quot;wirble …</pre>
+  </div>
+</article><article class="summary">
+<div class="metadata">
+  <time datetime="2012-01-01T12:00:00+00:00" pubdate>2012-01-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/ruby/">ruby</a></p></div>  <div>
+    <h2>
+      <a href="/programming/ruby/simple-string-interpolation/" rel="bookmark" title="Permalink to Simple string interpolation">Simple string interpolation</a>
+    </h2>
+		<div class="summary">Safe and straightforward markup, for renaming files.</div>
+   <p>It's often useful for a script to allow the specification of how an
+output file is named, e.g. myscript.rb -o file.out. At the same time, it
+would be nice to have the output name based on the an input file name,
+and have easy and consistent naming …</p>
+  </div>
+</article><article class="summary">
+<div class="metadata">
+  <time datetime="2011-09-01T12:00:00+01:00" pubdate>2011-09-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/ruby/">ruby</a>, <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/wtf/">wtf</a></p></div>  <div>
+    <h2>
+      <a href="/programming/ruby/illogical-or/" rel="bookmark" title="Permalink to Illogical or">Illogical or</a>
+    </h2>
+		<div class="summary">'Or' or something else.</div>
+   <p>In which we consider the difference between <tt class="docutils literal">or</tt> and <tt class="docutils literal">||</tt>
+in Ruby. The secret is ... it depends. On context.</p>
+<p>Behold:</p>
+<pre class="literal-block">
+&gt;&gt; foo = nil or &quot;foo&quot;
+=&gt; &quot;foo&quot;
+&gt;&gt; bar = nil || &quot;bar&quot;
+=&gt; &quot;bar&quot;
+</pre>
+<p>That makes sense. But!:</p>
+<pre class="literal-block">
+def testor (&amp;block)
+   foo = block or &quot;foo&quot;
+   bar = block || &quot;bar&quot;
+   return foo, bar, block
+end
+
+&gt;&gt; testor()
+=&gt; [nil, &quot;bar …</pre>
+  </div>
+</article><article class="summary">
+<div class="metadata">
+  <time datetime="2011-09-01T12:00:00+01:00" pubdate>2011-09-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/ruby/">ruby</a>, <a href="//by-tag/wtf/">wtf</a>, <a href="//by-tag/programming/">programming</a></p></div>  <div>
+    <h2>
+      <a href="/programming/ruby/ruby-1-9-keyword-arguments-wtf/" rel="bookmark" title="Permalink to Ruby 1.9, keyword arguments, WTF">Ruby 1.9, keyword arguments, WTF</a>
+    </h2>
+   <p>Amongst the many entries Ruby has in the &quot;you have got to be kidding me&quot;
+stakes, this is a doozy.</p>
+<p>Due to Ruby's lack of explicit support for keyword arguments, it's
+traditional to use a quirk of its argument parsing that pushes named
+arguments into a hash:</p>
+<pre class="literal-block">
+def foo (a …</pre>
+  </div>
+</article><article class="summary">
+<div class="metadata">
+  <time datetime="2011-03-01T12:00:00+00:00" pubdate>2011-03-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/ruby/">ruby</a>, <a href="//by-tag/excel/">excel</a>, <a href="//by-tag/programmning/">programmning</a></p></div>  <div>
+    <h2>
+      <a href="/programming/ruby/parsing-excel/" rel="bookmark" title="Permalink to Parsing Excel">Parsing Excel</a>
+    </h2>
+   <p>Some (very) quick notes on libraries for manipulating (mostly reading)
+Excel files in Ruby.</p>
+<div class="section" id="parseexcel">
+<h2>Parseexcel</h2>
+<ul class="simple">
+<li>This is the usual / traditional method for reading Excel</li>
+<li>Doesn't work on XSLX (modern Excel)</li>
+<li>There are a number of versions handing around the web, look on rubygems for latest version</li>
+<li>Appears to not call …</li></ul></div>
+  </div>
+</article><article class="summary">
+<div class="metadata">
+  <time datetime="2010-05-14T12:00:00+01:00" pubdate>2010-05-14</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/ruby/">ruby</a>, <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/visualisation/">visualisation</a>, <a href="//by-tag/plotting/">plotting</a></p></div>  <div>
+    <h2>
+      <a href="/programming/ruby/rubyvis/" rel="bookmark" title="Permalink to Rubyvis">Rubyvis</a>
+    </h2>
+		<div class="summary">Some problems, some solutions.</div>
+   <p>If you need to draw a custom graph type in Ruby, there's a few problems:</p>
+<ol class="arabic simple">
+<li>There's only a modest number of graphing libraries</li>
+<li>You don't have to go to far for your graph type to not be covered by
+these</li>
+</ol>
+<p>Which leaves you few choices. You could manually draw it …</p>
+  </div>
+</article>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

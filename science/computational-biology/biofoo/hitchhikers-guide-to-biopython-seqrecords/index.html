@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Hitchhikers guide to BioPython: SeqRecords - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="(Previously published on BiocodersHub.) Previously I'd spoken about how Biopython represents sequence data with the Seq class. But there is also the SeqRecord class: A Seq is just raw sequence data and information about what type of sequence it is. A SeqRecord is a Seq and all the other information …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Hitchhikers guide to BioPython: SeqRecords">
+	<meta name="twitter:description" content="(Previously published on BiocodersHub.) Previously I'd spoken about how Biopython represents sequence data with the Seq class. But there is also the SeqRecord class: A Seq is just raw sequence data and information about what type of sequence it is. A SeqRecord is a Seq and all the other information …">
+	<meta name="twitter:url" content="/science/computational-biology/biofoo/hitchhikers-guide-to-biopython-seqrecords/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Hitchhikers guide to BioPython: SeqRecords</h1>
+
+<div class="metadata">
+  <time datetime="2012-02-01T12:00:00+00:00" pubdate>2012-02-01</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/biopython/">BioPython</a>, <a href="//by-tag/biosequences/">biosequences</a>, <a href="//by-tag/computational-biology/">computational biology</a>, <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/python/">Python</a></p></div>
+		<div class="summary">For the novice, more-than-raw sequences.</div>
+
+
+      <p>(Previously published on BiocodersHub.)</p>
+<p>Previously I'd spoken about how Biopython represents sequence data with
+the Seq class. But there is also the SeqRecord class:</p>
+<ul class="simple">
+<li>A Seq is just raw sequence data and information about what type of sequence it is.</li>
+<li>A SeqRecord is a Seq and all the other information that is associated with that sequence: identifiers, annotataions, features and so on.</li>
+</ul>
+<p>It can be confusing working out if a Biopython function uses or returns
+Seqs or SeqRecords. As a rule of thumb if a function uses or produces
+anything more than the raw sequence data, or retrieves the sequence
+information from a file or database, it uses a SeqRecord. Thus the I/O
+functions all read and write SeqRecords.</p>
+<p>To create a SeqRecord you need a Seq:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; from Bio.Seq import Seq
+&gt;&gt;&gt; from Bio.Alphabet import IUPAC
+&gt;&gt;&gt; s = Seq(&quot;MKQHKAMIVALIVICITAVVAALV&quot;, IUPAC.protein)
+&gt;&gt;&gt; from Bio.SeqRecord import SeqRecord
+&gt;&gt;&gt; sr = SeqRecord (s)
+</pre>
+<p>This produce the simplest possible SeqRecord, being a simple sequence
+with no identifiers or annotations.</p>
+<p>The main optional arguments for the SeqRecord constructor are:</p>
+<ul class="simple">
+<li>id (string): the primary identifier for the sequence, usually a database accession number.</li>
+<li>name (string): the title of the sequence. Often the same as the id, but sometimes a clone name or similar.</li>
+<li>description (string): free text notes associated with the sequence. Often, additional information associated that is not covered by the other fields is included in ther description is a structured format.</li>
+</ul>
+<p>These also are the names of respective object members the arguments are
+assigned to:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; from Bio.Seq import Seq
+&gt;&gt;&gt; from Bio.Alphabet import IUPAC
+&gt;&gt;&gt; from Bio.SeqRecord import SeqRecord
+&gt;&gt;&gt; sr = SeqRecord (Seq(&quot;MKQHKAMIVALIVI&quot;, IUPAC.protein), id=&quot;A73456&quot;,
+name=&quot;E. coli phosphatase&quot;)
+&gt;&gt;&gt; sr.id
+'A73456'
+&gt;&gt;&gt; sr.name
+'E. coli phosphatase'
+&gt;&gt;&gt; sr.description
+'&lt;unknown description&gt;'
+</pre>
+<p>If no value is given for the id, name and description of a SeqFeature,
+those members default to the warning message ‘&lt;unknown FOO&gt;’. This can
+create problems if you try to test whether the member is set or equal to
+another if you assume that an unset field is an empty string or false:</p>
+<pre class="literal-block">
+for s in seqs:
+if (not s.id):
+   # this doesn't work
+   print &quot;%s has no id&quot;
+</pre>
+<p>By wide convention in metadata, <em>identifiers</em> or <em>IDs</em> are required and
+unique, at least locally, while <em>names</em> or <em>titles</em> are optional and
+duplicates. In practice, Biopython is unlikely to malfunction or care
+about either. However duplicate or missing IDs or names may cause
+dependent programs to complain or crash and create confusion for anyone
+reading the output. So it’s advisable to use both and make them unique.</p>
+<p>There are three additional SeqRecord optional arguments (and members)
+for SeqRecord:</p>
+<p><strong>dbxrefs (list):</strong> This is simply a list of reference or accession numbers to the sequence in other databases (i.e. not the one that you’ve retreived the
+sequence from). It is often empty, but when present the entries are
+simply strings:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; sr.dbxrefs
+[&quot;ASAP:13298&quot;, &quot;GI:16131885&quot;, &quot;GeneID:948570&quot;]
+</pre>
+<p>The database references are often of the form
+<em>database_name:id_in_database</em> and manipulating the database
+references is as list as changing the strings in the dbxrefs list:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; sr.dbxrefs.append ('PrmDb:12345')
+</pre>
+<p><strong>annotations (dictionary):</strong> Additional information about the sequence not associated with or linked to a location in the sequence as key-values where the key is the type of information. This tends to be more unstructured information like the organism and taxonomy involved, the date of modification, etc.:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; sr.annotations
+{'accessions': ['U49845'],
+'data_file_division': 'PLN',
+'date': '21-JUN-1999',
+'gi': '1293613',
+'keywords': [''],
+'organism': 'Saccharomyces cerevisiae',
+'references': [Reference(title='Cloning and sequence of REV7, a gene whose function is required for DNA damage-induced mutagenesis in Saccharomyces cerevisiae', ...),
+Reference(title='Selection of axial growth sites in yeast requires Axl2p, a novel plasma membrane glycoprotein', ...),
+Reference(title='Direct Submission', ...)],
+'sequence_version': 1,
+'source': &quot;Saccharomyces cerevisiae (baker's yeast)&quot;,
+'taxonomy': ['Eukaryota',
+'Fungi',
+'Ascomycota',
+'Saccharomycotina',
+'Saccharomycetes',
+'Saccharomycetales',
+'Saccharomycetaceae',
+'Saccharomyces']}
+</pre>
+<p>Note that the keys are almost always
+<em>lowercase_separated_by_underscores</em>. There’s little agreement about
+standard key names, although the records you get from one database or
+source will tend to agree with each other. You’ll also notice there’s a
+great deal of heterogeneity in what’s used for an annotation value. Some
+are plain text (‘organism’), others are a list of strings (‘taxonomy’,
+‘keywords’) and some use special Biopython classes to represent complex
+information (‘references’). This means that accessing or modifying the
+annotations can be easy or complicated:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; if 'Saccharomycetales' in sr.annotations['taxonomy']:
+   print 'correct taxa'
+correct taxa
+
+# add a reference to the annotations
+&gt;&gt;&gt; new_ref = Reference (title=&quot;The 5' end of the ...&quot; ...)
+&gt;&gt;&gt; sr.annotations.references.append (new_ref)
+
+# find out what the date is, where the format may not be consistent
+&gt;&gt;&gt; import datetime
+&gt;&gt;&gt; try:
+   mod_date = datetime.strptime(sr.annotations['date'], '%d-%b-%Y')
+except ValueError, err:
+   # if date in wrong format
+   ...
+</pre>
+<p>A consequence of storing annotations in a dictionary is that there
+cannot be two annotations of the same type. This is generally true but
+but occasionally files will occur that do have this problem.</p>
+<p><strong>features (list):</strong> A list of SeqFeatures for data that is associated with specific
+location in the sequence. This is a more complicated tiopic that we’ll
+discuss in the next installment.</p>
+<p>(In more recent version of Biopython, SeqRecords have an additional
+member, <em>letter_annotations</em>. This is a dictionary of properties for
+every location along the sequence, and usually used quality scores (e.g.
+Section 16.1.5) or secondary structure information (e.g. from
+Stockholm/PFAM alignment files).)</p>
+<p>Previously, I noted how the <em>right</em> way to do sequence IO was with
+Bio.SeqIO. There are two other methods that can be useful for quickly
+dumping a SeqRecord to the screen or a file. ‘print’ will throw a
+reasonably readable form of the SeqRecord data to the screen:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; print sr2
+ID: NM_001083539.1
+Name: NM_001083539
+Description: Homo sapiens killer cell immunoglobulin-like receptor, three domains, short cytoplasmic tail, 1 (KIR3DS1), mRNA.
+Number of features: 26
+...
+</pre>
+<p>And the 'format' method can be used to choose a specific formal
+format:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; print sr_2.format('fasta')
+&gt;NM_001083539.1 Homo sapiens killer cell immunoglobulin-like receptor, three domains, short cytoplasmic tail, 1 (KIR3DS1), mRNA.
+CCGGCAGCACCATGTTGCTCATGGTCGTCAGCATGGCGTGTGTTGGGTTGTTCTTGGTCC
+</pre>
+<p>It’s worth paying attention to how the fields in different file formats
+map to the SeqRecord object. For example, the VERSION, LOCUS and
+DEFINITION line in a Genbank file become the id, name and description
+field of a SeqRecord respectively. When written out to a Fasta file, the
+id becomes the first entry on the accession line, with the description
+appended. The name is lost, as are the annotations and features. The
+moral here is probably to stick to using as few formats as possible and
+ones that are complex enough to support the data you are interested in.</p>
+<p>Back in the previous installment, I also noted that Seqs were basically
+strings and could do just about anything strings could:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; s = Seq ('ACGTACGT')
+&gt;&gt;&gt; 'ACG' in s
+True
+&gt;&gt;&gt; s[0]
+'A'
+&gt;&gt;&gt; s[:5]
+Seq('ACGTA', Alphabet())
+</pre>
+<p>The same holds for SeqRecords in many regards. They can be sliced,
+indexed and queried:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; sr = SeqRecord (s)
+&gt;&gt;&gt; sr
+SeqRecord(seq=Seq('ACGTACGT', Alphabet()), id='&lt;unknown id&gt;', name='&lt;unknown name&gt;', description='&lt;unknown description&gt;', dbxrefs=[])
+&gt;&gt;&gt; 'ACG' in sr
+True
+&gt;&gt;&gt; sr[0]
+'A'
+&gt;&gt;&gt; sr[:5]
+SeqRecord(seq=Seq('ACGTA', Alphabet()), id='&lt;unknown id&gt;', name='&lt;unknown name&gt;', description='&lt;unknown description&gt;', dbxrefs=[])
+</pre>
+<p>SeqRecords can even be concatenated:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; sr[:3] + sr[5:]
+SeqRecord(seq=Seq('ACGCGT', Alphabet()), id='&lt;unknown id&gt;', name='&lt;unknown name&gt;', description='&lt;unknown description&gt;', dbxrefs=[])
+</pre>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

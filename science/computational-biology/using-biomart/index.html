@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>"Checking gene names & identities in Biomart" - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="I need to check some gene names and get the sequences for them. Ordinarily, I would prefer to use Python for this sort of thing. Unfortunately, the Python interfaces to Biomart appear to have been written by insane people, so R it is. What is Biomart? What is a biomart …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content=""Checking gene names & identities in Biomart"">
+	<meta name="twitter:description" content="I need to check some gene names and get the sequences for them. Ordinarily, I would prefer to use Python for this sort of thing. Unfortunately, the Python interfaces to Biomart appear to have been written by insane people, so R it is. What is Biomart? What is a biomart …">
+	<meta name="twitter:url" content="/science/computational-biology/using-biomart/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>"Checking gene names & identities in Biomart"</h1>
+
+<div class="metadata">
+  <time datetime="2015-05-19T00:00:00+01:00" pubdate>2015-05-19</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/science/">science</a>, <a href="//by-tag/r/">r</a>, <a href="//by-tag/computational-biology/">computational-biology</a>, <a href="//by-tag/biomart/">biomart</a>, <a href="//by-tag/genomics/">genomics</a></p></div>
+
+
+      <p>I need to check some gene names and get the sequences for them. Ordinarily, I would prefer to use Python for this sort of thing. Unfortunately, the Python interfaces to Biomart appear to have been written by insane people, so R it is.</p>
+<p>What is Biomart? What is <em>a</em> biomart? A biomart is a way of providing remote access to large genomic datasets and associated information, and Biomart is one of the popular instances of it:</p>
+<ul>
+<li>Biomart: http://central.biomart.org</li>
+<li>Cosmic http://www.sanger.ac.uk/genetics/CGP/cosmic/biomart/martview</li>
+<li>Ensembl http://www.ensembl.org/biomart/martview</li>
+<li>Intogen http://biomart.intogen.org/</li>
+</ul>
+<p>Under the hood, individual biomart servers may connect to a whole bunch of other servers, but this is invisible to users. Different servers may also specialise in different datasets, so you will need to discover and select the service you are using. You can use this data to answer queries like:</p>
+<ul>
+<li>"Give me all the genes for this species"</li>
+<li>"What's the name for this gene in this other nomenclature"</li>
+<li>"Show me all the genes associated with this region"</li>
+</ul>
+<p>There is a web interface to every biomart ("MartView"), but the winning feature of marts is programmatic access over the web, which is what I'll be demonstrating here. </p>
+<p>First load the <code>`biomaRt</code> library and see what marts are available at the default address:</p>
+<div class="highlight"><pre><span></span><span class="kn">library</span> <span class="p">(</span><span class="s">&#39;biomaRt&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in library(&quot;biomaRt&quot;): there is no package called &#39;biomaRt&#39;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>head <span class="p">(</span>listMarts<span class="p">())</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in listMarts(): could not find function &quot;listMarts&quot;
+</pre></div>
+
+
+<p>A little bit of nomenclature:</p>
+<ul>
+<li>A <em>mart</em> is a standalone service, so a biomart server may have several marts.</li>
+<li>Each mart may contain a number of <em>datasets</em> that can be queried</li>
+<li>Each datasets consists of records with <em>attributes</em> (columns)</li>
+<li>A record will have a <em>value</em> for each attribute</li>
+<li>A query can use a set of <em>filters</em> to control and narrow its search</li>
+</ul>
+<p>So, lets select Ensembl and see what datasets it has:</p>
+<div class="highlight"><pre><span></span>ensembl <span class="o">&lt;-</span> useMart<span class="p">(</span><span class="s">&#39;ensembl&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in useMart(&quot;ensembl&quot;): could not find function &quot;useMart&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>head <span class="p">(</span>listDatasets <span class="p">(</span>ensembl<span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in listDatasets(ensembl): could not find function &quot;listDatasets&quot;
+</pre></div>
+
+
+<p>Select the human dataset. Alternatively, you can select the mart and dataset in one go:</p>
+<div class="highlight"><pre><span></span>mart <span class="o">&lt;-</span> useDataset<span class="p">(</span><span class="s">&quot;hsapiens_gene_ensembl&quot;</span><span class="p">,</span> mart<span class="o">=</span>ensembl<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in useDataset(&quot;hsapiens_gene_ensembl&quot;, mart = ensembl): could not find function &quot;useDataset&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>mart <span class="o">&lt;-</span> useMart <span class="p">(</span>biomart<span class="o">=</span><span class="s">&quot;ensembl&quot;</span><span class="p">,</span> dataset<span class="o">=</span><span class="s">&quot;hsapiens_gene_ensembl&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in useMart(biomart = &quot;ensembl&quot;, dataset = &quot;hsapiens_gene_ensembl&quot;): could not find function &quot;useMart&quot;
+</pre></div>
+
+
+<p>You can see what sort of fields are available to filter upon:</p>
+<div class="highlight"><pre><span></span>filters <span class="o">=</span> listFilters <span class="p">(</span>mart<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in listFilters(mart): could not find function &quot;listFilters&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>head <span class="p">(</span>filters<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in head(filters): object &#39;filters&#39; not found
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>attribs <span class="o">=</span> listAttributes <span class="p">(</span>mart<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in listAttributes(mart): could not find function &quot;listAttributes&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>head <span class="p">(</span>attribs<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in head(attribs): object &#39;attribs&#39; not found
+</pre></div>
+
+
+<p>Queries are built with the <em>getBM</em> call. For example, to retreive genes by their gene symbol:</p>
+<div class="highlight"><pre><span></span>results <span class="o">&lt;-</span> getBM <span class="p">(</span>attributes<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="s">&quot;ensembl_gene_id&quot;</span><span class="p">,</span> <span class="s">&quot;hgnc_symbol&quot;</span><span class="p">),</span> filters<span class="o">=</span><span class="s">&quot;hgnc_symbol&quot;</span><span class="p">,</span> values<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="s">&quot;CPVL&quot;</span><span class="p">,</span> <span class="s">&quot;PYGL&quot;</span><span class="p">),</span> mart<span class="o">=</span>mart<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in getBM(attributes = c(&quot;ensembl_gene_id&quot;, &quot;hgnc_symbol&quot;), filters = &quot;hgnc_symbol&quot;, : could not find function &quot;getBM&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>results
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in eval(expr, envir, enclos): object &#39;results&#39; not found
+</pre></div>
+
+
+<p>To put this in plain English:</p>
+<ul>
+<li>using the mart we selected earlier</li>
+<li>return the <code>ensembl_gene_id</code> and <code>hgnc_symbol</code> columns for every record</li>
+<li>where the <code>hgnc_symbol</code> column must be <code>CPVL</code> or <code>PYGL</code>.</li>
+</ul>
+<p>So attributes are what we want to know and filters are how we restrict our search to a set of values.</p>
+<p>Note that if the gene symbol does not exist in the set, the results will not include a result for it:</p>
+<div class="highlight"><pre><span></span>results <span class="o">&lt;-</span> getBM <span class="p">(</span>attributes<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="s">&quot;ensembl_gene_id&quot;</span><span class="p">,</span> <span class="s">&quot;hgnc_symbol&quot;</span><span class="p">),</span> filters<span class="o">=</span><span class="s">&quot;hgnc_symbol&quot;</span><span class="p">,</span> values<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="s">&quot;CPVL&quot;</span><span class="p">,</span> <span class="s">&quot;BOGUS&quot;</span><span class="p">),</span> mart<span class="o">=</span>mart<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in getBM(attributes = c(&quot;ensembl_gene_id&quot;, &quot;hgnc_symbol&quot;), filters = &quot;hgnc_symbol&quot;, : could not find function &quot;getBM&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>results
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in eval(expr, envir, enclos): object &#39;results&#39; not found
+</pre></div>
+
+
+<p>A query that has no results will return an empty frame:</p>
+<div class="highlight"><pre><span></span>results <span class="o">&lt;-</span> getBM <span class="p">(</span>attributes<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="s">&quot;ensembl_gene_id&quot;</span><span class="p">,</span> <span class="s">&quot;hgnc_symbol&quot;</span><span class="p">),</span> filters<span class="o">=</span><span class="s">&quot;hgnc_symbol&quot;</span><span class="p">,</span> values<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="s">&quot;BOGUS&quot;</span><span class="p">),</span> mart<span class="o">=</span>mart<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in getBM(attributes = c(&quot;ensembl_gene_id&quot;, &quot;hgnc_symbol&quot;), filters = &quot;hgnc_symbol&quot;, : could not find function &quot;getBM&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>results
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in eval(expr, envir, enclos): object &#39;results&#39; not found
+</pre></div>
+
+
+<p>Wonderful. Now let's do something real. Given a list of obselete or synonym gene names, extract the current and official ones. First, I'll connect to a different biomart in a slightly different way:</p>
+<div class="highlight"><pre><span></span><span class="kn">library</span> <span class="p">(</span><span class="s">&#39;biomaRt&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in library(&quot;biomaRt&quot;): there is no package called &#39;biomaRt&#39;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>listMarts <span class="p">(</span>host<span class="o">=</span><span class="s">&#39;www.genenames.org&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in listMarts(host = &quot;www.genenames.org&quot;): could not find function &quot;listMarts&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>mart <span class="o">&lt;-</span> useMart <span class="p">(</span>host<span class="o">=</span><span class="s">&#39;www.genenames.org&#39;</span><span class="p">,</span> biomart<span class="o">=</span><span class="s">&#39;g4public&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in useMart(host = &quot;www.genenames.org&quot;, biomart = &quot;g4public&quot;): could not find function &quot;useMart&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>head <span class="p">(</span>listDatasets <span class="p">(</span>mart<span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in listDatasets(mart): could not find function &quot;listDatasets&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>mart <span class="o">&lt;-</span> useMart <span class="p">(</span>host<span class="o">=</span><span class="s">&#39;www.genenames.org&#39;</span><span class="p">,</span> biomart<span class="o">=</span><span class="s">&#39;g4public&#39;</span><span class="p">,</span> dataset<span class="o">=</span><span class="s">&#39;hgnc&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in useMart(host = &quot;www.genenames.org&quot;, biomart = &quot;g4public&quot;, dataset = &quot;hgnc&quot;): could not find function &quot;useMart&quot;
+</pre></div>
+
+
+<p>I chose this 'mart because I wanted to query names. Also the default central mart was flaky the day I did this, which seems to be a common-enough occurence.</p>
+<p>Next find the allowed attributes and filters:</p>
+<div class="highlight"><pre><span></span>head <span class="p">(</span>listFilters <span class="p">(</span>mart<span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in listFilters(mart): could not find function &quot;listFilters&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>head <span class="p">(</span>listAttributes <span class="p">(</span>mart<span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in listAttributes(mart): could not find function &quot;listAttributes&quot;
+</pre></div>
+
+
+<p>Load or details the names to query on:</p>
+<div class="highlight"><pre><span></span><span class="c1"># the first two are synonyms, the third and the last a primary and current identifier</span>
+query_symbols <span class="o">&lt;-</span> <span class="kt">c</span> <span class="p">(</span><span class="s">&#39;BHLHB2&#39;</span><span class="p">,</span> <span class="s">&#39;BRP44L&#39;</span><span class="p">,</span> <span class="s">&#39;BOGUS&#39;</span><span class="p">,</span> <span class="s">&#39;CPVL&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Then build and submit the query. Note that symbols that are correct (i.e. current and the primary symbol) and those that are unrecognised do not return any results:</p>
+<div class="highlight"><pre><span></span>attributes <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span>
+  <span class="s">&quot;gd_app_sym&quot;</span><span class="p">,</span> <span class="s">&quot;gd_app_name&quot;</span><span class="p">,</span> 
+  <span class="s">&quot;gd_prev_sym&quot;</span><span class="p">,</span>
+  <span class="s">&#39;md_ensembl_id&#39;</span><span class="p">,</span>
+  <span class="s">&#39;f_gd_prev_sym&#39;</span>
+<span class="p">)</span>
+filters <span class="o">&lt;-</span> <span class="s">&#39;f_gd_prev_sym&#39;</span> <span class="c1"># or &#39;f_gd_aliases&#39;</span>
+values <span class="o">&lt;-</span> query_symbols
+
+results <span class="o">&lt;-</span> getBM <span class="p">(</span>attributes<span class="o">=</span><span class="kp">attributes</span><span class="p">,</span> filters<span class="o">=</span>filters<span class="p">,</span> values<span class="o">=</span>values<span class="p">,</span> mart<span class="o">=</span>mart<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in getBM(attributes = attributes, filters = filters, values = values, : could not find function &quot;getBM&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>head <span class="p">(</span>results<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in head(results): object &#39;results&#39; not found
+</pre></div>
+
+
+<p>A more complicated example: get upstream, downstream and coding regions for a set of genes:</p>
+<div class="highlight"><pre><span></span><span class="kn">library</span><span class="p">(</span>tools<span class="p">)</span>
+<span class="kn">library</span><span class="p">(</span>biomaRt<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in library(biomaRt): there is no package called &#39;biomaRt&#39;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># initialize mart:</span>
+ensembl <span class="o">&lt;-</span> useMart<span class="p">(</span><span class="s">&#39;ensembl&#39;</span><span class="p">)</span> 
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in useMart(&quot;ensembl&quot;): could not find function &quot;useMart&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>mart <span class="o">&lt;-</span> useDataset<span class="p">(</span><span class="s">&quot;hsapiens_gene_ensembl&quot;</span><span class="p">,</span>mart<span class="o">=</span>ensembl<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in useDataset(&quot;hsapiens_gene_ensembl&quot;, mart = ensembl): could not find function &quot;useDataset&quot;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># get the central sequence</span>
+<span class="c1"># note that seqinr masks the biomart function, lovely</span>
+pep_seqs <span class="o">&lt;-</span> biomaRt<span class="o">::</span>getSequence <span class="p">(</span>id<span class="o">=</span>as.vector <span class="p">(</span>query_symbols<span class="p">),</span>
+ type<span class="o">=</span><span class="s">&quot;hgnc_symbol&quot;</span><span class="p">,</span> seqType<span class="o">=</span><span class="s">&quot;peptide&quot;</span><span class="p">,</span> mart <span class="o">=</span> mart<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in loadNamespace(name): there is no package called &#39;biomaRt&#39;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>pep_seqs <span class="o">&lt;-</span> pep_seqs<span class="p">[</span><span class="o">!</span>pep_seqs<span class="o">$</span>peptide<span class="o">==</span><span class="s">&#39;Sequence unavailable&#39;</span><span class="p">,]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in eval(expr, envir, enclos): object &#39;pep_seqs&#39; not found
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>pep_seqs <span class="o">&lt;-</span> pep_seqs<span class="p">[</span><span class="o">!</span><span class="kp">duplicated</span><span class="p">(</span>pep_seqs<span class="o">$</span>hgnc_symbol<span class="p">),]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in eval(expr, envir, enclos): object &#39;pep_seqs&#39; not found
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># get the upstream sequence</span>
+upstr_seqs <span class="o">&lt;-</span> biomaRt<span class="o">::</span>getSequence <span class="p">(</span>id<span class="o">=</span>as.vector <span class="p">(</span>query_symbols<span class="p">),</span>
+ type<span class="o">=</span><span class="s">&quot;hgnc_symbol&quot;</span><span class="p">,</span> seqType<span class="o">=</span><span class="s">&quot;coding_gene_flank&quot;</span><span class="p">,</span> upstream<span class="o">=</span><span class="m">5000</span><span class="p">,</span> mart <span class="o">=</span> mart<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in loadNamespace(name): there is no package called &#39;biomaRt&#39;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>upstr_seqs <span class="o">&lt;-</span> upstr_seqs<span class="p">[</span><span class="o">!</span>upstr_seqs<span class="o">$</span>coding_gene_flank<span class="o">==</span><span class="s">&#39;Sequence unavailable&#39;</span><span class="p">,]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in eval(expr, envir, enclos): object &#39;upstr_seqs&#39; not found
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>upstr_seqs <span class="o">&lt;-</span> upstr_seqs<span class="p">[</span><span class="o">!</span><span class="kp">duplicated</span><span class="p">(</span>upstr_seqs<span class="o">$</span>hgnc_symbol<span class="p">),]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in eval(expr, envir, enclos): object &#39;upstr_seqs&#39; not found
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># get the downstream sequence</span>
+downstr_seqs <span class="o">&lt;-</span> biomaRt<span class="o">::</span>getSequence <span class="p">(</span>id<span class="o">=</span>as.vector <span class="p">(</span>query_symbols<span class="p">),</span>
+ type<span class="o">=</span><span class="s">&quot;hgnc_symbol&quot;</span><span class="p">,</span> seqType<span class="o">=</span><span class="s">&quot;coding_gene_flank&quot;</span><span class="p">,</span> downstream<span class="o">=</span><span class="m">5000</span><span class="p">,</span> mart<span class="o">=</span>mart<span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in loadNamespace(name): there is no package called &#39;biomaRt&#39;
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>downstr_seqs <span class="o">&lt;-</span> downstr_seqs<span class="p">[</span><span class="o">!</span>downstr_seqs<span class="o">$</span>coding_gene_flank<span class="o">==</span><span class="s">&#39;Sequence unavailable&#39;</span><span class="p">,]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in eval(expr, envir, enclos): object &#39;downstr_seqs&#39; not found
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>downstr_seqs <span class="o">&lt;-</span> downstr_seqs<span class="p">[</span><span class="o">!</span><span class="kp">duplicated</span><span class="p">(</span>downstr_seqs<span class="o">$</span>hgnc_symbol<span class="p">),]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>## Error in eval(expr, envir, enclos): object &#39;downstr_seqs&#39; not found
+</pre></div>
+
+
+<p>Some notes:</p>
+<ul>
+<li>Biomart will usually return multiple sequences for each gene - because there are multiple sequences in the database. Some are partial, some are from abberant chromosomes, etc. That's why I deduplicate above and why you will have to filter stuff out according to your own preferences.</li>
+<li>Remember, if there's no hit, nothing will be returned.</li>
+<li>For reasons unclear to me, some were returned with 'Sequence unavailable'.</li>
+</ul>
+<p>And here's an absolute hack. As said, sometimes Biomart can be flaky and I had a huge problem trying to download a set of several hundred sequences when the service would barf once every 100 or so. So I wrote a fallback function to retry any failed queries:</p>
+<div class="highlight"><pre><span></span><span class="c1"># &quot;get_seq_fxn&quot; does the biomart fetching and</span>
+<span class="c1"># returns the results it gets</span>
+
+<span class="kr">repeat</span> <span class="p">{</span>
+   message <span class="p">(</span><span class="s">&quot;trying &quot;</span><span class="p">,</span> ids<span class="p">[</span><span class="m">1</span><span class="p">])</span>
+   results <span class="o">&lt;-</span> try <span class="p">(</span>get_seq_fxn<span class="p">())</span>
+   <span class="kr">if</span> <span class="p">(</span>class <span class="p">(</span>results<span class="p">)</span> <span class="o">==</span> <span class="s">&quot;data.frame&quot;</span><span class="p">)</span> <span class="kr">return</span> <span class="p">(</span>results<span class="p">)</span>
+   print <span class="p">(</span><span class="s">&quot;errored out&quot;</span><span class="p">)</span>
+   Sys.sleep <span class="p">(</span><span class="m">0.1</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h2>References</h2>
+<ul>
+<li>Michael Schroeder: <a href="http://bg.upf.edu/courses/big/documents/session_10/Biomart_lecture.pdf">Biomart (lecture)</a></li>
+<li>Ensembl <a href="http://www.ensembl.org/info/website/tutorials/mining_with_biomart.pdf">Datamining with Biomart</a></li>
+<li>Neil Saunders <a href="http://nsaunders.wordpress.com/2010/03/26/biomart-and-biomart/">BioMart (and biomaRt)</a></li>
+</ul>
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

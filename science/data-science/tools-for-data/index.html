@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Tools for data - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Prompted by a recent tweet asking what people used for storing and managing their data, I wrote down my own hard-won lessons on the topic. In rough order of preference and data complexity: A hierarchical strategy Use restructured text for documentation Or markdown / asciidoc. The advantages of this being: It's …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Tools for data">
+	<meta name="twitter:description" content="Prompted by a recent tweet asking what people used for storing and managing their data, I wrote down my own hard-won lessons on the topic. In rough order of preference and data complexity: A hierarchical strategy Use restructured text for documentation Or markdown / asciidoc. The advantages of this being: It's …">
+	<meta name="twitter:url" content="/science/data-science/tools-for-data/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Tools for data</h1>
+
+<div class="metadata">
+  <time datetime="2015-02-20T00:00:00+00:00" pubdate>2015-02-20</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/science/">science</a>
+<p class="tags">tagged <a href="//by-tag/ruby-on-rails/">Ruby-on-Rails</a>, <a href="//by-tag/rails/">Rails</a>, <a href="//by-tag/data-science/">data science</a>, <a href="//by-tag/csv/">CSV</a>, <a href="//by-tag/json/">JSON</a>, <a href="//by-tag/excel/">Excel</a>, <a href="//by-tag/sqlite/">SQLite</a>, <a href="//by-tag/xml/">XML</a>, <a href="//by-tag/redcap/">REDCap</a></p></div>
+		<div class="summary">How to store data, what to use</div>
+
+
+      <p>Prompted by a recent tweet asking what people used for storing and managing their data, I wrote down my own hard-won lessons on the topic. In rough order of preference and data complexity:</p>
+<div class="section" id="a-hierarchical-strategy">
+<h2>A hierarchical strategy</h2>
+<div class="section" id="use-restructured-text-for-documentation">
+<h3>Use restructured text for documentation</h3>
+<p>Or markdown / asciidoc. The advantages of this being:</p>
+<ul class="simple">
+<li>It's a plain text format, you can write or read it anywhere</li>
+<li>It's a format that's more about structure, information and relationships than presentation, i.e. what you should be worrying about rather than look-and-feel</li>
+<li>There are many tools for exporting it to other formats.</li>
+<li>If necessary, it can be parsed for extracting information.</li>
+</ul>
+</div>
+<div class="section" id="use-csv-for-tables">
+<h3>Use CSV for tables</h3>
+<p>Because:</p>
+<ul class="simple">
+<li>Every spreadsheet and stats tool can use it</li>
+<li>Every programming language can parse it without problems</li>
+<li>Again, it's a plain text format</li>
+<li>It doesn't mangle or transform values like Excel has a habit of silently doing</li>
+</ul>
+</div>
+<div class="section" id="use-sqlite-for-relational-data">
+<h3>Use SQLite for relational data</h3>
+<p>If you have to store relational data and/or use a database (and I suggest you question this need very closely), use one that</p>
+<ul class="simple">
+<li>is easily portable</li>
+<li>not beholden to any company</li>
+<li>uses fairly standard SQL</li>
+<li>is easy to get data in and out of</li>
+<li>is just sophisticated enough to store your data and no more</li>
+</ul>
+<p>In the context of data science, the lack of permissions / access control in SQLite is in fact an advantage. You're usually just throwing together a database to analyse, not to mount on the web, so a permissions structure is surplus to requirements and can only cause problems.</p>
+<p>Should you push beyond the limits of SQLite data-size-wise, retreat to other vanilla SQL databases: MySQL, Postgres.</p>
+</div>
+<div class="section" id="use-yaml-or-xml-or-hdf5-for-complex-datasets">
+<h3>Use YAML or XML or HDF5 for complex datasets</h3>
+<p>YAML for humans, XML for computers.</p>
+<p>Why YAML:</p>
+<ul class="simple">
+<li>It's highly readable (and nearly valid javascript)</li>
+<li>It's easy to write by hand</li>
+<li>There are parsers for many languages</li>
+</ul>
+<p>I'm tempted to says that YAML should always be used instead of XML. However there are more complex datatypes that are a bit fiddly to manipulate in YAML. And there may be the need for interoperability with XML-friendly tools. If so, you should use XML, because:</p>
+<ul class="simple">
+<li>It's super-standard</li>
+<li>There are many tools in every language for handling it.</li>
+</ul>
+<p>If you end up with very large complicated, heterogeneous data, use CDF or HDF5. Why?</p>
+<ul class="simple">
+<li>At this point, readability is moot. May as well use something that is easy for computers.</li>
+<li>It's a standard. That's a good enough reason.</li>
+<li>You can store anything in it.</li>
+<li>It was made for just this use case.</li>
+</ul>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Just, for godsake, don't not write your own <em>de novo</em> format. It's not as easy if it looks and untold hours have been consumed by dodgy home-grown formats. Write any format you use on top of YAML or XML. Even then, it's very easy to cock it up.</p>
+</div>
+</div>
+<div class="section" id="for-web-databases">
+<h3>For web databases</h3>
+<p>Use REDCap. Really. It does most everything you want to do, has sophisticated access control, a nice body of reporting tools, it's easy to design / revise databases, it's easy to import and export data, there's a large body of expertise, it's secure, there's a body of expertise and experience out there.</p>
+<p>(CKAN and opendatakitr may be good fits for this niche but I have less firsthand knowledge.)</p>
+<p>If you have to go beyond this - say for a database with heavy relational elements, or a lot of custom tools and datatypes, use Ruby-on-Rails. It is built for quickly doing this sort of CRUD database, making a lot of assumptions to speed development that will almost certainly hold for your data needs. It can't do everything, but it can almost certainly do what you need to do. Actually, use Hobo, which is like the next level RoR, allowing very rapid db development.</p>
+<p>The one downside is the dizzying rate of change in the RoR ecosystem, where yesterdays way is Old-and-Busted and tomorrow's New Hotness doesn't quite work yet. But a little bit of careful and conservative development can get you around this.</p>
+</div>
+</div>
+<div class="section" id="alternatives">
+<h2>Alternatives</h2>
+<div class="section" id="json">
+<h3>JSON</h3>
+<p>Certainly if you're working in Javascript (WHY?) or interacting with web-services, your data may pass through JSON. But as a primary data format? No. And that's before we consider the lack of data manipulation and search tools.</p>
+</div>
+<div class="section" id="excel">
+<h3>Excel</h3>
+<p>No.</p>
+<p>Just wait until you come across your very important piece of data that Excel silently &quot;corrects&quot;, or try and untangle the difference between a number that is contained in a numeric cell and one that is stored in a text cell. Then you'll understand. Look here:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.biomedcentral.com/1471-2105/5/80">http://www.biomedcentral.com/1471-2105/5/80</a></li>
+<li><a class="reference external" href="https://dontuseexcel.wordpress.com/2013/02/07/dont-use-excel-for-biological-data/">https://dontuseexcel.wordpress.com/2013/02/07/dont-use-excel-for-biological-data/</a></li>
+<li><a class="reference external" href="http://www.bioinformatics.fr/resources.php?id=2528&amp;name=Genes">http://www.bioinformatics.fr/resources.php?id=2528&amp;name=Genes</a></li>
+<li><a class="reference external" href="http://info.5amsolutions.com/blog/bid/120220/Using-Excel-for-Bioinformatics-Data-Five-Issues-Five-Solutions">http://info.5amsolutions.com/blog/bid/120220/Using-Excel-for-Bioinformatics-Data-Five-Issues-Five-Solutions</a></li>
+</ul>
+<p>Digression: It's often quite hard to avoid Excel, it's so embedded in everyone's workflow. Of course if someone needs a spreadsheet, they're going to use Excel, and so you are forced to deal with it. Even if you personally don't use Excel, it can still cause problems. I once set up a database and a user complained vociferously about how I'd &quot;corrupted the data&quot;. They'd downloaded the data, imported it into Excel, the program 'corrected' the data ...</p>
+<p>On the other hand, Excel has little competition in the 'point and click' creation of graphs and the pivot-table feature is actually very useful. The only thing you can do is aim for least-corruptible formatting. Send and receive data as CSV. Export data in forms that Excel can't interpret and has to treat as plain un-normalisable text.</p>
+</div>
+<div class="section" id="open-libreoffice">
+<h3>Open/LibreOffice</h3>
+<p>And now it's okay to poke yourself in the eye with a stick because the stick is ideologically correct?</p>
+</div>
+<div class="section" id="langauge-specific-encodings">
+<h3>Langauge-specific encodings</h3>
+<p>Python pickles, .RData, SPSS .spv and .sav files ...  Ask if you always and forever will be using this program. Ask if you and everyone you work with will always have access to this program. Ask  if this format and program that reads it will never change.</p>
+</div>
+</div>
+<div class="section" id="general-rules">
+<h2>General rules</h2>
+<ol class="arabic simple">
+<li>Where possible, use open, data and platform-agnostic formats. Avoid proprietary formats.</li>
+<li>Where possible, use human readable formats</li>
+<li>Use as simple a format (or tool) as you can get away with.</li>
+<li>Do not invent your own format.</li>
+<li>Seriously, do not invent your own format.</li>
+<li>Go with the crowd and use common tools and formats, so as to leverage others experience.</li>
+<li>Remember the object is not the formatting or storage of the data but the analysis of the data.</li>
+</ol>
+</div>
+<div class="section" id="references">
+<h2>References</h2>
+<ul class="simple">
+<li><a class="reference external" href="https://redcap.vanderbilt.edu/">REDCap</a></li>
+<li><a class="reference external" href="http://yaml.org/">YAML</a></li>
+<li><a class="reference external" href="http://www.hobocentral.net/">Hobo</a></li>
+</ul>
+</div>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li ><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li class="active"><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>

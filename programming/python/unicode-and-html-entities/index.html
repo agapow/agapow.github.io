@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="">
+<head>
+	<meta charset="utf-8"/>
+	<title>Unicode and HTML entities - Make More Machines</title>
+	<meta name="author" content="Paul Agapow">
+
+
+  <meta name="description" content="Buried in the Python standard library, unicodedata contains most the information needed to interrogate and translate unicode characters. Unfortunately, it's underdocumented. More accurately, the docs are a terse list of what it does, but not why you might want to use it or how you use it. Unfortunately it's also …">
+
+	<meta name="twitter:card" content="summary">
+	  <meta name="twitter:creator" content="@agapow">
+	<meta name="twitter:title" content="Unicode and HTML entities">
+	<meta name="twitter:description" content="Buried in the Python standard library, unicodedata contains most the information needed to interrogate and translate unicode characters. Unfortunately, it's underdocumented. More accurately, the docs are a terse list of what it does, but not why you might want to use it or how you use it. Unfortunately it's also …">
+	<meta name="twitter:url" content="/programming/python/unicode-and-html-entities/">
+
+
+	<link rel="stylesheet" href="/theme/css/main.css" type="text/css" />
+
+
+
+</head>
+
+<body>
+
+    <div class="container">
+
+	  <header role="banner">
+	    <div class="feeds">
+	    </div>
+	      <nav class="pages">
+			  <a href="/about">About</a>
+-			  <a href="/whereabouts">Whereabouts</a>
+	      </nav>
+		<a href="" class="title">Make More Machines</a>&nbsp;&nbsp;(agapow.net)
+      </header>
+
+	  <div class="wrapper">
+
+		  <div role="main" class="content">
+	<article class="full">
+
+		<h1>Unicode and HTML entities</h1>
+
+<div class="metadata">
+  <time datetime="2012-09-14T12:56:00+01:00" pubdate>2012-09-14</time>
+    <address class="vcard author">
+      by <a class="url fn" href="/False">Paul Agapow</a>
+    </address>
+  in <a href="/programming/">programming</a>
+<p class="tags">tagged <a href="//by-tag/programming/">programming</a>, <a href="//by-tag/unicode/">unicode</a>, <a href="//by-tag/text-handling/">text-handling</a>, <a href="//by-tag/python/">python</a></p></div>
+		<div class="summary">In which we struggle with a cacophony of characters for the web.</div>
+
+
+      <p>Buried in the Python standard library, unicodedata contains most the
+information needed to interrogate and translate unicode characters.
+Unfortunately, it's underdocumented. More accurately, the
+<a class="reference external" href="http://docs.python.org/lib/module-unicodedata.html">docs</a> are a
+terse list of <em>what</em> it does, but not <em>why</em> you might want to use it or
+<em>how</em> you use it. Unfortunately it's also a compiled library, which
+eliminates looking at the source. The following are some notes I
+compiled concerning unicodedata and beating information out of unicode
+characters. Throughout these examples, I'll use the characters 'a', 'é'
+(u'xE9' in Python) and pi (?, u'u03D6' in python).</p>
+<p>The name for any of these characters can be obtained by passing them to
+<strong>name</strong>. This accepts a single character unicode (not string):</p>
+<pre class="literal-block">
+&gt;&gt;&gt; chars = [u'a', u'xE9', u'u03D6']
+&gt;&gt;&gt; for item in chars:
+   print unicodedata.name (item)
+LATIN SMALL LETTER A
+LATIN SMALL LETTER E WITH ACUTE
+GREEK PI SYMBOL
+</pre>
+<p>This name can be used in a reverse lookup to get the character with
+<strong>lookup</strong>:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; unicodedata.lookup ('LATIN SMALL LETTER A') u'a'
+</pre>
+<p>The hexadecimal letter-numbers (A to F) can be either case.
+Interestingly, while the hex 'x' notation can be converted to the
+unicode 'u' notation, the reverse doesn't hold. This may be do with the
+compilation of Python, although it is stated
+<a class="reference external" href="http://www.amk.ca/python/howto/unicode">elsewhere</a> that the 'x'
+notation is limited to 2 characters, 'u' needs 4, and 'U' requires 8:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; print unicodedata.name (u'u00e9')
+LATIN SMALL LETTER E WITH ACUTE
+&gt;&gt;&gt; print unicodedata.name (u'x03d6')
+...
+&lt;type 'exceptions.typeerror'=&quot;&quot;&gt;: need a single Unicode character as parameter
+</pre>
+<p><strong>decimal</strong>, <strong>digit</strong> and <strong>numeric</strong> are potentially confusing call -
+if the character passed is a numerical character, they returns the
+integer (float for <em>numeric</em>) for that character:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; print unicodedata.decimal (u'1') 1
+&gt;&gt;&gt; print unicodedata.decimal (u'a')
+...
+&lt;type 'exceptions.ValueError'&gt;: not a decimal
+&gt;&gt;&gt; print unicodedata.digit (u'1')
+1
+&gt;&gt;&gt; print unicodedata.digit (u'a')
+...
+&lt;type 'exceptions.ValueError'&gt;: not a digit
+&gt;&gt;&gt; print unicodedata.numeric (u'1')
+1.0
+&gt;&gt;&gt; print unicodedata.digit (u'a')
+...
+&lt;type 'exceptions.valueerror'=&quot;&quot;&gt;: not a numeric character é
+</pre>
+<p>The remainder of functions within unicodedata are justifiably obscure,
+concerned with more typographical issuess. <strong>category</strong> is passingly
+interesting, returning a string of classification information for any
+character:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; unicodedata.category (u'A')
+'Lu' # letter, uppercase
+&gt;&gt;&gt; unicodedata.category (u'a')
+'Ll' # letter, lowercase
+</pre>
+<p>You can obtain the unicode for a character from it's ordinal value -
+decimal or hex, but not a hexadecimal string- via <strong>unichr</strong>:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; unichr (233), unichr (0xe9) (u'xe9', u'xe9')
+</pre>
+<p>Encoding characters for HTML is a small problem for unicode. First, the
+angled braces &lt; and &gt; have to be excluded from text within HTML, so they
+aren't mistaken for markup. Therefore they are translated into HTML
+character entities which can be safely placed in HTML and rendered. This
+can be done with the cgi.escape function:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; cgi.escape ('&lt;&gt;') '&amp;lt;&amp;gt;
+</pre>
+<p>This works with strings or unicode. cgi.escape also converts ampersands,
+as they are used in constructing the character entities:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; cgi.escape ('&amp;') '&amp;amp;'
+</pre>
+<p>Next, there is the problem of rendering extended characters in HTML.
+While character encoding information can be indicated by webpages, a
+safer fallback is to also translate extended characters into character
+entities. This can be done for all commonly used characters (and most
+uncommon ones). There isn't a direct translation faility in Python, but
+<a class="reference external" href="http://effbot.org/zone/element-index.htm">ElementTree</a> does this
+with some clever pattern recognition:</p>
+<pre class="literal-block">
+_escape = re.compile (eval(r'u&quot;[&amp;&lt;&gt;&quot;u0080-uffff]+&quot;'))
+</pre>
+<p>to catch the extended characters and then a simple substitution:</p>
+<pre class="literal-block">
+text = &quot;&amp;#%d;&quot; % ord (char)
+</pre>
+<p>to form numerical character entities:</p>
+<pre class="literal-block">
+&gt;&gt;&gt; &quot;&amp;#%d;&quot; % ord(u'xe9') 'é'
+</pre>
+<p>The catch here is this produces <em>numerical</em> entities, not the <em>named</em>
+entities that cgi.escape makes. Each character has a named and numerical
+entity. While these render equivalently, it would be preferable to
+produce the more readable named entities. To illustrate:</p>
+<pre class="literal-block">
+u'?' = unichr (960) = u'u03c0' = 'π' = 'π'
+</pre>
+<p>and:</p>
+<pre class="literal-block">
+u'???' becomes '∑&amp;radic;Π' or '∑√Π'
+</pre>
+<p>Unfortunately, there's no mapping for these named entities in Python.
+(Irritatingly, Docutils has wide support but <a class="reference external" href="http://docutils.sourceforge.net/tmp/charents/README.html">not in a form that looks
+useful for
+code</a>.)</p>
+
+
+	</article>
+
+    <p>
+	<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-lang="en" data-size="large" data-related="">Tweet</a>
+	<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'agapow';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+		  </div>
+
+		  <div class="sidebar">
+		    <div class="sidebar-container" >
+
+
+	            <aside>
+	              <h2>About</h2>
+			      <p class='summary'>
+                  This site has just been restored, with most of the content
+						translated automatically from its old form. Expect bugs,
+						missing information and general wierdness as things
+						get sorted out.
+			      </p>
+			    </aside>
+
+
+  	          <nav>
+	            <h2>Categories</h2>
+	            <ul>
+	                <li ><a href="/misc/">misc</a></li>
+	                <li ><a href="/personal/">personal</a></li>
+	                <li class="active"><a href="/programming/">programming</a></li>
+	                <li ><a href="/publications/">publications</a></li>
+	                <li ><a href="/science/">science</a></li>
+	                <li ><a href="/software/">software</a></li>
+	                <li ><a href="/talks/">talks</a></li>
+	            </ul>
+
+	            <ul>
+	              <li><a href="/tags.html">all tags</a></li>
+	            </ul>
+	          </nav>
+
+	            <aside>
+	            <h2>Social</h2>
+			      <ul class="social">
+				    <li><a href="http://twitter.com/agapow">Twitter</a><i></i></li>
+				    <li><a href="http://github.com/agapow">Github</a><i></i></li>
+				    <li><a href="https://plus.google.com/u/0/113920832845886210876/posts">Google+</a><i></i></li>
+				    <li><a href="http://uk.linkedin.com/pub/paul-michael-agapow/2/15b/184/">linkedIn</a><i></i></li>
+			      </ul>
+			    </aside>
+
+	            <aside>
+	              <h2>Links</h2>
+	              <ul>
+	                  <li><a href="http://www.imperial.ac.uk/data-science/">IC Data Science Institute</a></li>
+	                  <li><a href="http://www.meetup.com/Bioinformatics-London">Bioinformatics London</a></li>
+	              </ul>
+	            </aside>
+
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/agapow" data-widget-id="336428520026812416">Tweets by @agapow</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	        </div>
+		  </div>
+
+	  </div>
+
+      <footer>
+		<p role="contentinfo">
+		  Paul Agapow - Proudly powered by <a href="http://alexis.notmyidea.org/pelican/">pelican</a>. Theme <a href="https://github.com/fle/pelican-sober">pelican-sober</a>.
+    	</p>
+
+	  </footer>
+
+	</div>
+
+
+</body>
+</html>
