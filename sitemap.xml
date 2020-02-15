@@ -5,28 +5,28 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>/</loc>
-<lastmod>2020-01-18T16:01:36-00:00</lastmod>
+<lastmod>2020-02-15T21:07:03-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>/archives.html</loc>
-<lastmod>2020-01-18T16:01:36-00:00</lastmod>
+<lastmod>2020-02-15T21:07:03-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>/tags.html</loc>
-<lastmod>2020-01-18T16:01:36-00:00</lastmod>
+<lastmod>2020-02-15T21:07:03-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>/categories.html</loc>
-<lastmod>2020-01-18T16:01:36-00:00</lastmod>
+<lastmod>2020-02-15T21:07:03-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
@@ -40,7 +40,14 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>/whereabouts/</loc>
-<lastmod>2020-01-17T22:15:34+00:00</lastmod>
+<lastmod>2020-02-15T21:06:50+00:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>/misc/kwazy-kwistmas-kwiz/</loc>
+<lastmod>2020-02-01T00:00:00+00:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>
@@ -55,6 +62,20 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>/personal/infoglut/infoglut-2020/</loc>
 <lastmod>2020-01-01T00:00:00+00:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>/misc/humour/transmorphing-killer-robot-movie/</loc>
+<lastmod>2019-09-01T00:00:00+01:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>/misc/humour/learning-spanish/</loc>
+<lastmod>2019-08-01T00:00:00+01:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>
@@ -97,6 +118,13 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>/personal/infoglut/infoglut-2018/</loc>
 <lastmod>2018-01-01T00:00:00+00:00</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
+<loc>/downloads/kwiz/2017/qanda/</loc>
+<lastmod>2017-12-19T06:21:50+00:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>
@@ -481,13 +509,6 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>/publications/plos-v6-2011-h1n1/</loc>
-<lastmod>2012-10-01T12:00:00+01:00</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.5</priority>
-</url>
-
-<url>
-<loc>/publications/plos-v6-2011-h1n1 copy/</loc>
 <lastmod>2012-10-01T12:00:00+01:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
@@ -1481,8 +1502,15 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 </url>
 
 <url>
+<loc>/downloads/</loc>
+<lastmod>2017-12-19T06:21:50-00:01</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.5</priority>
+</url>
+
+<url>
 <loc>/misc/</loc>
-<lastmod>2020-01-02T00:00:00-00:01</lastmod>
+<lastmod>2020-02-01T00:00:00-00:01</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
@@ -1526,34 +1554,6 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <loc>/talks/</loc>
 <lastmod>2018-01-10T00:00:00-00:01</lastmod>
 <changefreq>daily</changefreq>
-<priority>0.5</priority>
-</url>
-
-<url>
-<loc>/misc/humour/fan-complaint/</loc>
-<lastmod>2006-01-01T11:59:00+00:00</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.5</priority>
-</url>
-
-<url>
-<loc>/publications/plos-v6-2011-h1n1 copy/</loc>
-<lastmod>2012-10-01T12:00:00+01:00</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.5</priority>
-</url>
-
-<url>
-<loc>/publications/plos-v6-2011-h1n1/</loc>
-<lastmod>2012-10-01T12:00:00+01:00</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.5</priority>
-</url>
-
-<url>
-<loc>/misc/humour/as-i-was-watching-game-of-thrones/</loc>
-<lastmod>2013-07-08T13:56:00+01:00</lastmod>
-<changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>
 
