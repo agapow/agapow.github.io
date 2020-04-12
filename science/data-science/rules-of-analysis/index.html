@@ -53,6 +53,7 @@
 
 
       <p>While mentoring some juniors, I started to think about the rules of thumb for analysing data that I've built up over the years. While I'm certainly not the world's greatest data scientist (or it's greatest bioinformatician, statistician, biomedical scientist, etc.), it seems worthwhile trying to capture them here. these are obviously shaped by my experience and domain in healthcare and biomedical data.</p>
+<p>This is a living document and with be extended as I think of more.</p>
 <h2>Analysis is code</h2>
 <p>Serious data analysis should be be done with code, proper code. Not Excel, not JMP, not a plotting package, not macros. Why?</p>
 <ul>
@@ -64,7 +65,7 @@
 <li>It's easier to revise</li>
 <li>Doing it the long (hard) way is usually faster for non-trivial tasks</li>
 </ul>
-<p>I still remember with horror the 20K-strong patient cohort that a colleague split into a myriad of cohorts, based on a huge list of complex criteria, in a massive Excel spreadsheet. It involved a massive number of sheets, macros and scripting, linked in a thick mesh of cross-references. It took months to put together. Did it work? There was no way of knowing - it just didn't obviously not work. That's not good enough.</p>
+<p>I still remember with horror the 20K-strong patient cohort that a colleague split into a myriad of sub-cohorts, based on a huge list of complex criteria, in a single massive Excel spreadsheet. It involved a massive number of sub-sheets, macros and scripting, linked in a thick mesh of cross-references. It took months to put together. Did it work? There was no way of knowing - it just didn't obviously not work. That's not good enough.</p>
 <h2>Reports are generated straight from analysis</h2>
 <p>Summaries and results should be auto-generated from analysis, rather than cutting and pasting into Word or Powerpoint. Why?</p>
 <ul>
@@ -82,7 +83,7 @@
 <li>How will others know how to parse your data? Will they have to write a custom parser?</li>
 <li>You'll never get around to formally documenting your format. See previous point.</li>
 </ul>
-<p>Meta-formats, or formats build on top of other formats like storing data in JSON or YAML is acceptable. At least then there are tools to read and write and the base format will stop a lot of bad design decisions. If there's a published or popular format that 90% right for you? Maybe you should use that.</p>
+<p>Meta-formats, or formats build on top of other formats like storing data in JSON or YAML are acceptable. At least then there are tools to read and write and the base format will stop a lot of bad design decisions. If there's a published or popular format that's 90% right for you? Maybe you should use that.</p>
 <p>See the long history of ambiguities, extensions and inconsistencies in NEXUS or even something as simple as the NEWICK tree format.</p>
 <h2>Storage data in humane common ways</h2>
 <p>Store data in CSV. If you can't do that, store in JSON or YAML. If you can't do that, SQLite. Why?</p>
@@ -133,7 +134,20 @@
 <li>The algorithms you're using have only the veneer of a statistical basis, and obscure assumptions</li>
 <li>Biomedical data is particular is heterogenous, biased and incomplete. Who knows if it meets the necessary assumptions.</li>
 </ul>
-<p>No, if your result's aren't necessarily true, what can you do? Ask yourself, "This is better than what? And how can I show that?" Look for ways of independently validating or reproducing your findings. Or, if your answers aren't guaranteed to be true, do they show that something is not true? Look for ways for answers to be useful, to be advisory on other approaches.</p>
+<p>I'm not saying that statistics is unimportant but it is difficult and can be unreliable. You can easily lie with statistics and maybe it impossible to place a statistical measure on your results. No, if your results aren't necessarily true, what can you do? Ask yourself, "This is better than what? And how can I show that?" Look for ways of independently validating or reproducing your findings. Or, if your answers aren't guaranteed to be true, do they show that something is not true? Look for ways for answers to be useful, to be advisory on other approaches.</p>
+<p>(Alice Wong rightly noted this was a bit of a drive-by statement - stats, p-hacking, multiplicity, etc. are vast subjects. But I can't do justice to them in this space, other than to underline their complexity.)</p>
+<h2>Maybe you should use less SQL</h2>
+<p>Why?</p>
+<ul>
+<li>Complex subsetting and massaging of data can be difficult to express in SQL, because it's depauperate as a programming language, and often those operations are cumbersome and verbose.</li>
+<li>Perhaps because of this, there's a tradition of enormous multi-line SQL statements to get work done. It is difficult to understand what these do or debug. You end up taking the code on faith.</li>
+<li>The internal representation of domain objects is right in your face, when you should be thinking of their external representation.</li>
+<li>Asserts, checks and defensive programming? What's that?</li>
+<li>And there are dialects of SQL so forget porting your analysis.</li>
+<li>If you're pulling data live from a database, how do you version that.</li>
+<li>In summary, excessive use of SQL moves towards the code being a blackbox.</li>
+</ul>
+<p>Obviously (gestures at 50 years of use), SQL is a tremendously useful thing. But it's not a great tool for communicating intent or writing good complex code. Fortunately, you could just use a small amount of SQL to do a broad extract of data, thendoing the heavy lifting in a real programming language. or use an abstraction layer (like SQAlchemy) so that you're manipulating objects not rows scattered across tables.</p>
 
 	</article>
 
