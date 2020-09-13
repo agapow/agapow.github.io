@@ -5,42 +5,42 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
 <loc>/</loc>
-<lastmod>2020-04-12T16:58:54-00:00</lastmod>
+<lastmod>2020-09-13T21:02:30-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>/archives.html</loc>
-<lastmod>2020-04-12T16:58:54-00:00</lastmod>
+<lastmod>2020-09-13T21:02:30-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>/tags.html</loc>
-<lastmod>2020-04-12T16:58:54-00:00</lastmod>
+<lastmod>2020-09-13T21:02:30-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>/categories.html</loc>
-<lastmod>2020-04-12T16:58:54-00:00</lastmod>
+<lastmod>2020-09-13T21:02:30-00:00</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>/about/</loc>
-<lastmod>2020-01-18T00:58:04+00:00</lastmod>
+<lastmod>2020-09-13T14:08:32+01:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>
 
 <url>
 <loc>/whereabouts/</loc>
-<lastmod>2020-04-06T21:47:07+01:00</lastmod>
+<lastmod>2020-09-13T14:29:55+01:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>
@@ -153,13 +153,6 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>/talks/other-archives/</loc>
 <lastmod>2017-11-30T00:00:00+00:00</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.5</priority>
-</url>
-
-<url>
-<loc>/science/data-science/long-and-wide/</loc>
-<lastmod>2017-07-13T00:00:00+01:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>
@@ -354,29 +347,8 @@ xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 </url>
 
 <url>
-<loc>/programming/r/indexing-and-slicing/</loc>
-<lastmod>2015-05-20T00:00:00+01:00</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.5</priority>
-</url>
-
-<url>
-<loc>/science/computational-biology/using-biomart/</loc>
-<lastmod>2015-05-19T00:00:00+01:00</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.5</priority>
-</url>
-
-<url>
 <loc>/programming/web-development/pelican/using-rmd/</loc>
 <lastmod>2015-05-12T00:00:00+01:00</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.5</priority>
-</url>
-
-<url>
-<loc>/programming/r/vocabulary-1/</loc>
-<lastmod>2015-05-10T22:16:35+01:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.5</priority>
 </url>
